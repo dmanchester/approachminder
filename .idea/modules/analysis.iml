@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id="root [file:/home/dan/IdeaUltProjects/approach-minder/analysis/]" external.linked.project.path="$MODULE_DIR$/../../analysis" external.root.project.path="$MODULE_DIR$/../../analysis" external.system.id="SBT" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+    <output url="file://$MODULE_DIR$/../../analysis/target/scala-2.13/classes" />
+    <output-test url="file://$MODULE_DIR$/../../analysis/target/scala-2.13/test-classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../analysis">
+      <sourceFolder url="file://$MODULE_DIR$/../../analysis/src/main/scala" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../analysis/src/test/scala" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/../../analysis/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="sbt: scala-sdk-2.13.12" level="project" />
+    <orderEntry type="library" name="sbt: org.scala-lang:scala-library:2.13.12:jar" level="project" />
+  </component>
+</module>

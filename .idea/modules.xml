@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/analysis.iml" filepath="$PROJECT_DIR$/.idea/modules/analysis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/analysis/.idea/modules/analysis-build.iml" filepath="$PROJECT_DIR$/analysis/.idea/modules/analysis-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/approach-minder.iml" filepath="$PROJECT_DIR$/approach-minder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/visualization.iml" filepath="$PROJECT_DIR$/visualization.iml" />
     </modules>
   </component>
 </project>
