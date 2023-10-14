@@ -1,1 +1,13 @@
+Visualization
+-------------
+* From a Trajectory:
+  * Get icao24 --> [X]do a JS version of "AircraftProfile"; but for now, just string-based "icao24"
+  * Get a time-ordered Array of time and position
+* Given a JulianDate (that's what we'll get from viewer.clock.currentTime), and some number of seconds before it, get the latest position of each aircraft within that time window --> as an array of AircraftProfile, TimeBasedPosition
+  * Must acct for the case of multiple trajectories in the window for a single aircraft
+* An IO method that takes the import of the JSON (which is parsed for us!), gives us a Trajectories object
+* TODO Add '"type": "module"' to package.json and move away from ".mjs" extension?
+
+Miscellaneous
+-------------
 * `/.idea/modules/analysis.iml` contains an absolute path. Can we mitigate, perhaps via [path variables](https://www.jetbrains.com/help/idea/absolute-path-variables.html)?
