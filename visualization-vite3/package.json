@@ -6,11 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "jasmine"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.4.2",
     "cesium": "^1.111.0",
+    "jasmine": "^5.1.0",
+    "lodash": "^4.17.21",
     "svelte": "^4.0.5",
     "vite": "^4.4.5"
   }

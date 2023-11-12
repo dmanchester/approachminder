@@ -1,6 +1,6 @@
 <script>
   import { onMount } from "svelte";
-  import { Viewer, Ion } from "cesium";
+  import {Viewer, Ion, Terrain, createWorldTerrainAsync } from "cesium";
   import "../node_modules/cesium/Source/Widgets/widgets.css";
 
   window['CESIUM_BASE_URL'] = './node_modules/cesium/Source/'
@@ -11,9 +11,20 @@
 
   let viewer;
   onMount(async () => {
-    viewer = new Viewer('cesiumContainer');
+    viewer = new Viewer('cesiumContainer', {
+        terrainProvider: await createWorldTerrainAsync()
+    });
   });
 </script>
 
-<div id="cesiumContainer">
+<div id="cesiumContainer"></div>
+<div id="toolbar" style="margin: 5px; padding: 2px 5px; position: absolute; color: #eee; top: 0; left: 0">
+    <table>
+        <tbody>
+        <tr>
+            <td>This is column 1</td>
+            <td>This is column 2</td>
+        </tr>
+        </tbody>
+    </table>
 </div>
