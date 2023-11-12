@@ -6,6 +6,8 @@
       <module fileurl="file://$PROJECT_DIR$/analysis/.idea/modules/analysis-build.iml" filepath="$PROJECT_DIR$/analysis/.idea/modules/analysis-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/approach-minder.iml" filepath="$PROJECT_DIR$/approach-minder.iml" />
       <module fileurl="file://$PROJECT_DIR$/visualization.iml" filepath="$PROJECT_DIR$/visualization.iml" />
+      <module fileurl="file://$PROJECT_DIR$/visualization-vite.iml" filepath="$PROJECT_DIR$/visualization-vite.iml" />
+      <module fileurl="file://$PROJECT_DIR$/visualization-vite3.iml" filepath="$PROJECT_DIR$/visualization-vite3.iml" />
     </modules>
   </component>
 </project>
