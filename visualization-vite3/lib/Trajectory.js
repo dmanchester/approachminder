@@ -17,6 +17,7 @@ class Trajectory {
   /**
    *
    * @param {Array<TimeBasedPosition>} untidy
+   * @returns {Array<TimeBasedPosition>}
    */
   static tidyTimeBasedPositions(untidy) {  // TODO Is there a concept of marking private?
 
@@ -28,6 +29,7 @@ class Trajectory {
 
   /**
    * TODO Document
+   * @returns {JulianDate}
    */
   earliestTime() {
     return this.timeBasedPositions[0].time;
@@ -35,6 +37,7 @@ class Trajectory {
 
   /**
    * TODO Document
+   * @returns {JulianDate}
    */
   latestTime() {
     return this.timeBasedPositions.at(-1).time;
@@ -48,10 +51,10 @@ class Trajectory {
    *
    * @param {JulianDate} endTime
    * @param {Number} duration
+   * @returns {TimeBasedPosition}
    */
   latestPositionWithinWindow(endTime, duration) {
     const startTime = JulianDate.addSeconds(endTime, -1 * duration, new JulianDate());
-    // TODO Try again to get type inference working on this return type. Are we facing https://youtrack.jetbrains.com/issue/WEB-56537? Also in Trajectories.
     return this.timeBasedPositions.findLast(tbp => JulianDate.lessThanOrEquals(startTime, tbp.time) && JulianDate.lessThanOrEquals(tbp.time, endTime));
   }
 }

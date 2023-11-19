@@ -10,6 +10,7 @@ class IO {
    * Construct a `Trajectories` instance from parsed trajectories JSON.
    *
    * @param {Object} parsedJSON
+   * @returns {Trajectories}
    */
   static trajectoriesFromParsedJSON(parsedJSON) {
 

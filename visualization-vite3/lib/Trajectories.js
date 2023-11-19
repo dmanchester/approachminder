@@ -15,6 +15,7 @@ class Trajectories {
 
   /**
    * TODO Document
+   * @returns {JulianDate}
    */
   earliestTime() {
     const earliestTimesOfTrajectories = this.theTrajectories.map(trajectory => trajectory.earliestTime());
@@ -23,6 +24,7 @@ class Trajectories {
 
   /**
    * TODO Document
+   * @returns {JulianDate}
    */
   latestTime() {
     const latestTimesOfTrajectories = this.theTrajectories.map(trajectory => trajectory.latestTime());
@@ -39,7 +41,8 @@ class Trajectories {
    *
    * @param {JulianDate} endTime
    * @param {Number} duration
-   * @returns {Array<[AircraftProfile, TimeBasedPosition]>} Order within array is arbitrary -- TODO Note that using Array mostly because Set type is not very functional (e.g., no "has"/"contains" with predicate)
+   * TODO Note that using Array mostly because Set type is not very functional (e.g., no "has"/"contains" with predicate)
+   * @returns {Array<[AircraftProfile, TimeBasedPosition]>}
    */
   aircraftLatestPositionsWithinWindow(endTime, duration) {
 
