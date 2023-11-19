@@ -1,4 +1,4 @@
-import TimeBasedPosition from "../lib/TimeBasedPosition.mjs";
+import TimeBasedPosition from "../lib/TimeBasedPosition.js";
 import { Cartesian3, JulianDate } from "cesium";
 
 describe("TimeBasedPosition", function() {

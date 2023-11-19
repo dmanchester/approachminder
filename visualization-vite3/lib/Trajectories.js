@@ -17,7 +17,7 @@ class Trajectories {
    * TODO Document
    */
   earliestTime() {
-    const earliestTimesOfTrajectories = this.theTrajectories.map((trajectory) => trajectory.earliestTime());
+    const earliestTimesOfTrajectories = this.theTrajectories.map(trajectory => trajectory.earliestTime());
     return minBy(earliestTimesOfTrajectories, (time) => JulianDate.totalDays(time));  // totalDays includes whole and fractional days
   }
 
@@ -25,7 +25,7 @@ class Trajectories {
    * TODO Document
    */
   latestTime() {
-    const latestTimesOfTrajectories = this.theTrajectories.map((trajectory) => trajectory.latestTime());
+    const latestTimesOfTrajectories = this.theTrajectories.map(trajectory => trajectory.latestTime());
     return maxBy(latestTimesOfTrajectories, (time) => JulianDate.totalDays(time));
   }
 
@@ -38,13 +38,13 @@ class Trajectories {
    * The start and end times of the window are considered "within" it.
    *
    * @param {JulianDate} endTime
-   * @param {number} duration
-   * @returns {Array<[AircraftProfile, TimeBasedPosition]>} Order within array is arbitrary -- TODO Check JSDoc syntax; also, note that using Array mostly because Set type is not very functional (e.g., no "has"/"contains" with predicate)
+   * @param {Number} duration
+   * @returns {Array<[AircraftProfile, TimeBasedPosition]>} Order within array is arbitrary -- TODO Note that using Array mostly because Set type is not very functional (e.g., no "has"/"contains" with predicate)
    */
   aircraftLatestPositionsWithinWindow(endTime, duration) {
 
     // For each trajectory that intersects the time window, find the latest position within the window.
-    const latestPositionsWithinWindow = this.theTrajectories.map((trajectory) => {
+    const latestPositionsWithinWindow = this.theTrajectories.map(trajectory => {
       return [trajectory.aircraftProfile, trajectory.latestPositionWithinWindow(endTime, duration)];
     }).filter(([aircraftProfile, tbp]) => {
       return tbp !== undefined;
@@ -55,7 +55,7 @@ class Trajectories {
     const latestPositionsWithinWindowByAircraft = Object.values(latestPositionsWithinWindowByAircraftWithKey);
 
     // Obtain the latest position per aircraft.
-    return latestPositionsWithinWindowByAircraft.map((latestPositionsOneAircraft) => maxBy(latestPositionsOneAircraft, ([aircraftProfile, tbp]) => JulianDate.totalDays(tbp.time)));
+    return latestPositionsWithinWindowByAircraft.map(latestPositionsOneAircraft => maxBy(latestPositionsOneAircraft, ([aircraftProfile, tbp]) => JulianDate.totalDays(tbp.time)));
   }
 }
 

@@ -47,10 +47,11 @@ class Trajectory {
    * The start and end times of the window are considered "within" it.
    *
    * @param {JulianDate} endTime
-   * @param {number} duration
+   * @param {Number} duration
    */
   latestPositionWithinWindow(endTime, duration) {
     const startTime = JulianDate.addSeconds(endTime, -1 * duration, new JulianDate());
+    // TODO Try again to get type inference working on this return type. Are we facing https://youtrack.jetbrains.com/issue/WEB-56537? Also in Trajectories.
     return this.timeBasedPositions.findLast(tbp => JulianDate.lessThanOrEquals(startTime, tbp.time) && JulianDate.lessThanOrEquals(tbp.time, endTime));
   }
 }

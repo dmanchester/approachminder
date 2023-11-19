@@ -1,5 +1,5 @@
 import { Cartesian3, JulianDate } from "cesium";
-import IO from "../lib/IO.mjs";
+import IO from "../lib/IO.js";
 
 describe("Trajectories", function() {
 

@@ -1,4 +1,4 @@
-import AircraftProfile from "../lib/AircraftProfile.mjs";
+import AircraftProfile from "../lib/AircraftProfile.js";
 
 describe("AircraftProfile", function() {
 

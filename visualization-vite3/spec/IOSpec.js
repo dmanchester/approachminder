@@ -1,4 +1,4 @@
-import IO from "../lib/IO.mjs";
+import IO from "../lib/IO.js";
 import { Cartesian3, JulianDate } from "cesium";
 
 describe("IO", function() {

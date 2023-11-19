@@ -1,7 +1,7 @@
-import Trajectory from "../lib/Trajectory.mjs";
+import Trajectory from "../lib/Trajectory.js";
 import { Cartesian3, JulianDate } from "cesium";
-import AircraftProfile from "../lib/AircraftProfile.mjs";
-import TimeBasedPosition from "../lib/TimeBasedPosition.mjs";
+import AircraftProfile from "../lib/AircraftProfile.js";
+import TimeBasedPosition from "../lib/TimeBasedPosition.js";
 
 describe("Trajectory", function() {
 
