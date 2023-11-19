@@ -1,6 +1,17 @@
 <script>
   import { onMount } from "svelte";
-  import { Cartesian3, Ion, IonResource, JulianDate, SampledPositionProperty, Terrain, VelocityOrientationProperty, Viewer, createWorldTerrainAsync } from "cesium";
+  import {
+      Cartesian3,
+      Ion,
+      IonResource,
+      JulianDate,
+      SampledPositionProperty,
+      Terrain,
+      VelocityOrientationProperty,
+      Viewer,
+      createWorldTerrainAsync,
+      Entity
+  } from "cesium";
   import IO from "../lib/IO.js";
   import "../node_modules/cesium/Source/Widgets/widgets.css";  // TODO Compare with 'import "cesium/Build/Cesium/Widgets/widgets.css"'; and, what do I get from this?
   import trajectoriesFromJSON from "./data.json";
@@ -58,8 +69,7 @@
 
       const airplaneUri = await IonResource.fromAssetId(1621363);
 
-      let trackedEntitySet = false;  // FIXME This is a big hack
-      trajectories.theTrajectories.forEach(trajectory => {
+      const entities = trajectories.theTrajectories.map(trajectory => {
 
           const times = trajectory.timeBasedPositions.map(timeBasedPosition => timeBasedPosition.time);
           const positions = trajectory.timeBasedPositions.map(timeBasedPosition => timeBasedPosition.position);
@@ -67,21 +77,23 @@
           const positionProperty = new SampledPositionProperty();
           positionProperty.addSamples(times, positions);
 
-          const airplaneEntity = viewer.entities.add({
+          return new Entity({
               name: trajectory.aircraftProfile.icao24,
               //  availability: new Cesium.TimeIntervalCollection([ new Cesium.TimeInterval({ start: start, stop: stop }) ]),
               position: positionProperty,
-              model: { uri: airplaneUri },
+              model: {uri: airplaneUri},
               // Automatically compute the orientation from the position.
               orientation: new VelocityOrientationProperty(positionProperty),
           });
-
-          if (!trackedEntitySet) {
-              viewer.trackedEntity = airplaneEntity;
-              viewer.clock.currentTime = trajectory.earliestTime().clone();
-              trackedEntitySet = true;
-          }
       });
+
+      entities.forEach(entity => {
+          viewer.entities.add(entity);
+      });
+
+      // TODO This is hacky. Also, concern ourselves with no-entities case?
+      viewer.trackedEntity = entities[0];
+      viewer.clock.currentTime = trajectories.theTrajectories[0].earliestTime().clone();
   });
 </script>
 
