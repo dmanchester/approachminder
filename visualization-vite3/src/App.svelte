@@ -69,7 +69,8 @@
 
       const airplaneUri = await IonResource.fromAssetId(1621363);
 
-      const entities = trajectories.theTrajectories.map(trajectory => {
+      const trajectoriesToEntities = new Map();
+      trajectories.theTrajectories.forEach(trajectory => {
 
           const times = trajectory.timeBasedPositions.map(timeBasedPosition => timeBasedPosition.time);
           const positions = trajectory.timeBasedPositions.map(timeBasedPosition => timeBasedPosition.position);
@@ -77,23 +78,26 @@
           const positionProperty = new SampledPositionProperty();
           positionProperty.addSamples(times, positions);
 
-          return new Entity({
+          const entity = new Entity({
               name: trajectory.aircraftProfile.icao24,
               //  availability: new Cesium.TimeIntervalCollection([ new Cesium.TimeInterval({ start: start, stop: stop }) ]),
               position: positionProperty,
-              model: {uri: airplaneUri},
+              model: { uri: airplaneUri },
               // Automatically compute the orientation from the position.
-              orientation: new VelocityOrientationProperty(positionProperty),
+              orientation: new VelocityOrientationProperty(positionProperty)
           });
+
+          trajectoriesToEntities.set(trajectory, entity);
       });
 
-      entities.forEach(entity => {
-          viewer.entities.add(entity);
-      });
+      for (const entity of trajectoriesToEntities.values()) {
+         viewer.entities.add(entity);
+      }
 
       // TODO This is hacky. Also, concern ourselves with no-entities case?
-      viewer.trackedEntity = entities[0];
-      viewer.clock.currentTime = trajectories.theTrajectories[0].earliestTime().clone();
+      const firstTrajectory = trajectories.theTrajectories[0];
+      viewer.trackedEntity = trajectoriesToEntities.get(firstTrajectory);
+      viewer.clock.currentTime = firstTrajectory.earliestTime().clone();
   });
 </script>
 
