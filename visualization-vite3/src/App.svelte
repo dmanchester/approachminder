@@ -12,6 +12,7 @@
       createWorldTerrainAsync,
       Entity
   } from "cesium";
+  import sortBy from "lodash/sortBy.js";
   import IO from "../lib/IO.js";
   import "../node_modules/cesium/Source/Widgets/widgets.css";  // TODO Compare with 'import "cesium/Build/Cesium/Widgets/widgets.css"'; and, what do I get from this?
   import trajectoriesFromJSON from "./data.json";
@@ -21,8 +22,10 @@
   // TODO Externalize this.
   Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI2MzQ3MmQ0ZC1mNWU1LTQ2YzItYTRjMS01NGIxYzRjMGIwZTUiLCJpZCI6MTMyMTg5LCJpYXQiOjE2ODA2NTY4ODN9.CSgIJqm0gEDGCXXvbuW932tn04Q1m8Y_AmssiRXgR8Y';
 
-  let aircraftSeenRecently;  // TODO Initialize to zero?
   let viewer;
+  const trajectoriesToEntities = new Map();
+  let latestPositionWithinWindowByAircraft = [];
+
   onMount(async () => {
       try {
           viewer = new Viewer('cesiumContainer', {
@@ -46,30 +49,10 @@
       const windowDuration = 60;  // seconds
       let lastTimeProcessed = undefined;
 
-      viewer.clock.onTick.addEventListener(() => {   // Whoa, this gets called all the time, even when clock is stopped!
-
-          const time = viewer.clock.currentTime;
-
-          if (JulianDate.equals(time, lastTimeProcessed)) {
-              // Nothing to do.
-              return;
-          }
-
-          const aircraftLatestPositionsWithinWindow = trajectories.aircraftLatestPositionsWithinWindow(time, windowDuration);
-
-          aircraftSeenRecently = aircraftLatestPositionsWithinWindow.length;
-          // let message = `As of ${JulianDate.toIso8601(time)}, ${aircraftLatestPositionsWithinWindow.length} aircraft seen in last ${windowDuration} seconds:\n`;
-          // aircraftLatestPositionsWithinWindow.forEach(([aircraftProfile, tbp]) => { message += `  ${aircraftProfile.icao24} ${JulianDate.toIso8601(tbp.time)}\n` });
-          // console.log(message);
-
-          lastTimeProcessed = time;
-      });
-
       viewer.clock.shouldAnimate = true;
 
       const airplaneUri = await IonResource.fromAssetId(1621363);
 
-      const trajectoriesToEntities = new Map();
       trajectories.theTrajectories.forEach(trajectory => {
 
           const times = trajectory.timeBasedPositions.map(timeBasedPosition => timeBasedPosition.time);
@@ -98,17 +81,37 @@
       const firstTrajectory = trajectories.theTrajectories[0];
       viewer.trackedEntity = trajectoriesToEntities.get(firstTrajectory);
       viewer.clock.currentTime = firstTrajectory.earliestTime().clone();
+
+      viewer.clock.onTick.addEventListener(() => {   // Whoa, this gets called all the time, even when clock is stopped!
+
+        const time = viewer.clock.currentTime;
+
+        if (JulianDate.equals(time, lastTimeProcessed)) {
+          // Nothing to do.
+          return;
+        }
+
+        const latestPositionWithinWindowByAircraftUnsorted = trajectories.latestPositionWithinWindowByAircraft(time, windowDuration);
+        latestPositionWithinWindowByAircraft = sortBy(latestPositionWithinWindowByAircraftUnsorted, ([trajectory, timeBasedPosition]) => trajectory.aircraftProfile.icao24);
+
+        lastTimeProcessed = time;
+      });
   });
 </script>
 
 <div id="cesiumContainer"></div>
 <div id="toolbar" style="margin: 5px; padding: 2px 5px; position: absolute; color: #eee; top: 0; left: 0">
-    <table>
-        <tbody>
+  <table>
+    <tbody>
+      {#each latestPositionWithinWindowByAircraft as trajectoryAndTimeBasedPosition}
         <tr>
-            <td>This is column 1</td>
-            <td>{aircraftSeenRecently} aircraft seen recently</td>
+          <td>
+            <button on:click={() => { viewer.trackedEntity = trajectoriesToEntities.get(trajectoryAndTimeBasedPosition[0]); }}>
+              {trajectoryAndTimeBasedPosition[0].aircraftProfile.icao24}
+            </button>
+          </td>
         </tr>
-        </tbody>
-    </table>
+      {/each}
+    </tbody>
+  </table>
 </div>

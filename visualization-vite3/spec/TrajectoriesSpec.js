@@ -50,13 +50,13 @@ describe("Trajectories", function() {
     expect(trajectories.latestTime().equals(expectedDate)).toBeTrue();
   });
 
-  it("aircraftLatestPositionsWithinWindow() should work per its JSDoc", function() {  // TODO Write a better description
-    const latestPositions = trajectories.aircraftLatestPositionsWithinWindow(JulianDate.fromIso8601("2023-01-02T00:00:01Z"), 23 * 60 * 60 + 59 * 60);  // 23 hours, 59 minutes: 2023-01-01T00:01:01Z to 2023-01-02T00:00:01Z
+  it("latestPositionWithinWindowByAircraft() should work per its JSDoc", function() {  // TODO Write a better description
+    const latestPositions = trajectories.latestPositionWithinWindowByAircraft(JulianDate.fromIso8601("2023-01-02T00:00:01Z"), 23 * 60 * 60 + 59 * 60);  // 23 hours, 59 minutes: 2023-01-01T00:01:01Z to 2023-01-02T00:00:01Z
 
     expect(latestPositions.length).toEqual(3);  // no position from jkl012; its trajectory later than window
 
-    expect(latestPositions.some(([aircraftProfile, tbp]) => aircraftProfile.icao24 === "abc123" && tbp.time.equals(JulianDate.fromIso8601("2023-01-01T00:01:01Z")))).toBeTrue();
-    expect(latestPositions.some(([aircraftProfile, tbp]) => aircraftProfile.icao24 === "def456" && tbp.time.equals(JulianDate.fromIso8601("2023-01-02T00:00:01Z")))).toBeTrue();
-    expect(latestPositions.some(([aircraftProfile, tbp]) => aircraftProfile.icao24 === "ghi789" && tbp.time.equals(JulianDate.fromIso8601("2023-01-01T00:05:01Z")))).toBeTrue();
+    expect(latestPositions.some(([trajectory, timeBasedPosition]) => trajectory.aircraftProfile.icao24 === "abc123" && timeBasedPosition.time.equals(JulianDate.fromIso8601("2023-01-01T00:01:01Z")))).toBeTrue();
+    expect(latestPositions.some(([trajectory, timeBasedPosition]) => trajectory.aircraftProfile.icao24 === "def456" && timeBasedPosition.time.equals(JulianDate.fromIso8601("2023-01-02T00:00:01Z")))).toBeTrue();
+    expect(latestPositions.some(([trajectory, timeBasedPosition]) => trajectory.aircraftProfile.icao24 === "ghi789" && timeBasedPosition.time.equals(JulianDate.fromIso8601("2023-01-01T00:05:01Z")))).toBeTrue();
   });
 });
