@@ -24,7 +24,7 @@
 
   let viewer;
   const trajectoriesToEntities = new Map();
-  let latestPositionWithinWindowByAircraft = [];
+  let latestPositionsWithinWindow = [];
 
   onMount(async () => {
       try {
@@ -91,8 +91,9 @@
           return;
         }
 
-        const latestPositionWithinWindowByAircraftUnsorted = trajectories.latestPositionWithinWindowByAircraft(time, windowDuration);
-        latestPositionWithinWindowByAircraft = sortBy(latestPositionWithinWindowByAircraftUnsorted, ([trajectory, timeBasedPosition]) => trajectory.aircraftProfile.icao24);
+        // Get the latest positions within the time window, one per aircraft.
+        const latestPositionsWithinWindowUnsorted = trajectories.latestPositionsWithinWindow(time, windowDuration);
+        latestPositionsWithinWindow = sortBy(latestPositionsWithinWindowUnsorted, ([trajectory, timeBasedPosition]) => trajectory.aircraftProfile.icao24);
 
         lastTimeProcessed = time;
       });
@@ -103,12 +104,13 @@
 <div id="toolbar" style="margin: 5px; padding: 2px 5px; position: absolute; color: #eee; top: 0; left: 0">
   <table>
     <tbody>
-      {#each latestPositionWithinWindowByAircraft as trajectoryAndTimeBasedPosition}
+      {#each latestPositionsWithinWindow as trajectoryAndTimeBasedPosition (trajectoryAndTimeBasedPosition[0].aircraftProfile.icao24)}
         <tr>
           <td>
             <button on:click={() => { viewer.trackedEntity = trajectoriesToEntities.get(trajectoryAndTimeBasedPosition[0]); }}>
               {trajectoryAndTimeBasedPosition[0].aircraftProfile.icao24}
             </button>
+            {trajectoryAndTimeBasedPosition[1].position}
           </td>
         </tr>
       {/each}

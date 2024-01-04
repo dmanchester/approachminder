@@ -32,7 +32,7 @@ class Trajectories {
   }
 
   /**
-   * Get the latest position per aircraft within a time window.
+   * Get the latest positions within a time window, one per aircraft.
    *
    * If an aircraft does not have a trajectory that intersects the time window, the aircraft is not
    * included in the output.
@@ -52,26 +52,29 @@ class Trajectories {
    * TODO Note that using Array return mostly because Set type is not very functional (e.g., no "has"/"contains" with predicate)
    * @returns {Array<[Trajectory, TimeBasedPosition]>}
    */
-  latestPositionWithinWindowByAircraft(endTime, duration) {
+  latestPositionsWithinWindow(endTime, duration) {
+
+    // Throughout this method, "latest" in a variable name indicates latest *within the time window* passed to the
+    // method. ("WithinWindow" is omitted from names for brevity.)
 
     // For each trajectory that intersects the time window, find the latest position within the window.
-    const latestPositionWithinWindowByTrajectory = this.theTrajectories.map(trajectory => {
+    const trajectoriesAndLatestPositions = this.theTrajectories.map(trajectory => {
       return [trajectory, trajectory.latestPositionWithinWindow(endTime, duration)];
     }).filter(([trajectory, timeBasedPosition]) => {
       return timeBasedPosition !== undefined;
     });
 
-    // Group the found positions by aircraft *physical identifier* (icao24).
-    const latestPositionsWithinWindowByAircraftWithKey =
+    // Group the found trajectories and positions by aircraft *physical identifier* (icao24).
+    const trajectoriesAndLatestPositionsGroupedByAircraft = Object.values(
         groupBy(
-            latestPositionWithinWindowByTrajectory,
+            trajectoriesAndLatestPositions,
             ([trajectory, timeBasedPosition]) => trajectory.aircraftProfile.icao24
-        );
-    const latestPositionsWithinWindowByAircraft = Object.values(latestPositionsWithinWindowByAircraftWithKey);
+        )
+    );
 
     // Obtain the latest position per aircraft.
-    return latestPositionsWithinWindowByAircraft.map(latestPositionsOneAircraft =>
-        maxBy(latestPositionsOneAircraft, ([trajectory, timeBasedPosition]) => JulianDate.totalDays(timeBasedPosition.time))
+    return trajectoriesAndLatestPositionsGroupedByAircraft.map(trajectoriesAndLatestPositionsOneAircraft =>
+        maxBy(trajectoriesAndLatestPositionsOneAircraft, ([trajectory, timeBasedPosition]) => JulianDate.totalDays(timeBasedPosition.time))
     );
   }
 }

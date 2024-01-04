@@ -40,9 +40,9 @@ viewer.clock.onTick.addEventListener(() => {   // Whoa, this gets called all the
 
   const aircraftLatestPositionsWithinWindow = trajectories.aircraftLatestPositionsWithinWindow(time, windowDuration);
 
-  let message = `As of ${JulianDate.toIso8601(time)}, ${aircraftLatestPositionsWithinWindow.length} aircraft seen in last ${windowDuration} seconds:\n`;
-  aircraftLatestPositionsWithinWindow.forEach(([aircraftProfile, tbp]) => { message += `  ${aircraftProfile.icao24} ${JulianDate.toIso8601(tbp.time)}\n` });
-  console.log(message);
+  // let message = `As of ${JulianDate.toIso8601(time)}, ${aircraftLatestPositionsWithinWindow.length} aircraft seen in last ${windowDuration} seconds:\n`;
+  // aircraftLatestPositionsWithinWindow.forEach(([aircraftProfile, tbp]) => { message += `  ${aircraftProfile.icao24} ${JulianDate.toIso8601(tbp.time)}\n` });
+  // console.log(message);
 
   lastTimeProcessed = time;
 });

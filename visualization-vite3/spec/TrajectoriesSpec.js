@@ -51,7 +51,7 @@ describe("Trajectories", function() {
   });
 
   it("latestPositionWithinWindowByAircraft() should work per its JSDoc", function() {  // TODO Write a better description
-    const latestPositions = trajectories.latestPositionWithinWindowByAircraft(JulianDate.fromIso8601("2023-01-02T00:00:01Z"), 23 * 60 * 60 + 59 * 60);  // 23 hours, 59 minutes: 2023-01-01T00:01:01Z to 2023-01-02T00:00:01Z
+    const latestPositions = trajectories.latestPositionsWithinWindow(JulianDate.fromIso8601("2023-01-02T00:00:01Z"), 23 * 60 * 60 + 59 * 60);  // 23 hours, 59 minutes: 2023-01-01T00:01:01Z to 2023-01-02T00:00:01Z
 
     expect(latestPositions.length).toEqual(3);  // no position from jkl012; its trajectory later than window
 
