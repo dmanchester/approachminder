@@ -1,4 +1,4 @@
-html, body, #app, #cesiumContainer {
+html, body, #app {
   /* TODO To get Cesium bottom-edge controls to move with window height, Dan added "#app". Is that "right"? */
   width: 100%;
   height: 100%;
