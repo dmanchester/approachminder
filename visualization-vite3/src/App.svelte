@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import { SplitPane } from '@rich_harris/svelte-split-pane';
   import {
       Cartesian3,
       Ion,
@@ -100,10 +101,17 @@
   });
 </script>
 
-<div id="cesiumContainer"></div>
-<div id="toolbar" style="margin: 5px; padding: 2px 5px; position: absolute; color: #eee; top: 0; left: 0">
-  <table>
-    <tbody>
+<!-- TODO What additional parameters to pass to SplitPane? See https://www.npmjs.com/package/@rich_harris/svelte-split-pane.
+     TODO Work thru issue: we're using Svelte 4; svelte-split-pane expects 3.x. -->
+<SplitPane
+        type="vertical"
+>
+  <section slot="a">
+    <div id="cesiumContainer"></div>
+  </section>
+  <section slot="b">
+    <table>
+      <tbody>
       {#each latestPositionsWithinWindow as trajectoryAndTimeBasedPosition (trajectoryAndTimeBasedPosition[0].aircraftProfile.icao24)}
         <tr>
           <td>
@@ -114,9 +122,10 @@
           </td>
         </tr>
       {/each}
-    </tbody>
-  </table>
-</div>
+      </tbody>
+    </table>
+  </section>
+</SplitPane>
 
 <style>
   #cesiumContainer {

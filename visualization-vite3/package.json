@@ -10,6 +10,7 @@
     "test": "jasmine"
   },
   "devDependencies": {
+    "@rich_harris/svelte-split-pane": "^1.1.1",
     "@sveltejs/vite-plugin-svelte": "^2.4.2",
     "cesium": "^1.111.0",
     "jasmine": "^5.1.0",
