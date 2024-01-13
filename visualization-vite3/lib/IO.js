@@ -18,7 +18,7 @@ class IO {
 
       const aircraftProfile = new AircraftProfile(trajectoryFromJSON.icao24);
       const timeBasedPositions = Object.entries(trajectoryFromJSON.positions).map(([timeFromJSON, positionFromJSON]) => {
-        return new TimeBasedPosition(JulianDate.fromIso8601(timeFromJSON), Cartesian3.fromDegrees(positionFromJSON.longitude, positionFromJSON.latitude, positionFromJSON.altitude));
+        return new TimeBasedPosition(JulianDate.fromIso8601(timeFromJSON), positionFromJSON.longitude, positionFromJSON.latitude, positionFromJSON.altitude);
       });
 
       return new Trajectory(aircraftProfile, timeBasedPositions);

@@ -25,7 +25,7 @@
 
   let viewer;
   const trajectoriesToEntities = new Map();
-  let latestPositionsWithinWindow = [];
+  let observations = [];
 
   onMount(async () => {
       try {
@@ -57,7 +57,7 @@
       trajectories.theTrajectories.forEach(trajectory => {
 
           const times = trajectory.timeBasedPositions.map(timeBasedPosition => timeBasedPosition.time);
-          const positions = trajectory.timeBasedPositions.map(timeBasedPosition => timeBasedPosition.position);
+          const positions = trajectory.timeBasedPositions.map(timeBasedPosition => Cartesian3.fromDegrees(timeBasedPosition.longitude, timeBasedPosition.latitude, timeBasedPosition.altitude));
 
           const positionProperty = new SampledPositionProperty();
           positionProperty.addSamples(times, positions);
@@ -93,8 +93,17 @@
         }
 
         // Get the latest positions within the time window, one per aircraft.
-        const latestPositionsWithinWindowUnsorted = trajectories.latestPositionsWithinWindow(time, windowDuration);
-        latestPositionsWithinWindow = sortBy(latestPositionsWithinWindowUnsorted, ([trajectory, timeBasedPosition]) => trajectory.aircraftProfile.icao24);
+        const latestPositionsWithinWindow = trajectories.latestPositionsWithinWindow(time, windowDuration);
+        // TODO First time I've used the "observations" terminology. If it sticks, broaden back to the Scala code?
+        const observationsUnsorted = latestPositionsWithinWindow.map(([trajectory, timeBasedPosition]) => ({
+          entity: trajectoriesToEntities.get(trajectory),
+          icao24: trajectory.aircraftProfile.icao24,
+          longitude: timeBasedPosition.longitude,
+          latitude: timeBasedPosition.latitude,
+          altitude: timeBasedPosition.altitude,
+          ageOfObservation: Math.round(JulianDate.secondsDifference(time, timeBasedPosition.time))
+        }));
+        observations = sortBy(observationsUnsorted, observation => observation.icao24);
 
         lastTimeProcessed = time;
       });
@@ -110,15 +119,26 @@
     <div id="cesiumContainer"></div>
   </section>
   <section slot="b">
-    <table>
+    <table id="aircraftTable">
       <tbody>
-      {#each latestPositionsWithinWindow as trajectoryAndTimeBasedPosition (trajectoryAndTimeBasedPosition[0].aircraftProfile.icao24)}
+      {#each observations as observation (observation.icao24)}
         <tr>
           <td>
-            <button on:click={() => { viewer.trackedEntity = trajectoriesToEntities.get(trajectoryAndTimeBasedPosition[0]); }}>
-              {trajectoryAndTimeBasedPosition[0].aircraftProfile.icao24}
+            <button on:click={() => { viewer.trackedEntity = observation.entity; }}>
+              {observation.icao24}
             </button>
-            {trajectoryAndTimeBasedPosition[1].position}
+          </td>
+          <td>
+            {observation.longitude}
+          </td>
+          <td>
+            {observation.latitude}
+          </td>
+          <td>
+            {observation.altitude}
+          </td>
+          <td>
+            {observation.ageOfObservation}
           </td>
         </tr>
       {/each}
@@ -134,5 +154,10 @@
     margin: 0;
     padding: 0;
     overflow: hidden;
+  }
+  #aircraftTable {
+    /* TODO This is the default. How to prevent "overflow: hidden" trickle-down (not from #cesiumContainer; from
+         elsewhere) such that we obviate the need for this? */
+    overflow: visible;
   }
 </style>

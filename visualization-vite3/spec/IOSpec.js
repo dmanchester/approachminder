@@ -34,7 +34,9 @@ describe("IO", function() {
 
       expect(trajectory0.timeBasedPositions.length).toEqual(2);
       expect(trajectory0.timeBasedPositions[0].time.equals(JulianDate.fromIso8601("2023-01-01T00:00:01Z"))).toBeTrue();  // supplied second in parsedJSON, but is chronologically first
-      expect(trajectory0.timeBasedPositions[0].position.equals(Cartesian3.fromDegrees(1.1, 2.2, 3.3))).toBeTrue();
+      expect(trajectory0.timeBasedPositions[0].longitude).toEqual(1.1);
+      expect(trajectory0.timeBasedPositions[0].latitude).toEqual(2.2);
+      expect(trajectory0.timeBasedPositions[0].altitude).toEqual(3.3);
     });
   });
 });
