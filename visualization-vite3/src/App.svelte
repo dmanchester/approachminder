@@ -136,6 +136,7 @@
           </td>
           <td>
             {observation.altitude}
+            <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
           </td>
           <td>
             {observation.ageOfObservation}
