@@ -1,3 +1,6 @@
+# When specs2 tests are run in IntelliJ IDEA, the following directory is created.
+/target/specs2-reports/
+
 # BEGIN JetBrains.gitignore, downloaded 14 Oct. 2023 from https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore ***
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
