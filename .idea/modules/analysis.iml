@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module external.linked.project.id="root [file:/home/dan/IdeaUltProjects/approach-minder/analysis/]" external.linked.project.path="$MODULE_DIR$/../../analysis" external.root.project.path="$MODULE_DIR$/../../analysis" external.system.id="SBT" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_21">
     <output url="file://$MODULE_DIR$/../../analysis/target/scala-2.13/classes" />
     <output-test url="file://$MODULE_DIR$/../../analysis/target/scala-2.13/test-classes" />
     <exclude-output />
