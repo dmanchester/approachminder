@@ -20,6 +20,19 @@ object GroupingSortingFiltering {
   }
 
   /**
+   * Determine the most-common string in an `Iterable`.
+   *
+   * If multiple strings are equally common, pick the one that is alphabetically first (according to
+   * the inherent ordering of `String`).
+   *
+   * @param strings
+   * @return
+   */
+  def mostCommonString(strings: Iterable[String]): Option[String] = {
+    mostCommonValue(strings) { (a, b) => a < b }
+  }
+
+  /**
    * Determine the most-common aircraft category that is "non-blank" (i.e., not `NoInfoAtAll` or
    * `NoADSBEmitterCategoryInfo`).
    *
@@ -28,19 +41,44 @@ object GroupingSortingFiltering {
    *
    * @param categories
    * @return the most-common `AircraftCategory` as a `Some`; or, `None` if all categories are
-   *         `NoInfoAtAll`/`NoADSBEmitterCategoryInfo` or if `category` is empty.
+   *         `NoInfoAtAll`/`NoADSBEmitterCategoryInfo` or if `categories` is empty.
    */
-  def mostCommonNonBlankCategory(categories: Seq[AircraftCategory]): Option[AircraftCategory] = {
+  def mostCommonNonBlankCategory(categories: Iterable[AircraftCategory]): Option[AircraftCategory] = {
+    val nonBlankCategories = categories.filter(!AircraftCategory.blank.contains(_))
+    mostCommonValue(nonBlankCategories) { (a, b) => a.getClass.getSimpleName < b.getClass.getSimpleName }
+  }
 
-    val categoriesAndCounts = categories.filter(!AircraftCategory.blank.contains(_)).groupBy(identity).map { case (category, categoryOccurrences) =>
-      (category, categoryOccurrences.length)
+  /**
+   * Determine the most-common value in an `Iterable`.
+   *
+   * If multiple values are equally common (i.e., they have the same number of occurrences), pick
+   * the one that comes first according to a user-supplied discriminator function.
+   *
+   * @param values
+   * @param comesFirst Discriminator function. Given `a` and `b`, returns which one comes first.
+   * @tparam T
+   * @return
+   */
+  private def mostCommonValue[T](values: Iterable[T])(comesFirst: (T, T) => Boolean): Option[T] = {
+
+    val valuesAndCounts = values.groupBy(identity).map { case (value, valueOccurrences) =>
+      (value, valueOccurrences.size)
     }.toSeq
 
-    val mostCommonNonBlankCategoryWithCount = categoriesAndCounts.sortBy { categoryAndCount =>
-      (/* "-1" to reverse-sort this field */ -1 * categoryAndCount._2, categoryAndCount._1.getClass.getSimpleName)
-    }.headOption
+    // Pick value and count "a" if:
+    //
+    //   * a's count is higher than b's; or,
+    //   * their counts are the same, but "a" comes first, according to the discriminator function.
+    //
+    // Otherwise, pick "b".
+    val mostCommonValueWithCount = valuesAndCounts.reduceOption { (a, b) =>
+      if (a._2 > b._2 || (a._2 == b._2 && comesFirst(a._1, b._1)))
+        a
+      else
+        b
+    }
 
-    mostCommonNonBlankCategoryWithCount.map(_._1)
+    mostCommonValueWithCount.map(_._1)
   }
 
   def filterPossiblyFixedWingPowered(positionsUnfiltered: Map[AircraftProfile, Seq[TimeBasedPosition]]): Map[AircraftProfile, Seq[TimeBasedPosition]] = {

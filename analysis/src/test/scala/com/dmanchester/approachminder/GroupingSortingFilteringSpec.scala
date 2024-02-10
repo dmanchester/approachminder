@@ -12,6 +12,19 @@ class GroupingSortingFilteringSpec extends Specification {
   val timeDRepeat2 = Time(40)
   val timeE = Time(42)
 
+  "mostCommonString" should {
+
+    "determine the most-common string, picking the alphabetically first one among equally common ones" in {
+      val strings = Seq("Cherry", "Apple", "Banana", "Apple", "Cherry")
+      GroupingSortingFiltering.mostCommonString(strings) must beSome(beEqualTo("Apple"))
+    }
+
+    "return `None` if there are no strings" in {
+      val strings = Seq()
+      GroupingSortingFiltering.mostCommonString(strings) must beNone
+    }
+  }
+
   "mostCommonNonBlankCategory" should {
 
     "determine the most-common non-blank category, picking the alphabetically first one among equally common ones" in {
