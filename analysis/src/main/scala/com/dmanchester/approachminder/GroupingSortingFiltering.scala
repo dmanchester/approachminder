@@ -12,8 +12,13 @@ object GroupingSortingFiltering {
 
     positions.groupBy(_.vector.icao24).map { case (icao24, positionsOneAircraftUnsorted) =>
 
-      val theMostCommonNonBlankCategory = mostCommonNonBlankCategory(positionsOneAircraftUnsorted.map(_.vector.category))
-      val profile = AircraftProfile(icao24, theMostCommonNonBlankCategory)
+      val callsigns = positionsOneAircraftUnsorted.flatMap(_.vector.callsign)  // flatMap, because StateVector.callsign is an Option[String]
+      val theMostCommonCallsign = mostCommonString(callsigns)
+
+      val categories = positionsOneAircraftUnsorted.map(_.vector.category)
+      val theMostCommonNonBlankCategory = mostCommonNonBlankCategory(categories)
+
+      val profile = AircraftProfile(icao24, theMostCommonCallsign, theMostCommonNonBlankCategory)
 
       (profile, positionsOneAircraftUnsorted.sortBy(_.timePosition))
     }

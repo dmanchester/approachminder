@@ -64,7 +64,7 @@ class ExtractionAndEstimationSpec extends Specification {
 
     val thresholds = Thresholds(sfo.thresholds :++ oak.thresholds)
 
-    val stubProfile = AircraftProfile("(icao24)", None)
+    val stubProfile = AircraftProfile("(icao24)", Some("(callsign)"), None)
 
     "determine a trajectory's approaches and landings, allocating the correct positions to each; correctly associate thresholds; and correctly interpolate crossing points" in {
 
