@@ -52,7 +52,12 @@ object IO {
         formattedInstant -> Json.obj(
           "longitude" -> timeBasedPosition.longitude,
           "latitude" -> timeBasedPosition.latitude,
-          "altitude" -> timeBasedPosition.altitudeMeters
+          "altitude" -> timeBasedPosition.altitudeMeters,
+          "onGround" -> timeBasedPosition.vector.onGround,
+          "velocity" -> timeBasedPosition.vector.velocity,  // Option
+          "trueTrack" -> timeBasedPosition.vector.trueTrack,  // Option
+          "verticalRate" -> timeBasedPosition.vector.verticalRate,  // Option
+          "squawk" -> timeBasedPosition.vector.squawk  // Option
         )
       })
     }

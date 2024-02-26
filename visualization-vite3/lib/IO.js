@@ -9,16 +9,26 @@ class IO {
   /**
    * Construct a `Trajectories` instance from parsed trajectories JSON.
    *
-   * @param {Object} parsedJSON
+   * @param {object} parsedJSON
    * @returns {Trajectories}
    */
   static trajectoriesFromParsedJSON(parsedJSON) {
 
     const theTrajectories = parsedJSON.map(trajectoryFromJSON => {
 
-      const aircraftProfile = new AircraftProfile(trajectoryFromJSON.icao24);
+      const aircraftProfile = new AircraftProfile(trajectoryFromJSON.icao24, trajectoryFromJSON.callsign, trajectoryFromJSON.category);
       const timeBasedPositions = Object.entries(trajectoryFromJSON.positions).map(([timeFromJSON, positionFromJSON]) => {
-        return new TimeBasedPosition(JulianDate.fromIso8601(timeFromJSON), positionFromJSON.longitude, positionFromJSON.latitude, positionFromJSON.altitude);
+        return new TimeBasedPosition(
+            JulianDate.fromIso8601(timeFromJSON),
+            positionFromJSON.longitude,
+            positionFromJSON.latitude,
+            positionFromJSON.altitude,
+            positionFromJSON.onGround,
+            positionFromJSON.velocity,
+            positionFromJSON.trueTrack,
+            positionFromJSON.verticalRate,
+            positionFromJSON.squawk
+        );
       });
 
       return new Trajectory(aircraftProfile, timeBasedPositions);

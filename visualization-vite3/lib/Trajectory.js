@@ -50,7 +50,7 @@ class Trajectory {
    * The start and end times of the window are considered "within" it.
    *
    * @param {JulianDate} endTime
-   * @param {Number} duration
+   * @param {number} duration
    * @returns {TimeBasedPosition}
    */
   latestPositionWithinWindow(endTime, duration) {

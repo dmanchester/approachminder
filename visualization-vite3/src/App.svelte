@@ -98,9 +98,16 @@
         const observationsUnsorted = latestPositionsWithinWindow.map(([trajectory, timeBasedPosition]) => ({
           entity: trajectoriesToEntities.get(trajectory),
           icao24: trajectory.aircraftProfile.icao24,
+          callsign: trajectory.aircraftProfile.callsign,
+          category: trajectory.aircraftProfile.category,
           longitude: timeBasedPosition.longitude,
           latitude: timeBasedPosition.latitude,
           altitude: timeBasedPosition.altitude,
+          onGround: timeBasedPosition.onGround,
+          velocity: timeBasedPosition.velocity,
+          trueTrack: timeBasedPosition.trueTrack,
+          verticalRate: timeBasedPosition.verticalRate,
+          squawk: timeBasedPosition.squawk,
           ageOfObservation: Math.round(JulianDate.secondsDifference(time, timeBasedPosition.time))
         }));
         observations = sortBy(observationsUnsorted, observation => observation.icao24);
@@ -118,29 +125,41 @@
   <section slot="a">
     <div id="cesiumContainer"></div>
   </section>
-  <section slot="b">
-    <table id="aircraftTable">
+  <section slot="b" id="tableSection">
+    <table>
+      <thead>
+        <tr>
+          <th>Callsign</th>
+          <th>Category</th>
+          <th>Longitude</th>
+          <th>Latitude</th>
+          <th>Altitude</th>
+          <th>On Ground?</th>
+          <th>Velocity</th>
+          <th>True Track</th>
+          <th>Vertical Rate</th>
+          <th>Squawk</th>
+          <th>Age of Obs.</th>
+        </tr>
+      </thead>
       <tbody>
       {#each observations as observation (observation.icao24)}
         <tr>
           <td>
             <button on:click={() => { viewer.trackedEntity = observation.entity; }}>
-              {observation.icao24}
+              {observation.callsign}
             </button>
           </td>
-          <td>
-            {observation.longitude}
-          </td>
-          <td>
-            {observation.latitude}
-          </td>
-          <td>
-            {observation.altitude}
-            <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
-          </td>
-          <td>
-            {observation.ageOfObservation}
-          </td>
+          <td>{observation.category}</td>
+          <td>{observation.longitude}</td>
+          <td>{observation.latitude}</td>
+          <td>{observation.altitude}</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
+          <td>{observation.onGround}</td>
+          <td>{observation.velocity}</td>
+          <td>{observation.trueTrack}</td>
+          <td>{observation.verticalRate}</td>
+          <td>{observation.squawk}</td>
+          <td>{observation.ageOfObservation}</td>
         </tr>
       {/each}
       </tbody>
@@ -156,8 +175,8 @@
     padding: 0;
     overflow: hidden;
   }
-  #aircraftTable {
-    /* TODO This is the default. How to prevent "overflow: hidden" trickle-down (not from #cesiumContainer; from
+  #tableSection {
+    /* TODO This is the CSS default. How to prevent "overflow: hidden" trickle-down (not from #cesiumContainer; from
          elsewhere) such that we obviate the need for this? */
     overflow: visible;
   }

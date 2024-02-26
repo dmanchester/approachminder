@@ -48,7 +48,7 @@ class Trajectories {
    * TODO Can we/should we offer any guarantees about sortedness? (Probably not, based on my TODO about Set.)
    * 
    * @param {JulianDate} endTime
-   * @param {Number} duration
+   * @param {number} duration
    * TODO Note that using Array return mostly because Set type is not very functional (e.g., no "has"/"contains" with predicate)
    * @returns {Array<[Trajectory, TimeBasedPosition]>}
    */
