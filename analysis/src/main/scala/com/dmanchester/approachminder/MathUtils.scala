@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder
 
-import scala.math.Pi
+import scala.math.{sin, toRadians}
 
 object MathUtils {
 
@@ -27,4 +27,17 @@ object MathUtils {
    * @return
    */
   def interpolateScalar(a: Double, b: Double, percentage: Double): Double = a + percentage * (b - a)
+
+  /**
+   * Calculate the length of an Isosceles triangle's base.
+   *
+   * @param apexAngleDegrees the triangle's apex angle, in degrees
+   * @param legLength the length of the triangle's legs
+   * @return The length. If the angle is negative, the length is, too.
+   */
+  def isoscelesBaseLength(apexAngleDegrees: Double, legLength: Double): Double = {
+
+    val apexAngleRadians = toRadians(apexAngleDegrees)
+    2.0 * legLength * sin(apexAngleRadians / 2.0)
+  }
 }

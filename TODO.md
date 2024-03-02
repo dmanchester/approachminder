@@ -14,3 +14,4 @@ Miscellaneous
 * If marginal SBT-related stuff under analysis/ starts getting picked up on "git add", layer in https://github.com/github/gitignore/blob/main/Global/SBT.gitignore.
 * Where do I use subtypes when I could use supertypes? (e.g., `Seq` vs. `Iterable`)
 * Move away from "--legacy-peer-deps"/address underlying issue.
+* To the extent I'm manually converting between degrees and radians, switch to scala.math functions.
