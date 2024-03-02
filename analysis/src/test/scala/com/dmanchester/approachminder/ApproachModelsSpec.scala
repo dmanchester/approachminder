@@ -39,18 +39,15 @@ class ApproachModelsSpec extends Specification {
   "bestFit" should {
 
     "find the correct approach when there's only one candidate" in {
-      val (model, deviation, appliedDistributionInMeters) = approachModels.bestFit(pointB, pointC).get
-      model must beEqualTo(approachModelRight)
+      approachModels.bestFit(pointB, pointC).get.model must beEqualTo(approachModelRight)
     }
 
     "choose the correct approach when there are multiple candidates" in {
-      val (model, deviation, appliedDistributionInMeters) = approachModels.bestFit(pointA, pointB).get
-      model must beEqualTo(approachModelLeft)
+      approachModels.bestFit(pointA, pointB).get.model must beEqualTo(approachModelLeft)
     }
 
     "reach the correct conclusion when there are no candidates" in {
-      val result = approachModels.bestFit(pointB, pointA)
-      result must beNone
+      approachModels.bestFit(pointB, pointA) must beNone
     }
   }
 }

@@ -91,9 +91,9 @@ object ThrowawayMain {
 
           val bestFitOption = approachModels.bestFit(pointPair(0), pointPair(1))
 
-          bestFitOption.filter(_._2.normalizedEuclideanDistance < 5.0).map { case (model, deviation, appliedDistributionInMeters) =>
-            val threshold = thresholdsByApproachModel(model)
-            s"(${threshold.airport.icaoID}${threshold.name},${appliedDistributionInMeters.toInt},$deviation)"
+          bestFitOption.filter(_.deviation.normalizedEuclideanDistance < 5.0).map { bestFit =>
+            val threshold = thresholdsByApproachModel(bestFit.model)
+            s"(${threshold.airport.icaoID}${threshold.name},${bestFit.appliedDistributionInMeters.toInt},${bestFit.deviation})"
           }.getOrElse("-")
         }
 
