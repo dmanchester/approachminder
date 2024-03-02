@@ -13,7 +13,7 @@ class ApproachModel private(thresholdCenter: HasLongLat, distributionsByDistance
     val distribution = distributionsByDistanceInMeters(distanceToTestAt)
     val deviation = distribution.deviation(pointToTestWithAltitude)
 
-    WithinRange(distanceToTestAt, deviation)
+    WithinRange(deviation, distanceToTestAt)
   }
 
   def test(previousPoint: HasLongLatAlt, currentPoint: HasLongLatAlt): ApproachModelTestResult = {
@@ -93,4 +93,4 @@ case object NotContinuouslyNearing extends ApproachModelTestResult
 
 case object ContinuouslyNearingButOutOfRange extends ApproachModelTestResult
 
-case class WithinRange(val appliedDistributionInMeters: BigDecimal, val deviation: DeviationFromPositionDistribution) extends ApproachModelTestResult
+case class WithinRange(val deviation: DeviationFromPositionDistribution, val appliedDistributionInMeters: BigDecimal) extends ApproachModelTestResult

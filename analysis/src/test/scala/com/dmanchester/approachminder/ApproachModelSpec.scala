@@ -49,7 +49,7 @@ class ApproachModelSpec extends Specification {
     "return WithinRange when the segment continuously nears the reference point and the current point lies between two model distances; further, the method should choose the previous (i.e., already-crossed) model distance when it's closer to the current point than the next distance is" in {
       val testResult = approachModel.test(trajectory(1), trajectory(2))
       testResult must beLike {
-        case WithinRange(appliedDistributionInMeters, deviation) => {
+        case WithinRange(deviation, appliedDistributionInMeters) => {
           appliedDistributionInMeters must beEqualTo(BigDecimal("3000.0"))
           deviation.angleDevDegrees must beCloseTo(-14.242848 within significantFigures)
           deviation.altitudeDevMeters must beCloseTo(-59.0111355 within significantFigures)
@@ -60,7 +60,7 @@ class ApproachModelSpec extends Specification {
     "return WithinRange when the segment continuously nears the reference point and the current point lies between two model distances; further, the method should choose the next (i.e., not-yet-crossed) model distance when it's closer to the current point than the previous distance is" in {
       val testResult = approachModel.test(trajectory(2), trajectory(3))
       testResult must beLike {
-        case WithinRange(appliedDistributionInMeters, deviation) => {
+        case WithinRange(deviation, appliedDistributionInMeters) => {
           appliedDistributionInMeters must beEqualTo(BigDecimal("2000.0"))
           deviation.angleDevDegrees must beCloseTo(-6.636623 within significantFigures)
           deviation.altitudeDevMeters must beCloseTo(-117.650434 within significantFigures)
@@ -71,7 +71,7 @@ class ApproachModelSpec extends Specification {
     "return WithinRange when the segment continuously nears the reference point and the current point lies closer than the closest model distance; further, the method should choose that model distance" in {
       val testResult = approachModel.test(trajectory(3), trajectory(4))
       testResult must beLike {
-        case WithinRange(appliedDistributionInMeters, deviation) => {
+        case WithinRange(deviation, appliedDistributionInMeters) => {
           appliedDistributionInMeters must beEqualTo(BigDecimal("1000.0"))
           deviation.angleDevDegrees must beCloseTo(1.298083 within significantFigures)
           deviation.altitudeDevMeters must beCloseTo(90.977375 within significantFigures)

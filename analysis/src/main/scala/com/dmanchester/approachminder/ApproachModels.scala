@@ -2,17 +2,17 @@ package com.dmanchester.approachminder
 
 class ApproachModels private(models: Iterable[ApproachModel]) {
 
-  // TODO Formalize a return type? Also, switch order within ApproachModel.WithinRange? Distance first seems dopey.
-  def bestFit(previousPoint: HasLongLatAlt, currentPoint: HasLongLatAlt): Option[(ApproachModel, BigDecimal, DeviationFromPositionDistribution)] = {
+  // TODO Formalize a return type?
+  def bestFit(previousPoint: HasLongLatAlt, currentPoint: HasLongLatAlt): Option[(ApproachModel, DeviationFromPositionDistribution, BigDecimal)] = {
 
     // TODO Could this be rewritten as a "for" comprehension?
 
     models.map { model =>
       (model.test(previousPoint, currentPoint), model)  // test the points against each model
     }.collect {
-      case (WithinRange(appliedDistributionInMeters, deviation), model) => (model, appliedDistributionInMeters, deviation)  // collect the subset of test results that are WithinRange
+      case (WithinRange(deviation, appliedDistributionInMeters), model) => (model, deviation, appliedDistributionInMeters)  // collect the subset of test results that are WithinRange
     }.minByOption {
-      case (_, _, deviation) => deviation.normalizedEuclideanDistance  // grab the one with the smallest normalized Euclidean distance
+      case (_, deviation, _) => deviation.normalizedEuclideanDistance  // grab the one with the smallest normalized Euclidean distance
     }
   }
 }

@@ -89,9 +89,9 @@ object ThrowawayMain {
 
         val strings = slidingWindowOverTrajectory.map { pointPair =>
 
-          val fitOption = approachModels.bestFit(pointPair(0), pointPair(1))
+          val bestFitOption = approachModels.bestFit(pointPair(0), pointPair(1))
 
-          fitOption.filter(_._3.normalizedEuclideanDistance < 5.0).map { case (model, appliedDistributionInMeters, deviation) =>
+          bestFitOption.filter(_._2.normalizedEuclideanDistance < 5.0).map { case (model, deviation, appliedDistributionInMeters) =>
             val threshold = thresholdsByApproachModel(model)
             s"(${threshold.airport.icaoID}${threshold.name},${appliedDistributionInMeters.toInt},$deviation)"
           }.getOrElse("-")
