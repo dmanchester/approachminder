@@ -94,6 +94,22 @@ class Airport private(val icaoID: String, val referencePoint: HasLongLat, runway
         geographicCalculator.angle(center, point)
       }
 
+      /**
+       * Calculate the distance in meters from the center of the threshold to a point.
+       *
+       * TODO It seems odd I didn't have cause to add this method until June 2024...although only previous (non-test)
+       * use of geographicCalculator.distanceInMeters was in ExtractionAndEstimation.interpolate, which "speaks" at a
+       * lower level than thresholds etc.?
+       *
+       * TODO Add test coverage? (Do I have any for "angle" method?)
+       *
+       * @param point
+       * @return
+       */
+      def distanceInMeters(point: HasLongLat): Double = {
+        geographicCalculator.distanceInMeters(center, point)
+      }
+
       override def toString = s"${this.getClass.getSimpleName}($name,$left,$center,$right)"
     }
 

@@ -81,26 +81,62 @@ object ThrowawayMain {
     val testDataFiles = IO.resolveGlob(dirPath, testDataGlob)
     val testDataTrajectories = filesToTrajectories(testDataFiles)
 
-    testDataTrajectories.foreach { case (aircraftProfile, trajectory) =>
+    val trajectoriesWithBestFitDeviations = testDataTrajectories.map { case (aircraftProfile, trajectory) =>
 
-      if (trajectory.size >= 2) {
+      if (trajectory.size < 2) { // TODO If we establish a type for trajectory with a length >= 2 invariant, don't need to test this
+        Seq.empty
+      } else { // trajectory.size >= 2
 
-        val slidingWindowOverTrajectory = trajectory.sliding(2).toSeq
+        (trajectory.head, None) +: trajectory.sliding(2).toSeq.map { pointPair =>
 
-        val strings = slidingWindowOverTrajectory.map { pointPair =>
+          // TODO In "pointPair" and these vars, "point" --> "position"?
+          val firstPoint = pointPair(0)
+          val secondPoint = pointPair(1)
 
-          val bestFitOption = approachModels.bestFit(pointPair(0), pointPair(1))
+          val bestFitOption = approachModels.bestFit(firstPoint, secondPoint)
 
-          bestFitOption.filter(_.deviation.normalizedEuclideanDistance < 5.0).map { bestFit =>
+          val deviationFromApproachWithThresholdDistanceOption /* FIXME Shorten name! */ = bestFitOption.filter(_.deviation.normalizedEuclideanDistance < 5.0).map { bestFit =>
+
             val threshold = thresholdsByApproachModel(bestFit.model)
-            s"(${threshold.airport.icaoID}${threshold.name},${bestFit.appliedDistributionInMeters.toInt},${bestFit.deviation})"
-          }.getOrElse("-")
-        }
+            val thresholdDistanceMeters = threshold.distanceInMeters(secondPoint)
+            val verticalDevMeters = bestFit.deviation.altitudeDevMeters
+            val horizontalDevMeters = MathUtils.isoscelesBaseLength(bestFit.deviation.angleDevDegrees, bestFit.appliedDistributionInMeters.toDouble)
+            val normalizedEuclideanDistance = bestFit.deviation.normalizedEuclideanDistance
 
-        println(s"\n$aircraftProfile: ${strings.mkString(", ")}")
-//        println(Json.toJson(trajectory)(IO.multipleTimeBasedPositionWrites))
+            DeviationFromApproachWithThresholdDistance(threshold, thresholdDistanceMeters, verticalDevMeters, horizontalDevMeters, normalizedEuclideanDistance)
+          }
+
+          (secondPoint, deviationFromApproachWithThresholdDistanceOption)
+        }
       }
     }
+
+    val stringBuilder = new StringBuilder()
+
+    trajectoriesWithBestFitDeviations.foreach { trajectoryWithBestFitDeviations =>
+
+      stringBuilder.append("\n*** START TRAJECTORY ***\n")
+
+      trajectoryWithBestFitDeviations.foreach { case (position, deviationFromApproachWithThresholdDistanceOption) /* FIXME Shorten name! */ =>
+
+        val message = deviationFromApproachWithThresholdDistanceOption.map { deviation =>
+          s"${deviation.threshold.airport.icaoID}, ${deviation.threshold.name}: At ${deviation.thresholdDistanceMeters} m out, concern factor ${deviation.normalizedEuclideanDistance} (${deviation.verticalDevMeters} m too high/low, ${deviation.horizontalDevMeters} m too left/right)"
+        }.getOrElse("-")
+
+        stringBuilder.append(message).append("\n")
+
+      }
+      stringBuilder.append("*** END TRAJECTORY ***\n")
+    }
+
+    val outputFile = Paths.get("/tmp/output-deviations-etc.txt")
+    Files.write(outputFile, stringBuilder.toString().getBytes(StandardCharsets.UTF_8))
+
+
+//        println(s"\n$aircraftProfile: ${strings.mkString(", ")}")
+////        println(Json.toJson(trajectory)(IO.multipleTimeBasedPositionWrites))
+//      }
+//    }
 
     //
 //    val sfo28L = Airports.sfo.thresholdByName("28L").get
