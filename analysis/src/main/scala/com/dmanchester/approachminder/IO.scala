@@ -40,6 +40,22 @@ object IO {
 
   // TODO Could we (easily) use combinator syntax in our Writes instead of what's below?
 
+  val timeBasedPositionWritesPositionalFields = new Writes[TimeBasedPosition] {
+
+    override def writes(timeBasedPosition: TimeBasedPosition): JsValue = {
+      Json.obj(
+        "longitude" -> timeBasedPosition.longitude,
+        "latitude" -> timeBasedPosition.latitude,
+        "altitude" -> timeBasedPosition.altitudeMeters,
+        "onGround" -> timeBasedPosition.vector.onGround,
+        "velocity" -> timeBasedPosition.vector.velocity,  // Option
+        "trueTrack" -> timeBasedPosition.vector.trueTrack,  // Option
+        "verticalRate" -> timeBasedPosition.vector.verticalRate,  // Option
+        "squawk" -> timeBasedPosition.vector.squawk  // Option
+      )
+    }
+  }
+
   val multipleTimeBasedPositionWrites = new Writes[Seq[TimeBasedPosition]] {
 
     override def writes(timeBasedPositions: Seq[TimeBasedPosition]): JsValue = {
@@ -49,16 +65,7 @@ object IO {
         val instant = Instant.ofEpochSecond(timeBasedPosition.timePosition.toLong)
         val formattedInstant = DateTimeFormatter.ISO_INSTANT.format(instant)
 
-        formattedInstant -> Json.obj(
-          "longitude" -> timeBasedPosition.longitude,
-          "latitude" -> timeBasedPosition.latitude,
-          "altitude" -> timeBasedPosition.altitudeMeters,
-          "onGround" -> timeBasedPosition.vector.onGround,
-          "velocity" -> timeBasedPosition.vector.velocity,  // Option
-          "trueTrack" -> timeBasedPosition.vector.trueTrack,  // Option
-          "verticalRate" -> timeBasedPosition.vector.verticalRate,  // Option
-          "squawk" -> timeBasedPosition.vector.squawk  // Option
-        )
+        formattedInstant -> timeBasedPositionWritesPositionalFields.writes(timeBasedPosition)  // TODO Is this "right"/optimal? Could use combinator syntax instead?
       })
     }
   }
