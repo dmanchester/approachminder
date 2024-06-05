@@ -87,26 +87,26 @@ object ThrowawayMain {
         Seq.empty
       } else { // trajectory.size >= 2
 
-        (trajectory.head, None) +: trajectory.sliding(2).toSeq.map { pointPair =>
+        (trajectory.head, None) +: trajectory.sliding(2).toSeq.map { positionPair =>
 
           // TODO In "pointPair" and these vars, "point" --> "position"?
-          val firstPoint = pointPair(0)
-          val secondPoint = pointPair(1)
+          val firstPosition = positionPair(0)
+          val secondPosition = positionPair(1)
 
-          val bestFitOption = approachModels.bestFit(firstPoint, secondPoint)
+          val bestFitOption = approachModels.bestFit(firstPosition, secondPosition)
 
-          val deviationFromApproachWithThresholdDistanceOption /* FIXME Shorten name! */ = bestFitOption.filter(_.deviation.normalizedEuclideanDistance < 5.0).map { bestFit =>
+          val deviationFromApproach = bestFitOption.filter(_.deviation.normalizedEuclideanDistance < 5.0).map { bestFit =>
 
             val threshold = thresholdsByApproachModel(bestFit.model)
-            val thresholdDistanceMeters = threshold.distanceInMeters(secondPoint)
+            val thresholdDistanceMeters = threshold.distanceInMeters(secondPosition)
             val verticalDevMeters = bestFit.deviation.altitudeDevMeters
             val horizontalDevMeters = MathUtils.isoscelesBaseLength(bestFit.deviation.angleDevDegrees, bestFit.appliedDistributionInMeters.toDouble)
             val normalizedEuclideanDistance = bestFit.deviation.normalizedEuclideanDistance
 
-            DeviationFromApproachWithThresholdDistance(threshold, thresholdDistanceMeters, verticalDevMeters, horizontalDevMeters, normalizedEuclideanDistance)
+            DeviationFromApproach(threshold, thresholdDistanceMeters, verticalDevMeters, horizontalDevMeters, normalizedEuclideanDistance)
           }
 
-          (secondPoint, deviationFromApproachWithThresholdDistanceOption)
+          (secondPosition, deviationFromApproach)
         }
       }
     }
@@ -117,9 +117,9 @@ object ThrowawayMain {
 
       stringBuilder.append("\n*** START TRAJECTORY ***\n")
 
-      trajectoryWithBestFitDeviations.foreach { case (position, deviationFromApproachWithThresholdDistanceOption) /* FIXME Shorten name! */ =>
+      trajectoryWithBestFitDeviations.foreach { case (position, deviationFromApproach) =>
 
-        val message = deviationFromApproachWithThresholdDistanceOption.map { deviation =>
+        val message = deviationFromApproach.map { deviation =>
           s"${deviation.threshold.airport.icaoID}, ${deviation.threshold.name}: At ${deviation.thresholdDistanceMeters} m out, concern factor ${deviation.normalizedEuclideanDistance} (${deviation.verticalDevMeters} m too high/low, ${deviation.horizontalDevMeters} m too left/right)"
         }.getOrElse("-")
 
@@ -132,6 +132,8 @@ object ThrowawayMain {
     val outputFile = Paths.get("/tmp/output-deviations-etc.txt")
     Files.write(outputFile, stringBuilder.toString().getBytes(StandardCharsets.UTF_8))
 
+    // DAN, THE TASK NOW IS TO SWITCH THE ABOVE INFO FROM GETTING DUMPED INTO A FILE TO BEING PACKAGED AS JSON;
+    // IT'S ADDING SIX MORE FIELDS PER fields-for-ui.ods; PROBABLY IN VEIN OF a7a2c00c2bc5f6b1531fbcb6842f2446690e3467
 
 //        println(s"\n$aircraftProfile: ${strings.mkString(", ")}")
 ////        println(Json.toJson(trajectory)(IO.multipleTimeBasedPositionWrites))
