@@ -9,6 +9,7 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
+import scala.math.BigDecimal.RoundingMode
 import scala.util.Using
 
 object IO {
@@ -40,50 +41,76 @@ object IO {
 
   // TODO Could we (easily) use combinator syntax in our Writes instead of what's below?
 
-  val timeBasedPositionWritesPositionalFields = new Writes[TimeBasedPosition] {
+  def timeBasedPositionPartiallyToJsObject(timeBasedPosition: TimeBasedPosition): JsObject = {  // TODO Make method private?
+    Json.obj(
+      // TODO Set scale on any of these values and/or reach "into" vector for the BigDecimals (although they're Options)?
+      "longitude" -> timeBasedPosition.longitude,
+      "latitude" -> timeBasedPosition.latitude,
+      "altitude" -> timeBasedPosition.altitudeMeters,
+      "onGround" -> timeBasedPosition.vector.onGround,
+      "velocity" -> timeBasedPosition.vector.velocity, // Option
+      "trueTrack" -> timeBasedPosition.vector.trueTrack, // Option
+      "verticalRate" -> timeBasedPosition.vector.verticalRate, // Option
+      "squawk" -> timeBasedPosition.vector.squawk // Option
+    )
+  }
 
+  val timeBasedPositionPartialWrites = new Writes[TimeBasedPosition] { // TODO Is this wrapping of timeBasedPositionToJsObject necessary? In general, only bother with a Writes if we're using combinators or convenience methods?
     override def writes(timeBasedPosition: TimeBasedPosition): JsValue = {
-      Json.obj(
-        "longitude" -> timeBasedPosition.longitude,
-        "latitude" -> timeBasedPosition.latitude,
-        "altitude" -> timeBasedPosition.altitudeMeters,
-        "onGround" -> timeBasedPosition.vector.onGround,
-        "velocity" -> timeBasedPosition.vector.velocity,  // Option
-        "trueTrack" -> timeBasedPosition.vector.trueTrack,  // Option
-        "verticalRate" -> timeBasedPosition.vector.verticalRate,  // Option
-        "squawk" -> timeBasedPosition.vector.squawk  // Option
+      timeBasedPositionPartiallyToJsObject(timeBasedPosition)
+    }
+  }
+
+  def setScale(double: Double, scale: Int): BigDecimal = BigDecimal.valueOf(double).setScale(scale, RoundingMode.HALF_EVEN)  // TODO Make private? Conversely, move to MathUtils?
+
+  private def approachSegmentWithDeviationToJsObject(approachSegmentWithDeviation: ApproachSegmentWithDeviation) = {
+    Json.obj(
+      "airport" -> approachSegmentWithDeviation.threshold.airport.icaoID,
+      "threshold" -> approachSegmentWithDeviation.threshold.name,
+      "thresholdDistanceMeters" -> setScale(approachSegmentWithDeviation.thresholdDistanceMeters, 0),
+      "verticalDevMeters" -> setScale(approachSegmentWithDeviation.verticalDevMeters, 0),
+      "horizontalDevMeters" -> setScale(approachSegmentWithDeviation.horizontalDevMeters, 0),
+      "normalizedEuclideanDistance" -> setScale(approachSegmentWithDeviation.normalizedEuclideanDistance, 1)
+    )
+  }
+
+  val positionWithApproachSegmentWrites = new Writes[TimeBasedPositionWithApproachSegment] {
+
+    override def writes(timeBasedPositionWithApproachSegment: TimeBasedPositionWithApproachSegment): JsValue = {
+      timeBasedPositionPartiallyToJsObject(timeBasedPositionWithApproachSegment.timeBasedPosition) + (
+        "approachSegment" -> timeBasedPositionWithApproachSegment.approachSegment.map(approachSegmentWithDeviationToJsObject).getOrElse(JsNull) // TODO Seems suboptimal to have to be explicity about null-handling
       )
     }
   }
 
-  val multipleTimeBasedPositionWrites = new Writes[Seq[TimeBasedPosition]] {
+  val multiplePositionWithApproachSegmentWrites = new Writes[Seq[TimeBasedPositionWithApproachSegment]] {
 
-    override def writes(timeBasedPositions: Seq[TimeBasedPosition]): JsValue = {
+    override def writes(positionsWithApproachSegments: Seq[TimeBasedPositionWithApproachSegment]): JsValue = {
 
-      JsObject( timeBasedPositions.map { timeBasedPosition =>
+      JsObject( positionsWithApproachSegments.map { positionWithApproachSegment =>
 
-        val instant = Instant.ofEpochSecond(timeBasedPosition.timePosition.toLong)
+        val instant = Instant.ofEpochSecond(positionWithApproachSegment.timeBasedPosition.timePosition.toLong)
         val formattedInstant = DateTimeFormatter.ISO_INSTANT.format(instant)
 
-        formattedInstant -> timeBasedPositionWritesPositionalFields.writes(timeBasedPosition)  // TODO Is this "right"/optimal? Could use combinator syntax instead?
+        formattedInstant -> positionWithApproachSegmentWrites.writes(positionWithApproachSegment)  // TODO Is this "right"/optimal? Could use combinator syntax instead?
       })
     }
   }
 
-  val trajectoryWrites = new Writes[(AircraftProfile, Seq[TimeBasedPosition])] {
+  val trajectoryWithApproachSegmentsWrites = new Writes[(AircraftProfile, Seq[TimeBasedPositionWithApproachSegment])] {
 
-    override def writes(trajectory: (AircraftProfile, Seq[TimeBasedPosition])): JsValue = {
+    override def writes(trajectory: (AircraftProfile, Seq[TimeBasedPositionWithApproachSegment])): JsValue = {
 
       Json.obj(
         "icao24" -> trajectory._1.icao24,
         "callsign" -> trajectory._1.callsign,  // TODO What does this output in "None" case? -- Also, may be relying on default Some.toString, which seems sub-optimal
         "category" -> trajectory._1.category.map(_.getClass.getSimpleName),  // FIXME Switch to a user-friendly category descriptor
-        "positions" -> multipleTimeBasedPositionWrites.writes(trajectory._2)  // TODO Is this "right"/optimal? Could use combinator syntax instead?
+        "positions" -> multiplePositionWithApproachSegmentWrites.writes(trajectory._2)  // TODO Is this "right"/optimal? Could use combinator syntax instead?
       )
     }
   }
 
-  val trajectoriesWrites = Writes.seq(trajectoryWrites)
+  val trajectoriesWithApproachesWrites = Writes.seq(trajectoryWithApproachSegmentsWrites)
 
   def resolveGlob(dir: Path, glob: String): Seq[Path] = {
 

@@ -9,7 +9,7 @@ object ThrowawayJsonTest {
     val tbp0 = TimeBasedPosition(1662044820, 2, 3, 4, null)
     val tbp1 = TimeBasedPosition(1662044825, 5, 6, 7, null)
 
-    val json = Json.toJson(Seq(tbp0, tbp1))(IO.multipleTimeBasedPositionWrites)
-    println(json)
+//    val json = Json.toJson(Seq(tbp0, tbp1))(IO.multiplePositionWithApproachSegmentWrites)
+//    println(json)
   }
 }

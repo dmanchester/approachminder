@@ -15,7 +15,7 @@ object ThrowawayTrajectoriesToJson {
     val testDataFiles = IO.resolveGlob(dirPath, testDataGlob)
     val testDataTrajectories = filesToTrajectories(testDataFiles)
 
-    val json = Json.toJson(testDataTrajectories)(IO.trajectoriesWrites)
-    Files.write(Paths.get("/tmp/ThrowawayTrajectoriesToJson.json"), json.toString().getBytes())  // TODO Should specify encoding
+//    val json = Json.toJson(testDataTrajectories)(IO.trajectoriesWithApproachesWrites)
+//    Files.write(Paths.get("/tmp/ThrowawayTrajectoriesToJson.json"), json.toString().getBytes())  // TODO Should specify encoding
   }
 }

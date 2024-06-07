@@ -81,13 +81,13 @@ object ThrowawayMain {
     val testDataFiles = IO.resolveGlob(dirPath, testDataGlob)
     val testDataTrajectories = filesToTrajectories(testDataFiles)
 
-    val trajectoriesWithBestFitDeviations = testDataTrajectories.map { case (aircraftProfile, trajectory) =>
+    val trajectoriesWithApproaches = testDataTrajectories.map { case (aircraftProfile, trajectory) =>
 
-      if (trajectory.size < 2) { // TODO If we establish a type for trajectory with a length >= 2 invariant, don't need to test this
+      val trajectoryWithApproachSegments = if (trajectory.size < 2) { // TODO If we establish a type for trajectory with a length >= 2 invariant, don't need to test this
         Seq.empty
       } else { // trajectory.size >= 2
 
-        (trajectory.head, None) +: trajectory.sliding(2).toSeq.map { positionPair =>
+        TimeBasedPositionWithApproachSegment(trajectory.head, None) +: trajectory.sliding(2).toSeq.map { positionPair =>
 
           // TODO In "pointPair" and these vars, "point" --> "position"?
           val firstPosition = positionPair(0)
@@ -95,7 +95,7 @@ object ThrowawayMain {
 
           val bestFitOption = approachModels.bestFit(firstPosition, secondPosition)
 
-          val deviationFromApproach = bestFitOption.filter(_.deviation.normalizedEuclideanDistance < 5.0).map { bestFit =>
+          val approachSegmentWithDeviationOption = bestFitOption.filter(_.deviation.normalizedEuclideanDistance < 5.0).map { bestFit =>
 
             val threshold = thresholdsByApproachModel(bestFit.model)
             val thresholdDistanceMeters = threshold.distanceInMeters(secondPosition)
@@ -103,34 +103,41 @@ object ThrowawayMain {
             val horizontalDevMeters = MathUtils.isoscelesBaseLength(bestFit.deviation.angleDevDegrees, bestFit.appliedDistributionInMeters.toDouble)
             val normalizedEuclideanDistance = bestFit.deviation.normalizedEuclideanDistance
 
-            DeviationFromApproach(threshold, thresholdDistanceMeters, verticalDevMeters, horizontalDevMeters, normalizedEuclideanDistance)
+            ApproachSegmentWithDeviation(threshold, thresholdDistanceMeters, verticalDevMeters, horizontalDevMeters, normalizedEuclideanDistance)
           }
 
-          (secondPosition, deviationFromApproach)
+          TimeBasedPositionWithApproachSegment(secondPosition, approachSegmentWithDeviationOption)
         }
       }
+
+      (aircraftProfile, trajectoryWithApproachSegments)
     }
 
-    val stringBuilder = new StringBuilder()
+    val json = Json.toJson(trajectoriesWithApproaches)(IO.trajectoriesWithApproachesWrites)
+    Files.write(Paths.get("/tmp/trajectoriesWithApproaches.json"), json.toString().getBytes())  // TODO Should specify encoding
 
-    trajectoriesWithBestFitDeviations.foreach { trajectoryWithBestFitDeviations =>
 
-      stringBuilder.append("\n*** START TRAJECTORY ***\n")
 
-      trajectoryWithBestFitDeviations.foreach { case (position, deviationFromApproach) =>
-
-        val message = deviationFromApproach.map { deviation =>
-          s"${deviation.threshold.airport.icaoID}, ${deviation.threshold.name}: At ${deviation.thresholdDistanceMeters} m out, concern factor ${deviation.normalizedEuclideanDistance} (${deviation.verticalDevMeters} m too high/low, ${deviation.horizontalDevMeters} m too left/right)"
-        }.getOrElse("-")
-
-        stringBuilder.append(message).append("\n")
-
-      }
-      stringBuilder.append("*** END TRAJECTORY ***\n")
-    }
-
-    val outputFile = Paths.get("/tmp/output-deviations-etc.txt")
-    Files.write(outputFile, stringBuilder.toString().getBytes(StandardCharsets.UTF_8))
+//    val stringBuilder = new StringBuilder()
+//
+//    trajectoriesWithApproaches.foreach { trajectoryWithApproachSegments =>
+//
+//      stringBuilder.append("\n*** START TRAJECTORY ***\n")
+//
+//      trajectoryWithApproachSegments.foreach { case (position, approachSegment) =>
+//
+//        val message = approachSegment.map { deviation =>
+//          s"${deviation.threshold.airport.icaoID}, ${deviation.threshold.name}: At ${deviation.thresholdDistanceMeters} m out, concern factor ${deviation.normalizedEuclideanDistance} (${deviation.verticalDevMeters} m too high/low, ${deviation.horizontalDevMeters} m too left/right)"
+//        }.getOrElse("-")
+//
+//        stringBuilder.append(message).append("\n")
+//
+//      }
+//      stringBuilder.append("*** END TRAJECTORY ***\n")
+//    }
+//
+//    val outputFile = Paths.get("/tmp/output-deviations-etc.txt")
+//    Files.write(outputFile, stringBuilder.toString().getBytes(StandardCharsets.UTF_8))
 
     // DAN, THE TASK NOW IS TO SWITCH THE ABOVE INFO FROM GETTING DUMPED INTO A FILE TO BEING PACKAGED AS JSON;
     // IT'S ADDING SIX MORE FIELDS PER fields-for-ui.ods; PROBABLY IN VEIN OF a7a2c00c2bc5f6b1531fbcb6842f2446690e3467
