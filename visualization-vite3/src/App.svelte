@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import { SplitPane } from '@rich_harris/svelte-split-pane';
+  import AircraftTable from './AircraftTable.svelte';
   import {
       Cartesian3,
       Ion,
@@ -93,25 +94,14 @@
         }
 
         // Get the latest positions within the time window, one per aircraft.
-        const latestPositionsWithinWindow = trajectories.latestPositionsWithinWindow(time, windowDuration);
+        const latestPositionsWithinWindow = trajectories.latestPositionsWithinWindow(time, windowDuration);  // TODO Rather than a tuple, this function could return an Object that names the two members (I end up doing this below anyway)
         // TODO First time I've used the "observations" terminology. If it sticks, broaden back to the Scala code?
         const observationsUnsorted = latestPositionsWithinWindow.map(([trajectory, timeBasedPosition]) => ({
-          entity: trajectoriesToEntities.get(trajectory),
-          icao24: trajectory.aircraftProfile.icao24,
-          callsign: trajectory.aircraftProfile.callsign,
-          category: trajectory.aircraftProfile.category,
-          longitude: timeBasedPosition.longitude,
-          latitude: timeBasedPosition.latitude,
-          altitude: timeBasedPosition.altitude,
-          onGround: timeBasedPosition.onGround,
-          velocity: timeBasedPosition.velocity,
-          trueTrack: timeBasedPosition.trueTrack,
-          verticalRate: timeBasedPosition.verticalRate,
-          squawk: timeBasedPosition.squawk,
-          approachSegment: timeBasedPosition.approachSegment,
+          trajectory: trajectory,
+          position: timeBasedPosition,
           ageOfObservation: Math.round(JulianDate.secondsDifference(time, timeBasedPosition.time))
         }));
-        observations = sortBy(observationsUnsorted, observation => observation.icao24);
+        observations = sortBy(observationsUnsorted, observation => observation.trajectory.aircraftProfile.icao24);  // TODO Sorting may move out of here and become a concern of AircraftTable.svelte
 
         lastTimeProcessed = time;
       });
@@ -127,56 +117,7 @@
     <div id="cesiumContainer"></div>
   </section>
   <section slot="b" id="tableSection">
-    <table>
-      <thead>
-        <tr>
-          <th>Callsign</th>
-          <th>Category</th>
-          <th>Longitude</th>
-          <th>Latitude</th>
-          <th>Altitude</th>
-          <th>Airport*</th>
-          <th>Threshold*</th>
-          <th>Dist. to Threshold*</th>
-          <th>Vertical Dev.*</th>
-          <th>Horizontal Dev.*</th>
-          <th>Std. Devs.*</th>
-          <th>On Ground?</th>
-          <th>Velocity</th>
-          <th>True Track</th>
-          <th>Vertical Rate</th>
-          <th>Squawk</th>
-          <th>Age of Obs.</th>
-        </tr>
-      </thead>
-      <tbody>
-      {#each observations as observation (observation.icao24)}
-        <tr>
-          <td>
-            <button on:click={() => { viewer.trackedEntity = observation.entity; }}>
-              {observation.callsign}
-            </button>
-          </td>
-          <td>{observation.category}</td>
-          <td>{observation.longitude}</td>
-          <td>{observation.latitude}</td>
-          <td>{observation.altitude}</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
-          <td>{observation.approachSegment?.airport}</td>
-          <td>{observation.approachSegment?.threshold}</td>
-          <td>{observation.approachSegment?.thresholdDistanceMeters}</td>
-          <td>{observation.approachSegment?.verticalDevMeters}</td>
-          <td>{observation.approachSegment?.horizontalDevMeters}</td>
-          <td>{observation.approachSegment?.normalizedEuclideanDistance}</td>
-          <td>{observation.onGround}</td>
-          <td>{observation.velocity}</td>
-          <td>{observation.trueTrack}</td>
-          <td>{observation.verticalRate}</td>
-          <td>{observation.squawk}</td>
-          <td>{observation.ageOfObservation}</td>
-        </tr>
-      {/each}
-      </tbody>
-    </table>
+    <AircraftTable observations="{observations}" clickHandlerTrajectory={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
   </section>
 </SplitPane>
 
