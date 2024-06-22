@@ -13,8 +13,9 @@ class TimeBasedPosition {
    * @param {?number} trueTrack
    * @param {?number} verticalRate
    * @param {?string} squawk
+   * @param {?ApproachSegment} approachSegment
    */
-  constructor(time, longitude, latitude, altitude, onGround, velocity, trueTrack, verticalRate, squawk) {
+  constructor(time, longitude, latitude, altitude, onGround, velocity, trueTrack, verticalRate, squawk, approachSegment) {
     this.time = time;
     this.longitude = longitude;
     this.latitude = latitude;
@@ -24,6 +25,7 @@ class TimeBasedPosition {
     this.trueTrack = trueTrack;
     this.verticalRate = verticalRate;
     this.squawk = squawk;
+    this.approachSegment = approachSegment;
   }
 }
 

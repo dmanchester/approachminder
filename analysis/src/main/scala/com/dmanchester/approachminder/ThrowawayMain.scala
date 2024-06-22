@@ -79,7 +79,8 @@ object ThrowawayMain {
     val testDataGlob = "all--2022-12-0*.json"
 
     val testDataFiles = IO.resolveGlob(dirPath, testDataGlob)
-    val testDataTrajectories = filesToTrajectories(testDataFiles)
+    val testDataTrajectoriesUnfiltered = filesToTrajectories(testDataFiles)
+    val testDataTrajectories = testDataTrajectoriesUnfiltered.filter(_._2.length >= 2)  // TODO Preceding line and this one ugly; see below about a trajectory type
 
     val trajectoriesWithApproaches = testDataTrajectories.map { case (aircraftProfile, trajectory) =>
 

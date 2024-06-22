@@ -108,6 +108,7 @@
           trueTrack: timeBasedPosition.trueTrack,
           verticalRate: timeBasedPosition.verticalRate,
           squawk: timeBasedPosition.squawk,
+          approachSegment: timeBasedPosition.approachSegment,
           ageOfObservation: Math.round(JulianDate.secondsDifference(time, timeBasedPosition.time))
         }));
         observations = sortBy(observationsUnsorted, observation => observation.icao24);
@@ -134,6 +135,12 @@
           <th>Longitude</th>
           <th>Latitude</th>
           <th>Altitude</th>
+          <th>Airport*</th>
+          <th>Threshold*</th>
+          <th>Dist. to Threshold*</th>
+          <th>Vertical Dev.*</th>
+          <th>Horizontal Dev.*</th>
+          <th>Std. Devs.*</th>
           <th>On Ground?</th>
           <th>Velocity</th>
           <th>True Track</th>
@@ -154,6 +161,12 @@
           <td>{observation.longitude}</td>
           <td>{observation.latitude}</td>
           <td>{observation.altitude}</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
+          <td>{observation.approachSegment?.airport}</td>
+          <td>{observation.approachSegment?.threshold}</td>
+          <td>{observation.approachSegment?.thresholdDistanceMeters}</td>
+          <td>{observation.approachSegment?.verticalDevMeters}</td>
+          <td>{observation.approachSegment?.horizontalDevMeters}</td>
+          <td>{observation.approachSegment?.normalizedEuclideanDistance}</td>
           <td>{observation.onGround}</td>
           <td>{observation.velocity}</td>
           <td>{observation.trueTrack}</td>
