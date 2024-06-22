@@ -26,7 +26,8 @@
 
   let viewer;
   const trajectoriesToEntities = new Map();
-  let observations = [];
+  let observationsAircraftOnApproach = [];
+  let observationsOtherAircraft = [];
 
   onMount(async () => {
       try {
@@ -101,8 +102,9 @@
           position: timeBasedPosition,
           ageOfObservation: Math.round(JulianDate.secondsDifference(time, timeBasedPosition.time))
         }));
-        observations = sortBy(observationsUnsorted, observation => observation.trajectory.aircraftProfile.icao24);  // TODO Sorting may move out of here and become a concern of AircraftTable.svelte
-
+        const observations = sortBy(observationsUnsorted, observation => observation.trajectory.aircraftProfile.icao24);  // TODO MOVE THIS INTO AircraftTable.svelte?
+        observationsAircraftOnApproach = observations.filter(observation => observation.position.approachSegment);
+        observationsOtherAircraft = observations.filter(observation => !observation.position.approachSegment);
         lastTimeProcessed = time;
       });
   });
@@ -117,7 +119,11 @@
     <div id="cesiumContainer"></div>
   </section>
   <section slot="b" id="tableSection">
-    <AircraftTable observations="{observations}" clickHandlerTrajectory={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
+    <!-- TODO Specify the click handler once and share below -->
+    <h1>Aircraft on Approach</h1>
+    <AircraftTable observations="{observationsAircraftOnApproach}" showApproachSegments={true} clickHandlerTrajectory={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
+    <h1>Other Aircraft</h1>
+    <AircraftTable observations="{observationsAircraftOnApproach}" showApproachSegments={false} clickHandlerTrajectory={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
   </section>
 </SplitPane>
 

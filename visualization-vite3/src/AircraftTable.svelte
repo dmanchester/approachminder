@@ -1,22 +1,25 @@
 <script>
   export let observations;
+  export let showApproachSegments;
   export let clickHandlerTrajectory;
 </script>
 
 <table>
     <thead>
     <tr>
-        <th>1Callsign</th>
+        <th>Callsign</th>
         <th>Category</th>
         <th>Longitude</th>
         <th>Latitude</th>
         <th>Altitude</th>
-        <th>Airport*</th>
-        <th>Threshold*</th>
-        <th>Dist. to Threshold*</th>
-        <th>Vertical Dev.*</th>
-        <th>Horizontal Dev.*</th>
-        <th>Std. Devs.*</th>
+        {#if showApproachSegments}
+            <th>Airport*</th>
+            <th>Threshold*</th>
+            <th>Dist. to Threshold*</th>
+            <th>Vertical Dev.*</th>
+            <th>Horizontal Dev.*</th>
+            <th>Std. Devs.*</th>
+        {/if}
         <th>On Ground?</th>
         <th>Velocity</th>
         <th>True Track</th>
@@ -38,12 +41,14 @@
             <td>{observation.position.longitude}</td>
             <td>{observation.position.latitude}</td>
             <td>{observation.position.altitude}</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
-            <td>{observation.position.approachSegment?.airport}</td>
-            <td>{observation.position.approachSegment?.threshold}</td>
-            <td>{observation.position.approachSegment?.thresholdDistanceMeters}</td>
-            <td>{observation.position.approachSegment?.verticalDevMeters}</td>
-            <td>{observation.position.approachSegment?.horizontalDevMeters}</td>
-            <td>{observation.position.approachSegment?.normalizedEuclideanDistance}</td>
+            {#if showApproachSegments}
+                <td>{observation.position.approachSegment.airport}</td>
+                <td>{observation.position.approachSegment.threshold}</td>
+                <td>{observation.position.approachSegment.thresholdDistanceMeters}</td>
+                <td>{observation.position.approachSegment.verticalDevMeters}</td>
+                <td>{observation.position.approachSegment.horizontalDevMeters}</td>
+                <td>{observation.position.approachSegment.normalizedEuclideanDistance}</td>
+            {/if}
             <td>{observation.position.onGround}</td>
             <td>{observation.position.velocity}</td>
             <td>{observation.position.trueTrack}</td>
