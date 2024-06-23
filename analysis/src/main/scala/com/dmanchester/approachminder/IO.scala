@@ -46,11 +46,11 @@ object IO {
       // TODO Set scale on any of these values and/or reach "into" vector for the BigDecimals (although they're Options)?
       "longitude" -> timeBasedPosition.longitude,
       "latitude" -> timeBasedPosition.latitude,
-      "altitude" -> timeBasedPosition.altitudeMeters,
+      "altitude" -> setScale(timeBasedPosition.altitudeMeters, 0),  // TODO Include units in JSON field name? (Below, too?)
       "onGround" -> timeBasedPosition.vector.onGround,
-      "velocity" -> timeBasedPosition.vector.velocity, // Option
-      "trueTrack" -> timeBasedPosition.vector.trueTrack, // Option
-      "verticalRate" -> timeBasedPosition.vector.verticalRate, // Option
+      "velocity" -> timeBasedPosition.vector.velocity.map(setScale(_, 0)), // Option
+      "trueTrack" -> timeBasedPosition.vector.trueTrack.map(setScale(_, 0)), // Option
+      "verticalRate" -> timeBasedPosition.vector.verticalRate.map(setScale(_, 1)), // Option
       "squawk" -> timeBasedPosition.vector.squawk // Option
     )
   }
@@ -61,7 +61,9 @@ object IO {
     }
   }
 
-  def setScale(double: Double, scale: Int): BigDecimal = BigDecimal.valueOf(double).setScale(scale, RoundingMode.HALF_EVEN)  // TODO Make private? Conversely, move to MathUtils?
+  def setScale(bigDecimal: BigDecimal, scale: Int): BigDecimal = bigDecimal.setScale(scale, RoundingMode.HALF_EVEN)  // TODO Make private? Conversely, move to MathUtils? (Same for next one.)
+
+  def setScale(double: Double, scale: Int): BigDecimal = setScale(BigDecimal.valueOf(double), scale)
 
   private def approachSegmentWithDeviationToJsObject(approachSegmentWithDeviation: ApproachSegmentWithDeviation) = {
     Json.obj(

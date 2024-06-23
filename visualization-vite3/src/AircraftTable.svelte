@@ -9,8 +9,8 @@
     <tr>
         <th>Callsign</th>
         <th>Category</th>
-        <th>Longitude</th>
         <th>Latitude</th>
+        <th>Longitude</th>
         <th>Altitude</th>
         {#if showApproachSegments}
             <th>Airport*</th>
@@ -36,25 +36,27 @@
                     {observation.trajectory.aircraftProfile.callsign}
                 </button>
             </td>
+            <!-- FIXNE Handle nulls better (for example, currently, squawk shows as "null" when not present. -->
             <!-- TODO Can we establish intermediate vars to make the following dot lookups shorter? -->
+            <!-- TODO For fields with a decimal component, show trailing zeros (e.g., "1.0")  -->
             <td>{observation.trajectory.aircraftProfile.category}</td>
-            <td>{observation.position.longitude}</td>
             <td>{observation.position.latitude}</td>
-            <td>{observation.position.altitude}</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
+            <td>{observation.position.longitude}</td>
+            <td>{observation.position.altitude} m</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
             {#if showApproachSegments}
                 <td>{observation.position.approachSegment.airport}</td>
                 <td>{observation.position.approachSegment.threshold}</td>
-                <td>{observation.position.approachSegment.thresholdDistanceMeters}</td>
-                <td>{observation.position.approachSegment.verticalDevMeters}</td>
-                <td>{observation.position.approachSegment.horizontalDevMeters}</td>
+                <td>{observation.position.approachSegment.thresholdDistanceMeters} m</td>
+                <td>{observation.position.approachSegment.verticalDevMeters} m</td>
+                <td>{observation.position.approachSegment.horizontalDevMeters} m</td>
                 <td>{observation.position.approachSegment.normalizedEuclideanDistance}</td>
             {/if}
             <td>{observation.position.onGround}</td>
-            <td>{observation.position.velocity}</td>
-            <td>{observation.position.trueTrack}</td>
-            <td>{observation.position.verticalRate}</td>
+            <td>{observation.position.velocity} m/s</td>
+            <td>{observation.position.trueTrack}°</td>
+            <td>{observation.position.verticalRate} m/s</td>
             <td>{observation.position.squawk}</td>
-            <td>{observation.ageOfObservation}</td>
+            <td>{observation.ageOfObservation} s</td>
         </tr>
     {/each}
     </tbody>
