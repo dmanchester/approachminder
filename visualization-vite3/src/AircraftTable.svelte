@@ -2,6 +2,8 @@
   export let observations;
   export let showApproachSegments;
   export let clickHandlerTrajectory;
+
+  const numberFormat = new Intl.NumberFormat();
 </script>
 
 <table>
@@ -42,13 +44,13 @@
             <td>{observation.trajectory.aircraftProfile.category}</td>
             <td>{observation.position.latitude}</td>
             <td>{observation.position.longitude}</td>
-            <td>{observation.position.altitude} m</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
+            <td>{numberFormat.format(observation.position.altitude)} m</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
             {#if showApproachSegments}
                 <td>{observation.position.approachSegment.airport}</td>
                 <td>{observation.position.approachSegment.threshold}</td>
-                <td>{observation.position.approachSegment.thresholdDistanceMeters} m</td>
-                <td>{observation.position.approachSegment.verticalDevMeters} m</td>
-                <td>{observation.position.approachSegment.horizontalDevMeters} m</td>
+                <td>{numberFormat.format(observation.position.approachSegment.thresholdDistanceMeters)} m</td>
+                <td>{numberFormat.format(observation.position.approachSegment.verticalDevMeters)} m</td>
+                <td>{numberFormat.format(observation.position.approachSegment.horizontalDevMeters)} m</td>
                 <td>{observation.position.approachSegment.normalizedEuclideanDistance}</td>
             {/if}
             <td>{observation.position.onGround}</td>
