@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder
 
-import scala.math.{sin, toRadians}
+import scala.math.{pow, sin, sqrt, toRadians}
 
 object MathUtils {
 
@@ -39,5 +39,9 @@ object MathUtils {
 
     val apexAngleRadians = toRadians(apexAngleDegrees)
     2.0 * legLength * sin(apexAngleRadians / 2.0)
+  }
+
+  def hypotenuseLength(aLength: Double, bLength: Double): Double = {
+    sqrt(pow(aLength, 2) + pow(bLength, 2))
   }
 }

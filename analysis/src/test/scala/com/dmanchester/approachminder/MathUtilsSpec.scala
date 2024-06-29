@@ -2,7 +2,7 @@ package com.dmanchester.approachminder
 
 import org.specs2.mutable._
 import SharedResources._
-import com.dmanchester.approachminder.MathUtils.{interpolateScalar, isBetween, isoscelesBaseLength}
+import com.dmanchester.approachminder.MathUtils.{hypotenuseLength, interpolateScalar, isBetween, isoscelesBaseLength}
 
 import scala.math.Pi
 
@@ -49,6 +49,12 @@ class MathUtilsSpec extends Specification {
 
     "handle an angle of 0" in {
       isoscelesBaseLength(0, 99.1) must beCloseTo(0.0 within significantFigures)
+    }
+  }
+
+  "hypotenuseLength" should {
+    "calculate length" in {
+      hypotenuseLength(6.0, 7.0) must beCloseTo(9.219544 within significantFigures)
     }
   }
 }
