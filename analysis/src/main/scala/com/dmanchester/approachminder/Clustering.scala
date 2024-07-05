@@ -6,7 +6,7 @@ import scala.jdk.CollectionConverters._
 
 object Clustering {
 
-  def cluster(anglesAndAltitudes: Seq[AngleAndAltitude], origin: HasLongLat, distanceInMeters: Double, geographicCalculator: GeographicCalculator, eps: Double, minPointsPerCluster: Int): Seq[Seq[AngleAndAltitude]] = {
+  def cluster(anglesAndAltitudes: Seq[AngleAndAltitude], origin: HasLongLat, distanceInMeters: Double, geographicCalculator: GeographicCalculator, epsDistanceMeters: Double, minPointsPerCluster: Int): Seq[Seq[AngleAndAltitude]] = {
 
     val positions = anglesAndAltitudes.map { angleAndAltitude =>
       val position2D = geographicCalculator.pointAtAngleAndDistance(origin, angleAndAltitude.angle, distanceInMeters)
@@ -15,7 +15,7 @@ object Clustering {
 
     val distanceMeasure = LongLatAltDistanceMeasure(positions, geographicCalculator)
 
-    val clusterer = new DBSCANClusterer[IndexedClusterable](eps, minPointsPerCluster, distanceMeasure)
+    val clusterer = new DBSCANClusterer[IndexedClusterable](epsDistanceMeters, minPointsPerCluster, distanceMeasure)  // https://commons.apache.org/proper/commons-math/javadocs/api-3.6.1/index.html?org/apache/commons/math3/ml/clustering/DBSCANClusterer.html
 
     val clusters = clusterer.cluster(IndexedClusterable.instances(positions.length).asJava).asScala.toSeq
 

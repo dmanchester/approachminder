@@ -77,7 +77,7 @@ class ClusteringSpec extends Specification {
 
       val distanceInMeters = 1000.0
       val minPointsPerCluster = 4
-      val eps = 500.0
+      val epsDistanceMeters = 500.0
       // with minPointsPerCluster = 4, with an eps of...
       //
       // 10 gives zero clusters
@@ -90,7 +90,7 @@ class ClusteringSpec extends Specification {
       // 75, 100, 500, 1000 gives two clusters (8, 7)
       // 1500, 2000, 5000, 10000 gives one cluster (24)
 
-      val clusters = Clustering.cluster(points, sfo.referencePoint, distanceInMeters, sfoCalculator, eps, minPointsPerCluster)
+      val clusters = Clustering.cluster(points, sfo.referencePoint, distanceInMeters, sfoCalculator, epsDistanceMeters, minPointsPerCluster)
 
       // TODO Commented-out code facilitates a visual check that clusters' contents are correct. Turn into an automated
       // test.
@@ -105,6 +105,9 @@ class ClusteringSpec extends Specification {
       clusters.length must beEqualTo(3)
     }
   }
+
+  // TODO Add a test of LongLatAltDistanceMeasure that ensures it's using 3D distance and not just 2D (i.e., just
+  //  longitude and latitude).
 
   /**
    * Constructs `AngleAndAltitude` instances from angles (representing compass degrees). For altitude component,
