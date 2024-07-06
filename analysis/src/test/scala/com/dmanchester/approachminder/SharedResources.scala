@@ -79,11 +79,11 @@ object SharedResources {
    * @param simpleApproachModel
    * @return
    */
-  def mockApproachDistributions(simpleApproachModel /* maps distance to angle and altitude */ : Map[BigDecimal, (Double, Double)]): Map[BigDecimal, PositionDistribution] = {
+  def mockApproachDistributions(simpleApproachModel /* maps distance to angle and altitude */ : Map[BigDecimal, (Double, Double)]): Map[BigDecimal, AngleAndAltitudeWithStats] = {
 
     simpleApproachModel.map { case (distanceInMeters, (polarAngleCompassDegrees, altitudeMeters)) =>
 
-      val distribution = PositionDistribution.fromDataOption(Seq(
+      val distribution = AngleAndAltitudeWithStats.fromDataOption(Seq(
         AngleAndAltitude(PolarAngle.fromCompassDegrees(polarAngleCompassDegrees - 1.0), altitudeMeters - 10.0),
         AngleAndAltitude(PolarAngle.fromCompassDegrees(polarAngleCompassDegrees + 1.0), altitudeMeters + 10.0)
       )).get

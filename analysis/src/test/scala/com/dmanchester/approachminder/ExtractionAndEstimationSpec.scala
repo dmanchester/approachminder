@@ -68,7 +68,7 @@ class ExtractionAndEstimationSpec extends Specification {
 
     "determine a trajectory's approaches and landings, allocating the correct positions to each; correctly associate thresholds; and correctly interpolate crossing points" in {
 
-      val trajectory = Seq(pointK, pointL, pointM, pointN, pointO, pointP, pointQ)
+      val trajectory = Trajectory.newOption(Seq(pointK, pointL, pointM, pointN, pointO, pointP, pointQ)).get
 
       val approachesAndLandings = ExtractionAndEstimation.approachesAndLandings(stubProfile, trajectory, thresholds)
 
@@ -83,18 +83,6 @@ class ExtractionAndEstimationSpec extends Specification {
       approachesAndLandings(1).approach.length must beEqualTo(2) // points O, P
       approachesAndLandings(1).crossingPointInterpolated must beCloseInThreeDimensionsTo(LongLatAlt(-122.242067, 37.720108, 44.276624), significantFigures) // confirmed correctness visually
       approachesAndLandings(1).landing.length must beEqualTo(1) // point Q
-    }
-
-    "handle a single-point trajectory" in {
-      val trajectory = Seq(pointK)
-      val approachesAndLandings = ExtractionAndEstimation.approachesAndLandings(stubProfile, trajectory, thresholds)
-      approachesAndLandings.length must beEqualTo(0)
-    }
-
-    "handle a no-point trajectory" in {
-      val trajectory = Seq.empty[TimeBasedPosition]
-      val approachesAndLandings = ExtractionAndEstimation.approachesAndLandings(stubProfile, trajectory, thresholds)
-      approachesAndLandings.length must beEqualTo(0)
     }
   }
 
@@ -163,17 +151,17 @@ class ExtractionAndEstimationSpec extends Specification {
 
       meanTrajectory.size mustEqual 2
 
-      meanTrajectory(bd_1_5).angleMean.toCompassDegrees must beCloseTo(2.5 within significantFigures)
+      meanTrajectory(bd_1_5).angle.toCompassDegrees must beCloseTo(2.5 within significantFigures)
       meanTrajectory(bd_1_5).angleStdDevDegrees must beCloseTo(0.707107 within significantFigures)
-      meanTrajectory(bd_1_5).altitudeMeanMeters must beCloseTo(12.0 within significantFigures)
+      meanTrajectory(bd_1_5).altitudeMeters must beCloseTo(12.0 within significantFigures)
       meanTrajectory(bd_1_5).altitudeStdDevMeters must beCloseTo(0.0 within significantFigures)
-      meanTrajectory(bd_1_5).valuesIncluded mustEqual 2
+      meanTrajectory(bd_1_5).sourceCount mustEqual 2
 
-      meanTrajectory(bd_2_0).angleMean.toCompassDegrees must beCloseTo(6.0 within significantFigures)
+      meanTrajectory(bd_2_0).angle.toCompassDegrees must beCloseTo(6.0 within significantFigures)
       meanTrajectory(bd_2_0).angleStdDevDegrees must beCloseTo(3.0 within significantFigures)
-      meanTrajectory(bd_2_0).altitudeMeanMeters must beCloseTo(18.0 within significantFigures)
+      meanTrajectory(bd_2_0).altitudeMeters must beCloseTo(18.0 within significantFigures)
       meanTrajectory(bd_2_0).altitudeStdDevMeters must beCloseTo(5.291503 within significantFigures)
-      meanTrajectory(bd_2_0).valuesIncluded mustEqual 3
+      meanTrajectory(bd_2_0).sourceCount mustEqual 3
     }
   }
 }

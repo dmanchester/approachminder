@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets
 
 object ThrowawayMain {
 
-  def filesToTrajectories(files: Seq[Path]): Seq[(AircraftProfile, Seq[TimeBasedPosition])] = {
+  def filesToTrajectories(files: Seq[Path]): Seq[(AircraftProfile, Trajectory[TimeBasedPosition])] = {
 
     val readUniqueVectorsResult = IO.readUniqueVectors(files)
     println(readUniqueVectorsResult)
@@ -62,6 +62,11 @@ object ThrowawayMain {
       (threshold, interpolatedApproachesOneThreshold)
     }
 
+    // DAN YOU LEFT OFF HERE... "single-threaded" ApproachModel to be supplanted by "multi-threaded" TrajectoryTree.
+    // Will likely end up splitting ExtractionAndEstimation.meanTrajectory. Where it gets positionsAtThisDistance and
+    // then calculates a single AngleAndAltitudeWithStats, we'll send the data for clustering and then calculate multiple
+    // AngleAndAltitudeWithStats. Those will be the "trajectory segments" of our tree.
+
     val approachModelsByThreshold = interpolatedApproachesByThreshold.map { case (threshold, interpolatedApproach) =>
       val meanApproach = ExtractionAndEstimation.meanTrajectory(interpolatedApproach)
       val approachModel = ApproachModel.newOption(threshold.center, meanApproach, threshold.geographicCalculator).get  // TODO It seems a little clunky how we're reaching into the threshold object here
@@ -79,36 +84,31 @@ object ThrowawayMain {
     val testDataGlob = "all--2022-12-0*.json"
 
     val testDataFiles = IO.resolveGlob(dirPath, testDataGlob)
-    val testDataTrajectoriesUnfiltered = filesToTrajectories(testDataFiles)
-    val testDataTrajectories = testDataTrajectoriesUnfiltered.filter(_._2.length >= 2)  // TODO Preceding line and this one ugly; see below about a trajectory type
+    val testDataTrajectories = filesToTrajectories(testDataFiles)
 
     val trajectoriesWithApproaches = testDataTrajectories.map { case (aircraftProfile, trajectory) =>
 
-      val trajectoryWithApproachSegments = if (trajectory.size < 2) { // TODO If we establish a type for trajectory with a length >= 2 invariant, don't need to test this
-        Seq.empty
-      } else { // trajectory.size >= 2
+      val positions = trajectory.positions
 
-        TimeBasedPositionWithApproachSegment(trajectory.head, None) +: trajectory.sliding(2).toSeq.map { positionPair =>
+      val trajectoryWithApproachSegments = TimeBasedPositionWithApproachSegment(positions.head, None) +: positions.sliding(2).toSeq.map { positionPair =>
 
-          // TODO In "pointPair" and these vars, "point" --> "position"?
-          val firstPosition = positionPair(0)
-          val secondPosition = positionPair(1)
+        val firstPosition = positionPair(0)
+        val secondPosition = positionPair(1)
 
-          val bestFitOption = approachModels.bestFit(firstPosition, secondPosition)
+        val bestFitOption = approachModels.bestFit(firstPosition, secondPosition)
 
-          val approachSegmentWithDeviationOption = bestFitOption.filter(_.deviation.normalizedEuclideanDistance < 5.0).map { bestFit =>
+        val approachSegmentWithDeviationOption = bestFitOption.filter(_.deviation.normalizedEuclideanDistance < 5.0).map { bestFit =>
 
-            val threshold = thresholdsByApproachModel(bestFit.model)
-            val thresholdDistanceMeters = threshold.distanceInMeters(secondPosition)
-            val verticalDevMeters = bestFit.deviation.altitudeDevMeters
-            val horizontalDevMeters = MathUtils.isoscelesBaseLength(bestFit.deviation.angleDevDegrees, bestFit.appliedDistributionInMeters.toDouble)
-            val normalizedEuclideanDistance = bestFit.deviation.normalizedEuclideanDistance
+          val threshold = thresholdsByApproachModel(bestFit.model)
+          val thresholdDistanceMeters = threshold.distanceInMeters(secondPosition)
+          val verticalDevMeters = bestFit.deviation.altitudeDevMeters
+          val horizontalDevMeters = MathUtils.isoscelesBaseLength(bestFit.deviation.angleDevDegrees, bestFit.appliedDistributionInMeters.toDouble)
+          val normalizedEuclideanDistance = bestFit.deviation.normalizedEuclideanDistance
 
-            ApproachSegmentWithDeviation(threshold, thresholdDistanceMeters, verticalDevMeters, horizontalDevMeters, normalizedEuclideanDistance)
-          }
-
-          TimeBasedPositionWithApproachSegment(secondPosition, approachSegmentWithDeviationOption)
+          ApproachSegmentWithDeviation(threshold, thresholdDistanceMeters, verticalDevMeters, horizontalDevMeters, normalizedEuclideanDistance)
         }
+
+        TimeBasedPositionWithApproachSegment(secondPosition, approachSegmentWithDeviationOption)
       }
 
       (aircraftProfile, trajectoryWithApproachSegments)

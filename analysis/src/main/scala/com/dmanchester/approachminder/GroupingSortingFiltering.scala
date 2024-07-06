@@ -95,7 +95,7 @@ object GroupingSortingFiltering {
     }
   }
 
-  def trajectories[T <: HasTime](positionsByAircraft: Map[AircraftProfile, Seq[T]], minTimeInSecondsForSegmenting: Int): Seq[(AircraftProfile, Seq[T])] = {
+  def trajectories[T <: HasTime](positionsByAircraft: Map[AircraftProfile, Seq[T]], minTimeInSecondsForSegmenting: Int): Seq[(AircraftProfile, Trajectory[T])] = {
 
     positionsByAircraft.toSeq.flatMap { case (aircraftProfile, positionsOneAircraft) =>
 
@@ -146,28 +146,29 @@ object GroupingSortingFiltering {
    *
    * @param historicalPositions
    * @param minTimeInSeconds
-   * @return the trajectories; or, if `historicalPositions` is empty, an empty `Seq`.
+   * @return the trajectories; or, an empty `Seq`, if `historicalPositions` is empty or if no trajectories could be
+   *         created (the uncommon case that all positions were separated by at least `minTimeInSeconds`).
    */
-  def segmentIntoTrajectoriesByTime[T <: HasTime](historicalPositions: Seq[T], minTimeInSeconds: Int): Seq[Seq[T]] = {
+  def segmentIntoTrajectoriesByTime[T <: HasTime](historicalPositions: Seq[T], minTimeInSeconds: Int): Seq[Trajectory[T]] = {
 
     if (historicalPositions.isEmpty) {
-      Seq.empty[Seq[T]]
+      Seq.empty[Trajectory[T]]
     } else {
 
       // Begin a first trajectory with the first position.
       val trajectoryInProgress = Seq(historicalPositions.head)
       val remainingHistoricalPositions = historicalPositions.tail
 
-      doSegmentIntoTrajectoriesByTime(remainingHistoricalPositions.iterator, minTimeInSeconds, trajectoryInProgress, Seq.empty[Seq[T]])
+      doSegmentIntoTrajectoriesByTime(remainingHistoricalPositions.iterator, minTimeInSeconds, trajectoryInProgress, Seq.empty[Trajectory[T]])
     }
   }
 
-  @tailrec private def doSegmentIntoTrajectoriesByTime[T <: HasTime](historicalPositionsIterator: Iterator[T], minTimeInSeconds: Int, trajectoryInProgress: Seq[T], completedTrajectories: Seq[Seq[T]]): Seq[Seq[T]] = {
+  @tailrec private def doSegmentIntoTrajectoriesByTime[T <: HasTime](historicalPositionsIterator: Iterator[T], minTimeInSeconds: Int, trajectoryInProgress: Seq[T], completedTrajectories: Seq[Trajectory[T]]): Seq[Trajectory[T]] = {
 
     if (!historicalPositionsIterator.hasNext) {
 
       // Complete the final trajectory and return them all.
-      completedTrajectories :+ trajectoryInProgress
+      completedTrajectories :++ Trajectory.newOption(trajectoryInProgress)
 
     } else {
 
@@ -177,7 +178,7 @@ object GroupingSortingFiltering {
 
       val (completedTrajectoriesUpdated, trajectoryInProgressUpdated) = if (positionsSeparatedByAtLeastMinTime) {
         // Complete the in-progress trajectory and begin a new one.
-        (completedTrajectories :+ trajectoryInProgress, Seq(currentPosition))
+        (completedTrajectories :++ Trajectory.newOption(trajectoryInProgress), Seq(currentPosition))
       } else {
         // Append the current position to the in-progress trajectory.
         (completedTrajectories, trajectoryInProgress :+ currentPosition)

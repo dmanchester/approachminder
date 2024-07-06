@@ -59,13 +59,13 @@ class GroupingSortingFilteringSpec extends Specification {
 
     "handle multiple- and single-point trajectories" in {
       val historicalPositions = Seq(timeA, timeB, timeC, timeD, timeE)
-      val expectedTrajectories = Seq(Seq(timeA), Seq(timeB, timeC), Seq(timeD, timeE))
+      val expectedTrajectories = Seq(Trajectory.newOption(Seq(timeB, timeC)), Trajectory.newOption(Seq(timeD, timeE))).flatten
       GroupingSortingFiltering.segmentIntoTrajectoriesByTime(historicalPositions, minTimeInSeconds) must beEqualTo(expectedTrajectories)
     }
 
     "handle a single-point position history" in {
       val historicalPositions = Seq(timeA)
-      val expectedTrajectories = Seq(Seq(timeA))
+      val expectedTrajectories = Seq.empty[Trajectory[Time]]
       GroupingSortingFiltering.segmentIntoTrajectoriesByTime(historicalPositions, minTimeInSeconds) must beEqualTo(expectedTrajectories)
     }
 

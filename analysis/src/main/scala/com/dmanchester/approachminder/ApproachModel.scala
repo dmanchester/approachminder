@@ -2,7 +2,7 @@ package com.dmanchester.approachminder
 
 import scala.math.abs
 
-class ApproachModel private(thresholdCenter: HasLongLat, distributionsByDistanceInMeters: Map[BigDecimal, PositionDistribution], calculator: GeographicCalculator) {
+class ApproachModel private(thresholdCenter: HasLongLat, distributionsByDistanceInMeters: Map[BigDecimal, AngleAndAltitudeWithStats], calculator: GeographicCalculator) {
 
   private val distributionDistancesInMeters = Intervals.fromPointsSet(distributionsByDistanceInMeters.keySet)  // TODO Does "private val" enforce same (lack of) visibility as constructor params?
   val minDistanceInMeters = distributionDistancesInMeters.min
@@ -78,7 +78,7 @@ class ApproachModel private(thresholdCenter: HasLongLat, distributionsByDistance
 
 object ApproachModel {
 
-  def newOption(thresholdCenter: HasLongLat, distributionsByDistanceInMeters: Map[BigDecimal, PositionDistribution], calculator: GeographicCalculator): Option[ApproachModel] = {
+  def newOption(thresholdCenter: HasLongLat, distributionsByDistanceInMeters: Map[BigDecimal, AngleAndAltitudeWithStats], calculator: GeographicCalculator): Option[ApproachModel] = {
     // TODO Is this Option-returning constructor tedious when we're just creating isolated objects (as opposed to
     //  mapping over Seqs etc.)? -- Get rid of, but throw exception on empty input?
     Option.when(!distributionsByDistanceInMeters.isEmpty) {
@@ -93,4 +93,4 @@ case object NotContinuouslyNearing extends ApproachModelTestResult
 
 case object ContinuouslyNearingButOutOfRange extends ApproachModelTestResult
 
-case class WithinRange(val deviation: DeviationFromPositionDistribution, val appliedDistributionInMeters: BigDecimal) extends ApproachModelTestResult
+case class WithinRange(val deviation: AngleAndAltitudeDeviation, val appliedDistributionInMeters: BigDecimal) extends ApproachModelTestResult

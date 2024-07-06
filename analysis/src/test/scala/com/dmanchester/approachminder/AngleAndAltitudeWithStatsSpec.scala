@@ -3,7 +3,7 @@ package com.dmanchester.approachminder
 import com.dmanchester.approachminder.SharedResources.significantFigures
 import org.specs2.mutable._
 
-class PositionDistributionSpec extends Specification {
+class AngleAndAltitudeWithStatsSpec extends Specification {
 
   val onePosition = Seq(
     AngleAndAltitude(PolarAngle.fromCompassDegrees(359.1), 14.1)
@@ -18,20 +18,20 @@ class PositionDistributionSpec extends Specification {
 
     "initialize an instance with the correct means and standard deviations" in {
 
-      val positionDistribution = PositionDistribution.fromDataOption(threePositions).get
+      val angleAndAltitudeWithStats = AngleAndAltitudeWithStats.fromDataOption(threePositions).get
 
-      positionDistribution.angleMean.toCompassDegrees must beCloseTo(3.533899 within significantFigures)
-      positionDistribution.angleStdDevDegrees must beCloseTo(4.140451 within significantFigures)
-      positionDistribution.altitudeMeanMeters must beCloseTo(18.2 within significantFigures)
-      positionDistribution.altitudeStdDevMeters must beCloseTo(5.386093 within significantFigures)
-      positionDistribution.valuesIncluded mustEqual 3
+      angleAndAltitudeWithStats.angle.toCompassDegrees must beCloseTo(3.533899 within significantFigures)
+      angleAndAltitudeWithStats.angleStdDevDegrees must beCloseTo(4.140451 within significantFigures)
+      angleAndAltitudeWithStats.altitudeMeters must beCloseTo(18.2 within significantFigures)
+      angleAndAltitudeWithStats.altitudeStdDevMeters must beCloseTo(5.386093 within significantFigures)
+      angleAndAltitudeWithStats.sourceCount mustEqual 3
     }
 
     "refuse to initialize an instance from less than two positions" in {
 
-      val positionDistribution = PositionDistribution.fromDataOption(onePosition)
+      val angleAndAltitudeWithStats = AngleAndAltitudeWithStats.fromDataOption(onePosition)
 
-      positionDistribution must beNone
+      angleAndAltitudeWithStats must beNone
     }
   }
 
@@ -39,10 +39,10 @@ class PositionDistributionSpec extends Specification {
 
     "calculate a passed-in position's deviation from the distribution" in {
 
-      val positionDistribution = PositionDistribution.fromDataOption(threePositions).get
+      val angleAndAltitudeWithStats = AngleAndAltitudeWithStats.fromDataOption(threePositions).get
 
       val position = AngleAndAltitude(PolarAngle.fromCompassDegrees(7.0), 20.0)
-      val deviation = positionDistribution.deviation(position)
+      val deviation = angleAndAltitudeWithStats.deviation(position)
 
       deviation.angleDevDegrees must beCloseTo(3.466101 within significantFigures)
       deviation.angleStdDevs must beCloseTo(0.837131 within significantFigures)

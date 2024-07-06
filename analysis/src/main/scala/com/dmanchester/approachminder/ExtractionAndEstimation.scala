@@ -42,31 +42,31 @@ object ExtractionAndEstimation {
    * @param thresholds The runway thresholds to check for crossings.
    * @return
    */
-  def approachesAndLandings[A <: HasLongLatAlt](aircraftProfile: AircraftProfile, trajectory: Seq[A], thresholds: Thresholds): Seq[ApproachAndLanding[A]] = {
-    doApproachesAndLandings(aircraftProfile, trajectory, thresholds, 1, 0, Seq.empty[ApproachAndLanding[A]])
+  def approachesAndLandings[A <: HasLongLatAlt](aircraftProfile: AircraftProfile, trajectory: Trajectory[A], thresholds: Thresholds): Seq[ApproachAndLanding[A]] = {
+    doApproachesAndLandings(aircraftProfile, trajectory.positions, thresholds, 1, 0, Seq.empty[ApproachAndLanding[A]])
   }
 
-  @tailrec private def doApproachesAndLandings[A <: HasLongLatAlt](aircraftProfile: AircraftProfile, trajectory: Seq[A], thresholds: Thresholds, currentIndex: Int, earliestIndexToConsiderForAnApproach: Int, approachesAndLandingsInProgress: Seq[ApproachAndLanding[A]]): Seq[ApproachAndLanding[A]] = {
+  @tailrec private def doApproachesAndLandings[A <: HasLongLatAlt](aircraftProfile: AircraftProfile, positions: Seq[A], thresholds: Thresholds, currentIndex: Int, earliestIndexToConsiderForAnApproach: Int, approachesAndLandingsInProgress: Seq[ApproachAndLanding[A]]): Seq[ApproachAndLanding[A]] = {
 
-    if (currentIndex >= trajectory.length) {
+    if (currentIndex >= positions.length) {
 
       approachesAndLandingsInProgress
 
     } else {
 
-      val thresholdCrossedInboundAndPointInterpolated = thresholds.findThresholdCrossedInboundAndInterpolatePoint((trajectory(currentIndex - 1), trajectory(currentIndex)))
+      val thresholdCrossedInboundAndPointInterpolated = thresholds.findThresholdCrossedInboundAndInterpolatePoint((positions(currentIndex - 1), positions(currentIndex)))
       // TODO Name trajectory(currentIndex - 1) and trajectory(currentIndex); use again below?
 
       val (currentIndexUpdated, earliestIndexToConsiderForAnApproachUpdated, approachesAndLandingsInProgressUpdated) = thresholdCrossedInboundAndPointInterpolated.map { case (threshold, crossingPointInterpolated2D, percentageFromSegStartToSegEnd) =>
 
-        val positionsToConsiderForApproach = trajectory.slice(earliestIndexToConsiderForAnApproach, currentIndex)
+        val positionsToConsiderForApproach = positions.slice(earliestIndexToConsiderForAnApproach, currentIndex)
         val approach = ContinuouslyNearingTrajectory.clip(positionsToConsiderForApproach, threshold.center, threshold.geographicCalculator)
 
-        val altitudeMeters = interpolateScalar(trajectory(currentIndex - 1).altitudeMeters, trajectory(currentIndex).altitudeMeters, percentageFromSegStartToSegEnd)
+        val altitudeMeters = interpolateScalar(positions(currentIndex - 1).altitudeMeters, positions(currentIndex).altitudeMeters, percentageFromSegStartToSegEnd)
         val crossingPointInterpolated3D = LongLatAlt(crossingPointInterpolated2D.longitude, crossingPointInterpolated2D.latitude, altitudeMeters)
 
-        val addlPositionsToConsiderForLanding = trajectory.drop(currentIndex + 1)
-        val landing = trajectory(currentIndex) +: subtrajectoryWithinPolygon(addlPositionsToConsiderForLanding, threshold.runwaySurface.rectangle, threshold.geographicCalculator)
+        val addlPositionsToConsiderForLanding = positions.drop(currentIndex + 1)
+        val landing = positions(currentIndex) +: subtrajectoryWithinPolygon(addlPositionsToConsiderForLanding, threshold.runwaySurface.rectangle, threshold.geographicCalculator)
 
         val approachAndLanding = ApproachAndLanding(aircraftProfile, threshold, approach, crossingPointInterpolated3D, landing)
 
@@ -83,7 +83,7 @@ object ExtractionAndEstimation {
 
       }
 
-      doApproachesAndLandings(aircraftProfile, trajectory, thresholds, currentIndexUpdated, earliestIndexToConsiderForAnApproachUpdated, approachesAndLandingsInProgressUpdated)
+      doApproachesAndLandings(aircraftProfile, positions, thresholds, currentIndexUpdated, earliestIndexToConsiderForAnApproachUpdated, approachesAndLandingsInProgressUpdated)
     }
   }
 
@@ -161,7 +161,7 @@ object ExtractionAndEstimation {
     }
   }
 
-  def meanTrajectory(trajectories: Iterable[Map[BigDecimal, AngleAndAltitude]]): Map[BigDecimal, PositionDistribution] = {
+  def meanTrajectory(trajectories: Iterable[Map[BigDecimal, AngleAndAltitude]]): Map[BigDecimal, AngleAndAltitudeWithStats] = {
 
     // Collect the set of distances for which at least one trajectory has a position.
     val distancesInMeters = trajectories.map(_.keys).toSet.flatten
@@ -169,12 +169,12 @@ object ExtractionAndEstimation {
     distancesInMeters.flatMap { thisDistance =>
 
       val positionsAtThisDistance = trajectories.flatMap(_.get(thisDistance))
-      val positionDistributionOption = PositionDistribution.fromDataOption(positionsAtThisDistance)
+      val angleAndAltitudeWithStatsOption = AngleAndAltitudeWithStats.fromDataOption(positionsAtThisDistance)
 
-      // If it was possible to create a PositionDistribution at this distance (generally, that
+      // If it was possible to create an AngleAndAltitudeWithStats at this distance (generally, that
       // hinges on whether there were at least two positions), queue up a `Map` entry, mapping this
       // distance to that distribution.
-      positionDistributionOption.map(thisDistance -> _)
+      angleAndAltitudeWithStatsOption.map(thisDistance -> _)
 
     }.toMap
   }
