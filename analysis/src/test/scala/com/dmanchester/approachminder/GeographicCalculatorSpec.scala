@@ -101,7 +101,7 @@ class GeographicCalculatorSpec extends Specification {
 
   "rotateAboutArbitraryOriginAndScaleToDistance" should {
     "calculate points" in {
-      // Confirmed the following points' correctness visually, with Google Maps.
+      // Confirmed the following points' correctness visually, with online map.
       sfoThresholdLeft28L must beCloseInTwoDimensionsTo(LongLat(-122.358510, 37.611469), significantFigures)
       sfoThresholdRight28L must beCloseInTwoDimensionsTo(LongLat(-122.358188, 37.611955), significantFigures)
       sfoThresholdLeft10R must beCloseInTwoDimensionsTo(LongLat(-122.392944, 37.626534), significantFigures)
@@ -185,6 +185,15 @@ class GeographicCalculatorSpec extends Specification {
 
     "handle the complex non-nearing case: point B is closer to the reference point than point A is; but their segment includes the containing line's closest point to the reference point; so the sub-segment from that point to point B is non-nearing" in {
       sfoCalculator.continuouslyNears(pointG, pointJ, referencePoint) must beFalse
+    }
+  }
+
+  "pointOnSegment" should {
+
+    "return the appropriate point" in {
+      val point = sfoCalculator.pointOnSegment((sfoData.thresholdCenter28L, sfoData.thresholdCenter10R), 0.25)
+      // Confirmed the following point's correctness visually, with online map.
+      point must beCloseInTwoDimensionsTo(LongLat(-122.367037, 37.615358), significantFigures)
     }
   }
 }

@@ -247,6 +247,12 @@ class GeographicCalculator private(val referencePoint: HasLongLat, private val t
     (vectorToPointAPrimeUTM.getX < 0.0) && // Following line includes calculation of vectorToPointBPrimeUTM. We do it in this fashion to avoid calculating it unnecessarily if first term is false.
       (Vector2D.create(pointBUTM).subtract(vectorToReferencePointUTM).rotate(-directedLineSegmentAngleRadians).getX <= 0.0)
   }
+
+  def pointOnSegment(lineSegment: (HasLongLat, HasLongLat), relativePosition: Double): HasLongLat = {
+    val lineSegmentUTM = toUTMLineSegment(lineSegment)
+    val point = lineSegmentUTM.pointAlong(relativePosition)
+    toLongLat(point)
+  }
 }
 
 object GeographicCalculator {

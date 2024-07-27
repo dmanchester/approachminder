@@ -6,6 +6,8 @@ import org.specs2.mutable._
 
 class AirportSpec extends Specification {
 
+  private val sfoThreshold28L = sfo.thresholdByName("28L").get
+
   "constructors/'apply' pseudo-constructors of Airport/RunwaySurface/RunwayThreshold" should {
     "process the RunwaySurfaceTemplates in order and correctly assign thresholds' left and right points" in {
 
@@ -41,8 +43,6 @@ class AirportSpec extends Specification {
 
   "RunwayThreshold.interpolateInboundCrossingPoint" should {
 
-    val sfoThreshold28L = sfo.thresholdByName("28L").get
-
     "handle a flight segment that crosses inbound" in {
 
       val flightSegment = (sfoPointA, sfoPointB)
@@ -71,4 +71,14 @@ class AirportSpec extends Specification {
       sfoThreshold28L.interpolateInboundCrossingPoint(flightSegment) must beNone
     }
   }
+
+  "RunwayThreshold.pointOnRunwayCenterline" should {
+
+    "return the appropriate point" in {
+      val point = sfoThreshold28L.pointOnRunwayCenterline(0.25)
+      // Confirmed the following point's correctness visually, with online map.
+      point must beCloseInTwoDimensionsTo(LongLat(-122.367037, 37.615358), significantFigures)
+    }
+  }
+
 }

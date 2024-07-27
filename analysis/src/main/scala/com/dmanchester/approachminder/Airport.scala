@@ -50,6 +50,14 @@ class Airport private(val icaoID: String, val referencePoint: HasLongLat, runway
 
     def contains(point: HasLongLat): Boolean = geographicCalculator.contains(rectangle, point)
 
+    private def oppositeThreshold(threshold: RunwaySurface#RunwayThreshold): RunwayThreshold = {  // TODO Confirm prefixing with "RunwaySurface#" is "right" way to solve spec's compilation issue
+      threshold match {
+        case `threshold0` => threshold1
+        case `threshold1` => threshold0
+        case _ => throw new IllegalArgumentException("Unrecognized threshold!")
+      }
+    }
+
     override def toString = s"${this.getClass.getSimpleName}($threshold0Left,$threshold0Right,$threshold1Left,$threshold1Right)"
 
     class RunwayThreshold private(val name: String, val left: HasLongLat, val center: HasLongLat, val right: HasLongLat) {
@@ -109,6 +117,20 @@ class Airport private(val icaoID: String, val referencePoint: HasLongLat, runway
       def distanceInMeters(point: HasLongLat): Double = {
         geographicCalculator.distanceInMeters(center, point)
       }
+
+      /**
+       * Calculate a point on the runway centerline.
+       *
+       * @param relativePosition The position of the point relative to this threshold. 0.0 = on this threshold; 1.0 = on
+       *                         the opposite threshold. A value would typically be between 0.0 and 1.0, but it need
+       *                         not be.
+       * @return
+       */
+      def pointOnRunwayCenterline(relativePosition: Double): HasLongLat = {  // TODO Here and (many) other places, return class instead of trait?
+        geographicCalculator.pointOnSegment((center, oppositeThreshold.center), relativePosition)
+      }
+
+      def oppositeThreshold = runwaySurface.oppositeThreshold(this)
 
       override def toString = s"${this.getClass.getSimpleName}($name,$left,$center,$right)"
     }
