@@ -33,11 +33,25 @@ class AirportSpec extends Specification {
 
   "RunwaySurface.contains" should {
     "confirm a point is on the runway surface" in {
-      sfo.thresholdByName("28L").get.runwaySurface.contains(sfoPointB) must beTrue
+      sfoThreshold28L.runwaySurface.contains(sfoPointB) must beTrue
     }
 
     "confirm a point is not on the runway surface" in {
-      sfo.thresholdByName("28L").get.runwaySurface.contains(sfoPointA) must beFalse
+      sfoThreshold28L.runwaySurface.contains(sfoPointA) must beFalse
+    }
+  }
+
+  "RunwaySurface.initialPointsInside" should {
+    "handle no initial points inside the runway surface" in {
+      sfoThreshold28L.runwaySurface.initialPointsInside(Seq(sfoPointA, sfoPointB)) must beEqualTo(0)
+    }
+
+    "handle some initial points inside the runway surface" in {
+      sfoThreshold28L.runwaySurface.initialPointsInside(Seq(sfoPointB, sfoPointB, sfoPointA)) must beEqualTo(2)
+    }
+
+    "handle some initial points inside the runway surface and not be 'tricked' by further such points after one that isn't inside" in {
+      sfoThreshold28L.runwaySurface.initialPointsInside(Seq(sfoPointB, sfoPointB, sfoPointA, sfoPointB)) must beEqualTo(2)
     }
   }
 

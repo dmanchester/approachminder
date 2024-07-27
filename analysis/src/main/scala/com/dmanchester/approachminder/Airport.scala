@@ -58,6 +58,10 @@ class Airport private(val icaoID: String, val referencePoint: HasLongLat, runway
       }
     }
 
+    def initialPointsInside(positions: Seq[HasLongLat]): Int = {
+      positions.segmentLength(contains)
+    }
+
     override def toString = s"${this.getClass.getSimpleName}($threshold0Left,$threshold0Right,$threshold1Left,$threshold1Right)"
 
     class RunwayThreshold private(val name: String, val left: HasLongLat, val center: HasLongLat, val right: HasLongLat) {
