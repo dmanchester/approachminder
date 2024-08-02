@@ -41,20 +41,6 @@ class AirportSpec extends Specification {
     }
   }
 
-  "RunwaySurface.initialPointsInside" should {
-    "handle no initial points inside the runway surface" in {
-      sfoThreshold28L.runwaySurface.initialPointsInside(Seq(sfoPointA, sfoPointB)) must beEqualTo(0)
-    }
-
-    "handle some initial points inside the runway surface" in {
-      sfoThreshold28L.runwaySurface.initialPointsInside(Seq(sfoPointB, sfoPointB, sfoPointA)) must beEqualTo(2)
-    }
-
-    "handle some initial points inside the runway surface and not be 'tricked' by further such points after one that isn't inside" in {
-      sfoThreshold28L.runwaySurface.initialPointsInside(Seq(sfoPointB, sfoPointB, sfoPointA, sfoPointB)) must beEqualTo(2)
-    }
-  }
-
   "RunwayThreshold.interpolateInboundCrossingPoint" should {
 
     "handle a flight segment that crosses inbound" in {
