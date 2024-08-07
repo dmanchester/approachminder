@@ -4,7 +4,7 @@ import com.dmanchester.approachminder.MathUtils.interpolateScalar
 
 // TODO Is tempting to make this a case class; but how would we get "equal" to fire reliably, since crossingPointInterpolated is a calculated Double?
 
-class ApproachAndLanding2[A <: HasLongLatAlt] private(val trajectory: ContinuouslyNearingTrajectory2[A], val threshold: Airport#RunwaySurface#RunwayThreshold, val crossingPointInterpolated: HasLongLatAlt, val referencePoint: HasLongLat)
+class ApproachAndLanding2[A <: HasLongLatAlt] private(val aircraftProfile: AircraftProfile, val trajectory: ContinuouslyNearingTrajectory2[A], val threshold: Airport#RunwaySurface#RunwayThreshold, val crossingPointInterpolated: HasLongLatAlt)
 
 object ApproachAndLanding2 {
 
@@ -18,30 +18,42 @@ object ApproachAndLanding2 {
    * longest-possible subtrajectory that continuously nears the reference point, contains the specified segment, and
    * ends within the runway surface.
    *
+   * The ApproachAndLanding2 also includes the interpolated point (with altitude information) where the specified
+   * segment crossed the threshold.
+   *
+   * While the above process for producing an ApproachAndLanding2 is generally expected to be reliable, it would
+   * consider an approach culminating in a go-around *over the runway surface* (i.e., without lateral deviation) to be
+   * an approach and landing.
+   *
+   * It would similarly consider a high-altitude crossing of a threshold to be an approach and landing.
+   *
    * @param fullTrajectory
    * @param segmentIndex
-   * @param threshold
-   * @param referencePoint
+   * @param thresholdAndReferencePoint
    * @tparam A
-   * @return The ApproachAndLanding2, along with the count of segments after the specified segment contained within the
+   * @return The ApproachAndLanding2, along with the count of segments after the specified segment included in the
    *         subtrajectory, wrapped in a `Some`. Or, `None` if at least one of the above criteria wasn't fulfilled, or
    *         if a trajectory that continuously nears the reference point couldn't be constructed.
    */
-  def newOption[A <: HasLongLatAlt](fullTrajectory: Trajectory[A], segmentIndex: Int, threshold: Airport#RunwaySurface#RunwayThreshold, referencePoint: HasLongLat): Option[(ApproachAndLanding2[A], Int)] = {
+  def newOption[A <: HasLongLatAlt](aircraftProfile: AircraftProfile, fullTrajectory: Seq[A], segmentIndex: Int, thresholdAndReferencePoint: ThresholdAndReferencePoint): Option[(ApproachAndLanding2[A], Int)] = {
 
-    val positionA = fullTrajectory.positions(segmentIndex)
-    val positionB = fullTrajectory.positions(segmentIndex + 1)
-    val inboundCrossingPoint = threshold.interpolateInboundCrossingPoint(positionA, positionB)
+    Option.when(fullTrajectory.length >= 2) {  // TODO Add a test for length < 2
 
-    for {
-      (crossingPoint2D, percentageFromSegStartToSegEnd) <- inboundCrossingPoint
-      (positionsBeforeMiddleSegment, positionsAfterMiddleSegment) = fullTrajectory.positions.splitAt(segmentIndex + 1)
-      truncatedTrajectoryAsPositions = positionsBeforeMiddleSegment :++ positionsAfterMiddleSegment.takeWhile(threshold.runwaySurface.contains)  // truncated after the specified segment to include only positions on the runway surface
-      (continuouslyNearingSegment, segmentsAfterMiddleIncluded) <- ContinuouslyNearingTrajectory2.newOption(truncatedTrajectoryAsPositions, segmentIndex, referencePoint, threshold.geographicCalculator)
-    } yield {
-      val altitudeMeters = interpolateScalar(positionA.altitudeMeters, positionB.altitudeMeters, percentageFromSegStartToSegEnd)
-      val crossingPoint3D = LongLatAlt(crossingPoint2D.longitude, crossingPoint2D.latitude, altitudeMeters)
-      (new ApproachAndLanding2(continuouslyNearingSegment, threshold, crossingPoint3D, referencePoint), segmentsAfterMiddleIncluded)
-    }
+      val threshold = thresholdAndReferencePoint.threshold
+      val positionA = fullTrajectory(segmentIndex)
+      val positionB = fullTrajectory(segmentIndex + 1)
+      val inboundCrossingPoint = threshold.interpolateInboundCrossingPoint(positionA, positionB)
+
+      for {
+        (crossingPoint2D, percentageFromSegStartToSegEnd) <- inboundCrossingPoint
+        (positionsBeforeSegment, positionsAfterSegment) = fullTrajectory.splitAt(segmentIndex + 1)
+        truncatedTrajectory = positionsBeforeSegment :++ positionsAfterSegment.takeWhile(threshold.runwaySurface.contains) // truncated after the specified segment to include only positions on the runway surface
+        (continuouslyNearingSegment, addlSegmentsIncluded) <- ContinuouslyNearingTrajectory2.newOption(truncatedTrajectory, segmentIndex, thresholdAndReferencePoint.referencePoint, threshold.geographicCalculator)
+      } yield {
+        val altitudeMeters = interpolateScalar(positionA.altitudeMeters, positionB.altitudeMeters, percentageFromSegStartToSegEnd)
+        val crossingPoint3D = LongLatAlt(crossingPoint2D.longitude, crossingPoint2D.latitude, altitudeMeters)
+        (new ApproachAndLanding2(aircraftProfile, continuouslyNearingSegment, threshold, crossingPoint3D), addlSegmentsIncluded)
+      }
+    }.flatten
   }
 }

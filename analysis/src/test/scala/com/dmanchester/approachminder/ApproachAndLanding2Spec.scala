@@ -66,13 +66,17 @@ class ApproachAndLanding2Spec extends Specification {
   private val pointA = LongLatAlt(pointE.longitude, pointC.latitude, 40)
   private val pointJ = LongLatAlt(pointF.longitude, pointG.latitude + 0.000001, 0)  // See discussion above of point G's latitude.
 
-  private val trajectoryCE = Trajectory.newOption(Seq(pointC, pointE)).get
+  private val trajectoryCE = Seq(pointC, pointE)
+  private val thresholdAndRefPointG = ThresholdAndReferencePoint(sfoThreshold10L, pointG)
+
+  val stubProfile = AircraftProfile("(icao24)", Some("(callsign)"), None)
 
   "newOption" should {
 
     "handle the simplest possible `Some` case, which involves a two-point threshold-crossing trajectory (trajectory C-E) continuously nearing a reference point" in {
 
-      val (approachAndLanding, segmentsIncludedAfterSpecified) = ApproachAndLanding2.newOption(trajectoryCE, 0, sfoThreshold10L, pointG).get
+      val (approachAndLanding, segmentsIncludedAfterSpecified) = ApproachAndLanding2.newOption(stubProfile, trajectoryCE, 0, thresholdAndRefPointG).get
+      approachAndLanding.aircraftProfile mustEqual stubProfile
       approachAndLanding.trajectory.positions mustEqual Seq(pointC, pointE)
       approachAndLanding.crossingPointInterpolated must beCloseInTwoDimensionsTo(sfoThreshold10L.center, significantFigures)  // Because C and E are on the runway centerline, they cross the threshold at its center point
       approachAndLanding.crossingPointInterpolated.altitudeMeters must beCloseTo(29.999618, significantFigures)  // crossing point is 1/3 of the way from C to E; altitude is thus 1/3 of the descent from C (40 m) to E (10 m)
@@ -81,53 +85,54 @@ class ApproachAndLanding2Spec extends Specification {
     }
 
     "return `None` for trajectory C-E if that trajectory passes the reference point (and thus does not continuously near it)" in {
-      ApproachAndLanding2.newOption(trajectoryCE, 0, sfoThreshold10L, pointD) must beNone
+      val thresholdAndRefPoint = ThresholdAndReferencePoint(sfoThreshold10L, pointD)
+      ApproachAndLanding2.newOption(stubProfile, trajectoryCE, 0, thresholdAndRefPoint) must beNone
     }
 
     "return `None` for a two-point trajectory that crosses the threshold inbound but ends outside the runway surface" in {
-      val trajectory = Trajectory.newOption(Seq(pointC, pointI)).get
-      ApproachAndLanding2.newOption(trajectory, 0, sfoThreshold10L, pointG) must beNone
+      val trajectory = Seq(pointC, pointI)
+      ApproachAndLanding2.newOption(stubProfile, trajectory, 0, thresholdAndRefPointG) must beNone
     }
 
     "return `None` for a two-point trajectory that ends inside the runway surface but does not cross the threshold" in {
-      val trajectory = Trajectory.newOption(Seq(pointA, pointE)).get
-      ApproachAndLanding2.newOption(trajectory, 0, sfoThreshold10L, pointG) must beNone
+      val trajectory = Seq(pointA, pointE)
+      ApproachAndLanding2.newOption(stubProfile, trajectory, 0, thresholdAndRefPointG) must beNone
     }
 
     "apply additional segments *before* the threshold-crossing one, provided they continuously near the reference point" in {
-      val trajectory = Trajectory.newOption(Seq(pointB, pointC, pointE)).get
+      val trajectory = Seq(pointB, pointC, pointE)
 
-      val (approachAndLanding, _) = ApproachAndLanding2.newOption(trajectory, 1, sfoThreshold10L, pointG).get
+      val (approachAndLanding, _) = ApproachAndLanding2.newOption(stubProfile, trajectory, 1, thresholdAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointB, pointC, pointE)
     }
 
     "apply additional segments *before* the threshold-crossing one, provided they continuously near the reference point; but stop when they no longer do" in {
-      val trajectory = Trajectory.newOption(Seq(pointA, pointB, pointC, pointE)).get
+      val trajectory = Seq(pointA, pointB, pointC, pointE)
 
-      val (approachAndLanding, _) = ApproachAndLanding2.newOption(trajectory, 2, sfoThreshold10L, pointG).get
+      val (approachAndLanding, _) = ApproachAndLanding2.newOption(stubProfile, trajectory, 2, thresholdAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointB, pointC, pointE)
     }
 
     "apply additional segments *after* the threshold-crossing one, provided they continuously near the reference point and are on the runway surface" in {
-      val trajectory = Trajectory.newOption(Seq(pointC, pointE, pointF)).get
+      val trajectory = Seq(pointC, pointE, pointF)
 
-      val (approachAndLanding, segmentsIncludedAfterSpecified) = ApproachAndLanding2.newOption(trajectory, 0, sfoThreshold10L, pointG).get
+      val (approachAndLanding, segmentsIncludedAfterSpecified) = ApproachAndLanding2.newOption(stubProfile, trajectory, 0, thresholdAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointC, pointE, pointF)
       segmentsIncludedAfterSpecified mustEqual(1)
     }
 
     "apply additional segments *after* the threshold-crossing one, provided they continuously near the reference point and are on the runway surface; but stop once they no longer near the reference point" in {
-      val trajectory = Trajectory.newOption(Seq(pointC, pointE, pointF, pointH)).get
+      val trajectory = Seq(pointC, pointE, pointF, pointH)
 
-      val (approachAndLanding, segmentsIncludedAfterSpecified) = ApproachAndLanding2.newOption(trajectory, 0, sfoThreshold10L, pointG).get
+      val (approachAndLanding, segmentsIncludedAfterSpecified) = ApproachAndLanding2.newOption(stubProfile, trajectory, 0, thresholdAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointC, pointE, pointF)
       segmentsIncludedAfterSpecified mustEqual(1)
     }
 
     "apply additional segments *after* the threshold-crossing one, provided they continuously near the reference point and are on the runway surface; but stop once they leave the runway surface" in {
-      val trajectory = Trajectory.newOption(Seq(pointC, pointE, pointF, pointJ)).get
+      val trajectory = Seq(pointC, pointE, pointF, pointJ)
 
-      val (approachAndLanding, segmentsIncludedAfterSpecified) = ApproachAndLanding2.newOption(trajectory, 0, sfoThreshold10L, pointG).get
+      val (approachAndLanding, segmentsIncludedAfterSpecified) = ApproachAndLanding2.newOption(stubProfile, trajectory, 0, thresholdAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointC, pointE, pointF)
       segmentsIncludedAfterSpecified mustEqual(1)
     }

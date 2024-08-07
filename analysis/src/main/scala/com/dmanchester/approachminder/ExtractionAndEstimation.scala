@@ -10,6 +10,62 @@ object ExtractionAndEstimation {
   /**
    * Determine the cases of an approach and landing contained within a trajectory.
    *
+   * For the criteria for what constitutes an approach and landing, please see the documentation of
+   * ApproachAndLanding2.newOption.
+   *
+   * As its return type suggests, this method can handle trajectories that include multiple  approaches and landings;
+   * for example, a continuous sequence of positions that include a landing at one airport, the subsequent take-off, and
+   * a landing at another airport.
+   *
+   * However, this method should not be used directly with highly discontinuous position data: for example, data that
+   * shows an aircraft leaving an area of observation on one day, with no further position reports until the aircraft
+   * returns to the area the following day.
+   *
+   * Pre-processing such data with `segmentIntoTrajectoriesByTime` will generally render it suitable for use with this method.
+   *
+   * @param aircraftProfile
+   * @param trajectory
+   * @param thresholdsAndReferencePoints
+   * @tparam A
+   * @return
+   */
+  def approachesAndLandings2[A <: HasLongLatAlt](aircraftProfile: AircraftProfile, trajectory: Trajectory[A], thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint]): Seq[ApproachAndLanding2[A]] = {
+    doApproachesAndLandings2(aircraftProfile, trajectory.positions, 0, thresholdsAndReferencePoints, Seq.empty)
+  }
+
+  @tailrec
+  private def doApproachesAndLandings2[A <: HasLongLatAlt](aircraftProfile: AircraftProfile, trajectoryAsPositions: Seq[A], segmentIndex: Int, thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint], accumulator: Seq[ApproachAndLanding2[A]]): Seq[ApproachAndLanding2[A]] = {
+
+    if (segmentIndex == (trajectoryAsPositions.length - 1)) {
+
+      accumulator
+
+    } else {
+
+      val checkSegment = (thresholdAndReferencePoint: ThresholdAndReferencePoint) => {
+        ApproachAndLanding2.newOption(aircraftProfile, trajectoryAsPositions, segmentIndex, thresholdAndReferencePoint)
+      }
+
+      val approachAndLandingOption = thresholdsAndReferencePoints.collectFirst { thresholdAndReferencePoint =>
+
+        checkSegment(thresholdAndReferencePoint) match {
+          case Some(approachAndLanding) => approachAndLanding
+        }
+      }
+
+      val (updatedTrajectoryAsPositions, updatedSegmentIndex, updatedAccumulator) = approachAndLandingOption.map { case (approachAndLanding, addlSegmentsIncluded) =>
+        (trajectoryAsPositions.drop(segmentIndex + 2 + addlSegmentsIncluded), 0, accumulator :+ approachAndLanding)
+      } getOrElse {
+        (trajectoryAsPositions, segmentIndex + 1, accumulator)
+      }
+
+      doApproachesAndLandings2(aircraftProfile, updatedTrajectoryAsPositions, updatedSegmentIndex, thresholdsAndReferencePoints, updatedAccumulator)
+    }
+  }
+
+  /**
+   * Determine the cases of an approach and landing contained within a trajectory.
+   *
    * The criteria for considering an approach and landing to have occurred are:
    *
    *   * the aircraft crosses a runway threshold in the threshold's inbound direction; and
@@ -60,6 +116,7 @@ object ExtractionAndEstimation {
       val (currentIndexUpdated, earliestIndexToConsiderForAnApproachUpdated, approachesAndLandingsInProgressUpdated) = thresholdCrossedInboundAndPointInterpolated.map { case (threshold, crossingPointInterpolated2D, percentageFromSegStartToSegEnd) =>
 
         val positionsToConsiderForApproach = positions.slice(earliestIndexToConsiderForAnApproach, currentIndex)
+        // DAN YOU LEFT OFF HERE -- How to introduce/integrate our new Trajectory type with CNT? Should CNT now extend Trajectory?
         val approach = ContinuouslyNearingTrajectory.clip(positionsToConsiderForApproach, threshold.center, threshold.geographicCalculator)
 
         val altitudeMeters = interpolateScalar(positions(currentIndex - 1).altitudeMeters, positions(currentIndex).altitudeMeters, percentageFromSegStartToSegEnd)

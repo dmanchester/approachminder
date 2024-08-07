@@ -36,7 +36,7 @@ class ExtractionAndEstimationSpec extends Specification {
     }
   }
 
-  "approachesAndLandings" should {
+  "approachesAndLandings2" should {
 
     // Points K - L are laid out as follows; the runway at lower-left is SFO's 10L/28R; the one at upper-right is OAK's 12/30:
     //
@@ -62,7 +62,9 @@ class ExtractionAndEstimationSpec extends Specification {
     val pointP = LongLatAlt(-122.2443625, 37.7216562, 50.0)
     val pointQ = LongLatAlt(-122.2303292, 37.7121848, 15.0)
 
-    val thresholds = Thresholds(sfo.thresholds :++ oak.thresholds)
+    val thresholdsAndReferencePoints = (sfo.thresholds :++ oak.thresholds).map { threshold =>
+      ThresholdAndReferencePoint(threshold, threshold.oppositeThreshold.center)
+    }
 
     val stubProfile = AircraftProfile("(icao24)", Some("(callsign)"), None)
 
@@ -70,19 +72,18 @@ class ExtractionAndEstimationSpec extends Specification {
 
       val trajectory = Trajectory.newOption(Seq(pointK, pointL, pointM, pointN, pointO, pointP, pointQ)).get
 
-      val approachesAndLandings = ExtractionAndEstimation.approachesAndLandings(stubProfile, trajectory, thresholds)
+      val approachesAndLandings = ExtractionAndEstimation.approachesAndLandings2(stubProfile, trajectory, thresholdsAndReferencePoints)
 
       approachesAndLandings.length must beEqualTo(2)
 
+      approachesAndLandings(0).aircraftProfile must beEqualTo(stubProfile)
+      approachesAndLandings(0).trajectory.positions must beEqualTo(Seq(pointL, pointM, pointN))
       approachesAndLandings(0).threshold must beEqualTo(sfo.thresholdByName("10L").get)
-      approachesAndLandings(0).approach.length must beEqualTo(1) // point L
       approachesAndLandings(0).crossingPointInterpolated must beCloseInThreeDimensionsTo(LongLatAlt(-122.393345, 37.628809, 23.035889), significantFigures) // confirmed correctness visually
-      approachesAndLandings(0).landing.length must beEqualTo(2) // points M, N
 
+      approachesAndLandings(1).trajectory.positions must beEqualTo(Seq(pointO, pointP, pointQ))
       approachesAndLandings(1).threshold must beEqualTo(oak.thresholdByName("12").get)
-      approachesAndLandings(1).approach.length must beEqualTo(2) // points O, P
       approachesAndLandings(1).crossingPointInterpolated must beCloseInThreeDimensionsTo(LongLatAlt(-122.242067, 37.720108, 44.276624), significantFigures) // confirmed correctness visually
-      approachesAndLandings(1).landing.length must beEqualTo(1) // point Q
     }
   }
 

@@ -53,15 +53,15 @@ object ContinuouslyNearingTrajectory2 {
    * @param calculator
    * @tparam L
    * @throws java.lang.IndexOutOfBoundsException if segmentIndex < 0 or segmentIndex > (positions.length - 2)
-   * @return the ContinuouslyNearingTrajectory2, along with the number of segments included in the trajectory *after*
-   *         the specified one, as a `Some`; or, `None` if the sequence's specified segment doesn't continuously near
-   *         the reference point
+   * @return the ContinuouslyNearingTrajectory2, along with the count of segments after the specified segment included
+   *         within the trajectory, as a `Some`; or, `None` if the sequence's specified segment doesn't continuously
+   *         near the reference point
    */
   @throws(classOf[IndexOutOfBoundsException])
   def newOption[L <: HasLongLat](positions: Seq[L], segmentIndex: Int, referencePoint: HasLongLat, calculator: GeographicCalculator): Option[(ContinuouslyNearingTrajectory2[L], Int)] = {
 
     if (segmentIndex < 0 || segmentIndex > positions.length - 2) {
-      throw new IndexOutOfBoundsException(s"middleSegmentIndex is $segmentIndex; must be between 0 and ${positions.length - 2}, inclusive!")
+      throw new IndexOutOfBoundsException(s"segmentIndex is $segmentIndex; must be between 0 and ${positions.length - 2}, inclusive!")
     }
 
     if (!calculator.continuouslyNears(positions(segmentIndex), positions(segmentIndex + 1), referencePoint)) {
@@ -70,6 +70,7 @@ object ContinuouslyNearingTrajectory2 {
 
       val (sourcePositionsBeforeSegment, sourcePositionsAfterSegment) = positions.splitAt(segmentIndex + 1)
 
+      // Following Seqs are *inclusive* of the segment's endpoints.
       val positionsBeforeSegment = accumulateSegmentsBackward(sourcePositionsBeforeSegment, referencePoint, calculator, Seq(sourcePositionsBeforeSegment.last))
       val positionsAfterSegment = accumulateSegmentsForward(sourcePositionsAfterSegment, referencePoint, calculator, Seq(sourcePositionsAfterSegment.head))
 
