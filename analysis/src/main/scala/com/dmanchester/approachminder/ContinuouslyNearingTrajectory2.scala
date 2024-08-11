@@ -1,5 +1,7 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.MathUtils.interpolateScalar
+
 import scala.annotation.tailrec
 
 /**
@@ -11,7 +13,7 @@ import scala.annotation.tailrec
  * @param calculator
  * @tparam L
  */
-case class ContinuouslyNearingTrajectory2[+L <: HasLongLat](positions: Seq[L], referencePoint: HasLongLat)
+case class ContinuouslyNearingTrajectory2[+L <: HasLongLat](positions: Seq[L], referencePoint: HasLongLat, calculator: GeographicCalculator)
 
 object ContinuouslyNearingTrajectory2 {
 
@@ -74,7 +76,7 @@ object ContinuouslyNearingTrajectory2 {
       val positionsBeforeSegment = accumulateSegmentsBackward(sourcePositionsBeforeSegment, referencePoint, calculator, Seq(sourcePositionsBeforeSegment.last))
       val positionsAfterSegment = accumulateSegmentsForward(sourcePositionsAfterSegment, referencePoint, calculator, Seq(sourcePositionsAfterSegment.head))
 
-      val continuouslyNearingTrajectory = new ContinuouslyNearingTrajectory2(positionsBeforeSegment :++ positionsAfterSegment, referencePoint)
+      val continuouslyNearingTrajectory = new ContinuouslyNearingTrajectory2(positionsBeforeSegment :++ positionsAfterSegment, referencePoint, calculator)
       Some(continuouslyNearingTrajectory, positionsAfterSegment.length - 1)
     }
   }

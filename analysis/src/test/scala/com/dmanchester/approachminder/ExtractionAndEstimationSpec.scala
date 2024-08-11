@@ -8,34 +8,6 @@ import com.dmanchester.approachminder.Airports.sfo
 
 class ExtractionAndEstimationSpec extends Specification {
 
-  "subtrajectoryWithinPolygon" should {
-
-    "get the points before the first one outside the polygon" in {
-      val trajectory = Seq(sfoPointB, sfoPointE, sfoPointD)
-      ExtractionAndEstimation.subtrajectoryWithinPolygon(trajectory, sfoRunwaySurface28L10R, sfoCalculator) must beEqualTo(Seq(sfoPointB, sfoPointE))
-    }
-
-    "get all points when all are within the polygon" in {
-      val trajectory = Seq(sfoPointB, sfoPointE)
-      ExtractionAndEstimation.subtrajectoryWithinPolygon(trajectory, sfoRunwaySurface28L10R, sfoCalculator) must beEqualTo(Seq(sfoPointB, sfoPointE))
-    }
-
-    "handle no initial points being within the polygon, even if subsequent ones are within it" in {
-      val trajectory = Seq(sfoPointD, sfoPointB)
-      ExtractionAndEstimation.subtrajectoryWithinPolygon(trajectory, sfoRunwaySurface28L10R, sfoCalculator) must beEqualTo(Seq.empty[TimeBasedPosition])
-    }
-
-    "handle a single point within the polygon" in {
-      val trajectory = Seq(sfoPointB)
-      ExtractionAndEstimation.subtrajectoryWithinPolygon(trajectory, sfoRunwaySurface28L10R, sfoCalculator) must beEqualTo(Seq(sfoPointB))
-    }
-
-    "handle no-point input" in {
-      val trajectory = Seq.empty[TimeBasedPosition]
-      ExtractionAndEstimation.subtrajectoryWithinPolygon(trajectory, sfoRunwaySurface28L10R, sfoCalculator) must beEqualTo(Seq.empty[TimeBasedPosition])
-    }
-  }
-
   "approachesAndLandings2" should {
 
     // Points K - L are laid out as follows; the runway at lower-left is SFO's 10L/28R; the one at upper-right is OAK's 12/30:
@@ -87,36 +59,36 @@ class ExtractionAndEstimationSpec extends Specification {
     }
   }
 
-  "interpolate" should {
-
-    val referencePoint = LongLat(-122, 38)
-    val pointR = LongLatAlt(-122, 40.7, 500) // 299.7 km; between 280 and 350 km
-    val pointS = LongLatAlt(-121.9, 40.3, 400) // 255.4 km; between 210 and 280 km
-    val pointT = LongLatAlt(-121.9, 40.1, 300) // 233.2 km; also between 210 and 280 km
-    val pointU = LongLatAlt(-122.1, 39.2, 200) // 133.5 km; between 70 and 140 km (no points between 140 and 210 km)
-    val pointV = LongLatAlt(-122.1, 38.5, 100) // 56.2 km; less than 70 km
-
-    val trajectoryFourPoints = Seq(pointR, pointS, pointT, pointU)
-    val trajectoryFivePoints = trajectoryFourPoints :+ pointV
+  "interpolateAtIntervals" should {
 
     "interpolate points on a trajectory whose segments cross differing numbers of rings: 0 rings (second segment), 1 ring (first and fourth segments), and more than 1 (third segment)" in {
-      val trajectory = ContinuouslyNearingTrajectory.clip(trajectoryFivePoints, referencePoint, sfoCalculator)
-      val interpolatedPoints = ExtractionAndEstimation.interpolate(trajectory, 70000)
 
-      interpolatedPoints.size mustEqual 4
+      val referencePoint = LongLat(-122, 38)
+      val pointR = LongLatAlt(-122, 40.7, 500) // 299.7 km; between 280 and 350 km
+      val pointS = LongLatAlt(-121.9, 40.3, 400) // 255.4 km; between 210 and 280 km
+      val pointT = LongLatAlt(-121.9, 40.1, 300) // 233.2 km; also between 210 and 280 km
+      val pointU = LongLatAlt(-122.1, 39.2, 200) // 133.5 km; between 70 and 140 km (no points between 140 and 210 km)
+      val pointV = LongLatAlt(-122.1, 38.5, 100) // 56.2 km; less than 70 km
+      val sourcePositions = Seq(pointR, pointS, pointT, pointU, pointV)
 
-      interpolatedPoints(70000).angle.toCompassDegrees must beCloseTo(352.235400 within significantFigures) // ~(-122.100010, 38.625875)
-      interpolatedPoints(70000).altitudeMeters must beCloseTo(117.981271 within significantFigures)
+      val (sourceTrajectory, _) = ContinuouslyNearingTrajectory2.newOption(sourcePositions, 0, referencePoint, sfoCalculator).get  // TODO, Sigh, passing 0 is kind of ugly, as is receiving second param; have a friendlier variant of newOption, too?
 
-      interpolatedPoints(140000).angle.toCompassDegrees must beCloseTo(356.305703 within significantFigures) // ~(-122.086899, 39.259719)
-      interpolatedPoints(140000).altitudeMeters must beCloseTo(206.633631 within significantFigures)
+      val targetTrajectory = ExtractionAndEstimation.interpolateAtIntervals(sourceTrajectory, 70000).get
+      val targetPositions = targetTrajectory.positions
 
-      interpolatedPoints(210000).angle.toCompassDegrees must beCloseTo(0.613227 within significantFigures) // ~(-121.946771, 39.891761)
-      interpolatedPoints(210000).altitudeMeters must beCloseTo(276.85694 within significantFigures)
+      targetPositions.size mustEqual 4
 
-      interpolatedPoints(280000).angle.toCompassDegrees must beCloseTo(0.138516 within significantFigures) // ~(-121.955503, 40.522587)
-      interpolatedPoints(280000).altitudeMeters must beCloseTo(455.643761 within significantFigures)
+      targetPositions(70000).angle.toCompassDegrees must beCloseTo(352.235400 within significantFigures) // ~(-122.100010, 38.625875)
+      targetPositions(70000).altitudeMeters must beCloseTo(117.981271 within significantFigures)
 
+      targetPositions(140000).angle.toCompassDegrees must beCloseTo(356.305703 within significantFigures) // ~(-122.086899, 39.259719)
+      targetPositions(140000).altitudeMeters must beCloseTo(206.633631 within significantFigures)
+
+      targetPositions(210000).angle.toCompassDegrees must beCloseTo(0.613227 within significantFigures) // ~(-121.946771, 39.891761)
+      targetPositions(210000).altitudeMeters must beCloseTo(276.85694 within significantFigures)
+
+      targetPositions(280000).angle.toCompassDegrees must beCloseTo(0.138516 within significantFigures) // ~(-121.955503, 40.522587)
+      targetPositions(280000).altitudeMeters must beCloseTo(455.643761 within significantFigures)
     }
   }
 

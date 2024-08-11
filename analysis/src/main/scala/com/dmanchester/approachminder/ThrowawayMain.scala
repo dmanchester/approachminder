@@ -37,85 +37,87 @@ object ThrowawayMain {
 
     val thresholds = Thresholds(Airports.sfo.thresholds ++: Airports.oak.thresholds)
 
-    val approachesAndLandings = trajectories.flatMap { case (aircraftProfile, trajectory) =>
-      ExtractionAndEstimation.approachesAndLandings(aircraftProfile, trajectory, thresholds)
-    }
+    // DAN YOU LEFT OFF HERE 8/9/2024; TO GET STUFF TO COMPILE, COMMENTED OUT THROUGH: "Files.write(Paths.get..."
 
-    println(s"${approachesAndLandings.length} approaches and landings")
-
-
-    val approachesByThreshold = approachesAndLandings.groupBy(_.threshold)
-
-//    approachesByThreshold.foreach { case (threshold, approaches) =>
-//      val crossingPoints = approaches.map(_.crossingPointInterpolated.altitudeMeters).sorted
-//      println(s"val ${threshold.airport.icaoID}${threshold.name} = Array(${crossingPoints.mkString(", ")})")
+//    val approachesAndLandings = trajectories.flatMap { case (aircraftProfile, trajectory) =>
+//      ExtractionAndEstimation.approachesAndLandings2(aircraftProfile, trajectory, thresholds)
 //    }
-
-    val intervalLengthInMeters = 100
-
-    val interpolatedApproachesByThreshold = approachesByThreshold.map { case (threshold, approachesAndLandingsOneThreshold) =>
-
-      val interpolatedApproachesOneThreshold = approachesAndLandingsOneThreshold.map { approachAndLanding =>
-        ExtractionAndEstimation.interpolate(approachAndLanding.approach, intervalLengthInMeters)
-      }
-
-      (threshold, interpolatedApproachesOneThreshold)
-    }
-
-    // DAN YOU LEFT OFF HERE... "single-threaded" ApproachModel to be supplanted by "multi-threaded" TrajectoryTree.
-    // Will likely end up splitting ExtractionAndEstimation.meanTrajectory. Where it gets positionsAtThisDistance and
-    // then calculates a single AngleAndAltitudeWithStats, we'll send the data for clustering and then calculate multiple
-    // AngleAndAltitudeWithStats. Those will be the "trajectory segments" of our tree.
-
-    val approachModelsByThreshold = interpolatedApproachesByThreshold.map { case (threshold, interpolatedApproach) =>
-      val meanApproach = ExtractionAndEstimation.meanTrajectory(interpolatedApproach)
-      val approachModel = ApproachModel.newOption(threshold.center, meanApproach, threshold.geographicCalculator).get  // TODO It seems a little clunky how we're reaching into the threshold object here
-      (threshold, approachModel)
-    }
-
-    val thresholdsByApproachModel = approachModelsByThreshold.toSeq.map { x => (x._2, x._1)}.toMap
-
-    val approachModels = ApproachModels(approachModelsByThreshold.values)
-
-    // TEST SOME DATA AGAINST THE MODELS
-
-    println("ABOUT TO TEST SOME DATA")
-
-    val testDataGlob = "all--2022-12-0*.json"
-
-    val testDataFiles = IO.resolveGlob(dirPath, testDataGlob)
-    val testDataTrajectories = filesToTrajectories(testDataFiles)
-
-    val trajectoriesWithApproaches = testDataTrajectories.map { case (aircraftProfile, trajectory) =>
-
-      val positions = trajectory.positions
-
-      val trajectoryWithApproachSegments = TimeBasedPositionWithApproachSegment(positions.head, None) +: positions.sliding(2).toSeq.map { positionPair =>
-
-        val firstPosition = positionPair(0)
-        val secondPosition = positionPair(1)
-
-        val bestFitOption = approachModels.bestFit(firstPosition, secondPosition)
-
-        val approachSegmentWithDeviationOption = bestFitOption.filter(_.deviation.normalizedEuclideanDistance < 5.0).map { bestFit =>
-
-          val threshold = thresholdsByApproachModel(bestFit.model)
-          val thresholdDistanceMeters = threshold.distanceInMeters(secondPosition)
-          val verticalDevMeters = bestFit.deviation.altitudeDevMeters
-          val horizontalDevMeters = MathUtils.isoscelesBaseLength(bestFit.deviation.angleDevDegrees, bestFit.appliedDistributionInMeters.toDouble)
-          val normalizedEuclideanDistance = bestFit.deviation.normalizedEuclideanDistance
-
-          ApproachSegmentWithDeviation(threshold, thresholdDistanceMeters, verticalDevMeters, horizontalDevMeters, normalizedEuclideanDistance)
-        }
-
-        TimeBasedPositionWithApproachSegment(secondPosition, approachSegmentWithDeviationOption)
-      }
-
-      (aircraftProfile, trajectoryWithApproachSegments)
-    }
-
-    val json = Json.toJson(trajectoriesWithApproaches)(IO.trajectoriesWithApproachesWrites)
-    Files.write(Paths.get("/tmp/trajectoriesWithApproaches.json"), json.toString().getBytes())  // TODO Should specify encoding
+//
+//    println(s"${approachesAndLandings.length} approaches and landings")
+//
+//
+//    val approachesByThreshold = approachesAndLandings.groupBy(_.threshold)
+//
+////    approachesByThreshold.foreach { case (threshold, approaches) =>
+////      val crossingPoints = approaches.map(_.crossingPointInterpolated.altitudeMeters).sorted
+////      println(s"val ${threshold.airport.icaoID}${threshold.name} = Array(${crossingPoints.mkString(", ")})")
+////    }
+//
+//    val intervalLengthInMeters = 100
+//
+//    val interpolatedApproachesByThreshold = approachesByThreshold.map { case (threshold, approachesAndLandingsOneThreshold) =>
+//
+//      val interpolatedApproachesOneThreshold = approachesAndLandingsOneThreshold.map { approachAndLanding =>
+//        ExtractionAndEstimation.interpolate(approachAndLanding.approach, intervalLengthInMeters)
+//      }
+//
+//      (threshold, interpolatedApproachesOneThreshold)
+//    }
+//
+//    // DAN YOU LEFT OFF HERE... "single-threaded" ApproachModel to be supplanted by "multi-threaded" TrajectoryTree.
+//    // Will likely end up splitting ExtractionAndEstimation.meanTrajectory. Where it gets positionsAtThisDistance and
+//    // then calculates a single AngleAndAltitudeWithStats, we'll send the data for clustering and then calculate multiple
+//    // AngleAndAltitudeWithStats. Those will be the "trajectory segments" of our tree.
+//
+//    val approachModelsByThreshold = interpolatedApproachesByThreshold.map { case (threshold, interpolatedApproach) =>
+//      val meanApproach = ExtractionAndEstimation.meanTrajectory(interpolatedApproach)
+//      val approachModel = ApproachModel.newOption(threshold.center, meanApproach, threshold.geographicCalculator).get  // TODO It seems a little clunky how we're reaching into the threshold object here
+//      (threshold, approachModel)
+//    }
+//
+//    val thresholdsByApproachModel = approachModelsByThreshold.toSeq.map { x => (x._2, x._1)}.toMap
+//
+//    val approachModels = ApproachModels(approachModelsByThreshold.values)
+//
+//    // TEST SOME DATA AGAINST THE MODELS
+//
+//    println("ABOUT TO TEST SOME DATA")
+//
+//    val testDataGlob = "all--2022-12-0*.json"
+//
+//    val testDataFiles = IO.resolveGlob(dirPath, testDataGlob)
+//    val testDataTrajectories = filesToTrajectories(testDataFiles)
+//
+//    val trajectoriesWithApproaches = testDataTrajectories.map { case (aircraftProfile, trajectory) =>
+//
+//      val positions = trajectory.positions
+//
+//      val trajectoryWithApproachSegments = TimeBasedPositionWithApproachSegment(positions.head, None) +: positions.sliding(2).toSeq.map { positionPair =>
+//
+//        val firstPosition = positionPair(0)
+//        val secondPosition = positionPair(1)
+//
+//        val bestFitOption = approachModels.bestFit(firstPosition, secondPosition)
+//
+//        val approachSegmentWithDeviationOption = bestFitOption.filter(_.deviation.normalizedEuclideanDistance < 5.0).map { bestFit =>
+//
+//          val threshold = thresholdsByApproachModel(bestFit.model)
+//          val thresholdDistanceMeters = threshold.distanceInMeters(secondPosition)
+//          val verticalDevMeters = bestFit.deviation.altitudeDevMeters
+//          val horizontalDevMeters = MathUtils.isoscelesBaseLength(bestFit.deviation.angleDevDegrees, bestFit.appliedDistributionInMeters.toDouble)
+//          val normalizedEuclideanDistance = bestFit.deviation.normalizedEuclideanDistance
+//
+//          ApproachSegmentWithDeviation(threshold, thresholdDistanceMeters, verticalDevMeters, horizontalDevMeters, normalizedEuclideanDistance)
+//        }
+//
+//        TimeBasedPositionWithApproachSegment(secondPosition, approachSegmentWithDeviationOption)
+//      }
+//
+//      (aircraftProfile, trajectoryWithApproachSegments)
+//    }
+//
+//    val json = Json.toJson(trajectoriesWithApproaches)(IO.trajectoriesWithApproachesWrites)
+//    Files.write(Paths.get("/tmp/trajectoriesWithApproaches.json"), json.toString().getBytes())  // TODO Should specify encoding
 
 
 
