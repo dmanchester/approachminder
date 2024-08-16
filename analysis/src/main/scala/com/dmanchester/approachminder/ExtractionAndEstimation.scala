@@ -29,36 +29,46 @@ object ExtractionAndEstimation {
    * @return
    */
   def approachesAndLandings2[A <: HasLongLatAlt](aircraftProfile: AircraftProfile, trajectory: Trajectory[A], thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint]): Seq[ApproachAndLanding2[A]] = {
-    doApproachesAndLandings2(aircraftProfile, trajectory.positions, 0, thresholdsAndReferencePoints, Seq.empty)
+    doApproachesAndLandings2(aircraftProfile, trajectory, 0, thresholdsAndReferencePoints, Seq.empty)
   }
 
   @tailrec
-  private def doApproachesAndLandings2[A <: HasLongLatAlt](aircraftProfile: AircraftProfile, trajectoryAsPositions: Seq[A], segmentIndex: Int, thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint], accumulator: Seq[ApproachAndLanding2[A]]): Seq[ApproachAndLanding2[A]] = {
+  private def doApproachesAndLandings2[A <: HasLongLatAlt](aircraftProfile: AircraftProfile, remainingTrajectory: Trajectory[A], segmentIndex: Int, thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint], accumulator: Seq[ApproachAndLanding2[A]]): Seq[ApproachAndLanding2[A]] = {
 
-    if (segmentIndex >= (trajectoryAsPositions.length - 1)) {  // TODO Document why I had to switch from "==" to ">="; what's the case where we blow past "=="?
+    // TODO What additional test coverage?
 
-      accumulator
+    val approachAndLandingOption = approachAndLanding(aircraftProfile, remainingTrajectory, segmentIndex, thresholdsAndReferencePoints)
 
+    val updatedAccumulator = accumulator :++ approachAndLandingOption.map(_._1)
+
+    val updatedRemainingTrajectoryAndSegmentIndexOption = approachAndLandingOption.flatMap { case (_, addlSegmentsIncluded) =>
+      remainingTrajectory.drop(segmentIndex + 2 + addlSegmentsIncluded).map { updatedRemainingTrajectory => (updatedRemainingTrajectory, 0) }
+    }.orElse {
+      Option.when(remainingTrajectory.isSegmentIndexValid(segmentIndex + 1)) {
+        (remainingTrajectory, segmentIndex + 1)
+      }
+    }
+
+    if (updatedRemainingTrajectoryAndSegmentIndexOption.isEmpty) {
+      updatedAccumulator
     } else {
+      val updatedRemainingTrajectory = updatedRemainingTrajectoryAndSegmentIndexOption.get._1
+      val updatedSegmentIndex = updatedRemainingTrajectoryAndSegmentIndexOption.get._2
+      doApproachesAndLandings2(aircraftProfile, updatedRemainingTrajectory, updatedSegmentIndex, thresholdsAndReferencePoints, updatedAccumulator)
+    }
+  }
 
-      val checkSegment = (thresholdAndReferencePoint: ThresholdAndReferencePoint) => {
-        ApproachAndLanding2.newOption(aircraftProfile, trajectoryAsPositions, segmentIndex, thresholdAndReferencePoint)
+  private def approachAndLanding[A <: HasLongLatAlt](aircraftProfile: AircraftProfile, remainingTrajectory: Trajectory[A], segmentIndex: Int, thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint]) = {
+
+    val checkSegment = (thresholdAndReferencePoint: ThresholdAndReferencePoint) => {
+      ApproachAndLanding2.newOption(aircraftProfile, remainingTrajectory, segmentIndex, thresholdAndReferencePoint)
+    }
+
+    thresholdsAndReferencePoints.collectFirst { thresholdAndReferencePoint =>
+
+      checkSegment(thresholdAndReferencePoint) match {
+        case Some(approachAndLanding) => approachAndLanding
       }
-
-      val approachAndLandingOption = thresholdsAndReferencePoints.collectFirst { thresholdAndReferencePoint =>
-
-        checkSegment(thresholdAndReferencePoint) match {
-          case Some(approachAndLanding) => approachAndLanding
-        }
-      }
-
-      val (updatedTrajectoryAsPositions, updatedSegmentIndex, updatedAccumulator) = approachAndLandingOption.map { case (approachAndLanding, addlSegmentsIncluded) =>
-        (trajectoryAsPositions.drop(segmentIndex + 2 + addlSegmentsIncluded), 0, accumulator :+ approachAndLanding)
-      } getOrElse {
-        (trajectoryAsPositions, segmentIndex + 1, accumulator)
-      }
-
-      doApproachesAndLandings2(aircraftProfile, updatedTrajectoryAsPositions, updatedSegmentIndex, thresholdsAndReferencePoints, updatedAccumulator)
     }
   }
 

@@ -27,7 +27,7 @@ object ApproachAndLanding2 {
    *
    * It would similarly consider a high-altitude crossing of a threshold to be an approach and landing.
    *
-   * @param fullTrajectory
+   * @param sourceTrajectory
    * @param segmentIndex
    * @param thresholdAndReferencePoint
    * @tparam A
@@ -35,25 +35,24 @@ object ApproachAndLanding2 {
    *         subtrajectory, wrapped in a `Some`. Or, `None` if at least one of the above criteria wasn't fulfilled, or
    *         if a trajectory that continuously nears the reference point couldn't be constructed.
    */
-  def newOption[A <: HasLongLatAlt](aircraftProfile: AircraftProfile, fullTrajectory: Seq[A], segmentIndex: Int, thresholdAndReferencePoint: ThresholdAndReferencePoint): Option[(ApproachAndLanding2[A], Int)] = {
+  def newOption[A <: HasLongLatAlt](aircraftProfile: AircraftProfile, sourceTrajectory: Trajectory[A], segmentIndex: Int, thresholdAndReferencePoint: ThresholdAndReferencePoint): Option[(ApproachAndLanding2[A], Int)] = {
 
-    Option.when(fullTrajectory.length >= 2) {  // TODO Add a test for length < 2
+    val sourcePositions = sourceTrajectory.positions
+    val positionA = sourcePositions(segmentIndex)
+    val positionB = sourcePositions(segmentIndex + 1)
+    val threshold = thresholdAndReferencePoint.threshold
 
-      val threshold = thresholdAndReferencePoint.threshold
-      val positionA = fullTrajectory(segmentIndex)
-      val positionB = fullTrajectory(segmentIndex + 1)
-      val inboundCrossingPoint = threshold.interpolateInboundCrossingPoint(positionA, positionB)
+    val inboundCrossingPoint = threshold.interpolateInboundCrossingPoint(positionA, positionB)
 
-      for {
-        (crossingPoint2D, percentageFromSegStartToSegEnd) <- inboundCrossingPoint
-        (positionsBeforeSegment, positionsAfterSegment) = fullTrajectory.splitAt(segmentIndex + 1)
-        truncatedTrajectory = positionsBeforeSegment :++ positionsAfterSegment.takeWhile(threshold.runwaySurface.contains) // truncated after the specified segment to include only positions on the runway surface
-        (continuouslyNearingSegment, addlSegmentsIncluded) <- ContinuouslyNearingTrajectory2.newOption(truncatedTrajectory, segmentIndex, thresholdAndReferencePoint.referencePoint, threshold.geographicCalculator)
-      } yield {
-        val altitudeMeters = interpolateScalar(positionA.altitudeMeters, positionB.altitudeMeters, percentageFromSegStartToSegEnd)
-        val crossingPoint3D = LongLatAlt(crossingPoint2D.longitude, crossingPoint2D.latitude, altitudeMeters)
-        (new ApproachAndLanding2(aircraftProfile, continuouslyNearingSegment, threshold, crossingPoint3D), addlSegmentsIncluded)
-      }
-    }.flatten
+    for {
+      (crossingPoint2D, percentageFromSegStartToSegEnd) <- inboundCrossingPoint
+      (positionsBeforeSegment, positionsAfterSegment) = sourcePositions.splitAt(segmentIndex + 1)
+      truncatedTrajectory = positionsBeforeSegment :++ positionsAfterSegment.takeWhile(threshold.runwaySurface.contains) // truncated after the specified segment to include only positions on the runway surface
+      (continuouslyNearingSegment, addlSegmentsIncluded) <- ContinuouslyNearingTrajectory2.newOption(truncatedTrajectory, segmentIndex, thresholdAndReferencePoint.referencePoint, threshold.geographicCalculator)
+      altitudeMeters = interpolateScalar(positionA.altitudeMeters, positionB.altitudeMeters, percentageFromSegStartToSegEnd)
+      crossingPoint3D = LongLatAlt(crossingPoint2D.longitude, crossingPoint2D.latitude, altitudeMeters)
+    } yield {
+      (new ApproachAndLanding2(aircraftProfile, continuouslyNearingSegment, threshold, crossingPoint3D), addlSegmentsIncluded)
+    }
   }
 }
