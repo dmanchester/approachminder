@@ -116,7 +116,7 @@ object IO {
 
   def resolveGlob(dir: Path, glob: String): Seq[Path] = {
 
-    Using.resource(Files.newDirectoryStream(dir, glob)) { dirStreamAsJavaIterable: java.lang.Iterable[Path] =>
+    Using.resource(Files.newDirectoryStream(dir, glob)) { (dirStreamAsJavaIterable: java.lang.Iterable[Path]) =>
       dirStreamAsJavaIterable.asScala.toSeq
     }
   }

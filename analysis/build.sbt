@@ -1,12 +1,14 @@
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
-ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / scalaVersion := "2.13.14"
 
 lazy val root = (project in file("."))
   .settings(
     name := "analysis",
     scalacOptions ++= Seq(
-      "-deprecation"
+      "-deprecation",
+      "-Xsource:3",
+      "-Xsource-features:case-apply-copy-access"
     ),
     libraryDependencies ++= Seq(
       // TODO Clean up versions etc.

@@ -3,6 +3,10 @@
   <component name="ScalaCompilerConfiguration">
     <profile name="sbt 1" modules="analysis">
       <option name="deprecationWarnings" value="true" />
+      <parameters>
+        <parameter value="-Xsource:3" />
+        <parameter value="-Xsource-features:case-apply-copy-access" />
+      </parameters>
     </profile>
   </component>
 </project>
