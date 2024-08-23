@@ -14,14 +14,12 @@ object TimeOrderedData {
    * element furthest down in `sortedSeq` as the winner and discards the other elements with that time.
    *
    * @param sortedSeq Must be sorted (ascending).
-   * @param bf
    * @tparam T
-   * @tparam S
    * @return
    */
-  private def resolveTimeConflicts[T <: HasTime, S[X] <: Seq[X]](sortedSeq: S[T])(implicit bf: BuildFrom[S[T], T, S[T]]): S[T] = {
+  private def resolveTimeConflicts[T <: HasTime](sortedSeq: Seq[T]): Seq[T] = {
 
-    val cleanedSeq = if (sortedSeq.isEmpty) {
+    if (sortedSeq.isEmpty) {
       Seq.empty[T]
     } else {
 
@@ -39,14 +37,12 @@ object TimeOrderedData {
         }
       }
     }
-
-    cleanedSeq.to(bf.toFactory(sortedSeq)) // FIXME Needed?
   }
 
   def create[T <: HasTime, S[X] <: Seq[X]](sourceSeq: S[T])(implicit bf: BuildFrom[S[T], T, S[T]]): TimeOrderedData[T, S[T]] = {
-    val sortedSeq = sourceSeq.sortBy(_.timePosition).to(bf.toFactory(sourceSeq))  // FIXME Try to ditch this!
+    val sortedSeq = sourceSeq.sortBy(_.timePosition)
     val cleanedSeq = resolveTimeConflicts(sortedSeq)
-    val cleanedSeqAsS = cleanedSeq.to(bf.toFactory(sourceSeq))
-    new TimeOrderedData(cleanedSeqAsS)
+    val cleanedSeqAsTypeS = cleanedSeq.to(bf.toFactory(sourceSeq))
+    new TimeOrderedData(cleanedSeqAsTypeS)
   }
 }
