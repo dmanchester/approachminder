@@ -1,49 +1,52 @@
 package com.dmanchester.approachminder
 
+import scala.collection.BuildFrom
+
 /**
- * Contains an `IndexedSeq` of `HasTime` elements. The sequence is guaranteed to be time-ordered (ascending). The
- * sequence is additionally guaranteed to contain at most one element with a given time value.
+ * Contains a `Seq` of `HasTime` elements. The sequence is guaranteed to be time-ordered (ascending).
  */
-case class TimeOrderedData[T <: HasTime, S] private (val seq: S)(implicit evidence: S <:< IndexedSeq[T])
+case class TimeOrderedData[T <: HasTime, S <: Seq[T]] private (seq: S)(implicit bf: BuildFrom[S, T, S]) // FIXME BuildFrom here?
 
 object TimeOrderedData {
 
   /**
-   * DAN YOU LEFT OFF HERE. CLEAN UP SCALADOC AND VARILABLE NAMES.
+   * Resolves time conflicts among elements. More specifically, given multiple elements having the same time, picks the
+   * element furthest down in `sortedSeq` as the winner and discards the other elements with that time.
    *
-   * EVENTUALLY, SEE WHERE WE CAN SIMPLIFY SIGNATURES IF WE DON'T NEED EXPILICIT "S" TYPE.
-   *
-   * Clean positions with the same time, picking the position furthest down in `positions` as the
-   * winner and discarding the others of that time.
-   *
-   * @param positions The positions. Must be in ascending time order!
+   * @param sortedSeq Must be sorted (ascending).
+   * @param bf
+   * @tparam T
+   * @tparam S
    * @return
    */
-  private def removeTimeConflictingElements[T <: HasTime, S](seq: S)(implicit evidence: S <:< IndexedSeq[T]): IndexedSeq[T] = {
+  private def resolveTimeConflicts[T <: HasTime, S[X] <: Seq[X]](sortedSeq: S[T])(implicit bf: BuildFrom[S[T], T, S[T]]): S[T] = {
 
-    if (seq.isEmpty) {
-      IndexedSeq.empty[T]
+    val cleanedSeq = if (sortedSeq.isEmpty) {
+      Seq.empty[T]
     } else {
 
-      // Given a sequence of positions from 0 to n, start with n as the first cleaned position. Step
-      // in reverse from n-1 to 0, adding a position to the cleaned positions unless its time
-      // matches that of the previously added position.
+      // Given a sequence of elements from 0 to n, start with n as the first cleaned position. Step in reverse from n-1
+      // to 0, adding an element to the cleaned elements unless its time matches that of the previously added element.
 
-      val cleanedPositionsInitial = IndexedSeq(seq.last)
+      val cleanedSeqInitial = Seq(sortedSeq.last)
 
-      seq.init.foldRight(cleanedPositionsInitial) { case (position, cleanedPositions) =>
-        if (position.timePosition == cleanedPositions.head.timePosition) {
-          cleanedPositions // don't add position
+      sortedSeq.init.foldRight(cleanedSeqInitial) { case (element, cleanedSeqInProgress) =>
+        val lastAddedTimePosition = cleanedSeqInProgress.head.timePosition
+        if (element.timePosition == lastAddedTimePosition) {
+          cleanedSeqInProgress // don't add element
         } else {
-          position +: cleanedPositions
+          element +: cleanedSeqInProgress
         }
       }
     }
+
+    cleanedSeq.to(bf.toFactory(sortedSeq)) // FIXME Needed?
   }
 
-  def create[T <: HasTime, S](sourceSeq: S)(implicit evidence: S <:< IndexedSeq[T]): TimeOrderedData[T, IndexedSeq[T]] = {
-    val sortedSeq = sourceSeq.sortBy(_.timePosition)
-    val cleanedSeq = removeTimeConflictingElements(sortedSeq)
-    new TimeOrderedData(cleanedSeq)
+  def create[T <: HasTime, S[X] <: Seq[X]](sourceSeq: S[T])(implicit bf: BuildFrom[S[T], T, S[T]]): TimeOrderedData[T, S[T]] = {
+    val sortedSeq = sourceSeq.sortBy(_.timePosition).to(bf.toFactory(sourceSeq))  // FIXME Try to ditch this!
+    val cleanedSeq = resolveTimeConflicts(sortedSeq)
+    val cleanedSeqAsS = cleanedSeq.to(bf.toFactory(sourceSeq))
+    new TimeOrderedData(cleanedSeqAsS)
   }
 }
