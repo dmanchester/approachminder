@@ -3,9 +3,10 @@ package com.dmanchester.approachminder
 import scala.collection.BuildFrom
 
 /**
- * Contains a `Seq` of `HasTime` elements. The sequence is guaranteed to be time-ordered (ascending).
+ * Contains a `Seq` of `HasTime` elements. The sequence is guaranteed to be time-ordered (ascending). The sequence is
+ * additionally guaranteed to contain at most one element with a given time value.
  */
-case class TimeOrderedData[T <: HasTime, S <: Seq[T]] private (seq: S)(implicit bf: BuildFrom[S, T, S]) // FIXME BuildFrom here?
+case class TimeOrderedData[S <: Seq[_ <: HasTime]] private (seq: S)
 
 object TimeOrderedData {
 
@@ -39,7 +40,7 @@ object TimeOrderedData {
     }
   }
 
-  def create[T <: HasTime, S[X] <: Seq[X]](sourceSeq: S[T])(implicit bf: BuildFrom[S[T], T, S[T]]): TimeOrderedData[T, S[T]] = {
+  def create[T <: HasTime, S[X] <: Seq[X]](sourceSeq: S[T])(implicit bf: BuildFrom[S[T], T, S[T]]): TimeOrderedData[S[T]] = {
     val sortedSeq = sourceSeq.sortBy(_.timePosition)
     val cleanedSeq = resolveTimeConflicts(sortedSeq)
     val cleanedSeqAsTypeS = cleanedSeq.to(bf.toFactory(sourceSeq))

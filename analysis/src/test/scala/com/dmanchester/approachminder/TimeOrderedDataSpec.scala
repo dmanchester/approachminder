@@ -15,7 +15,7 @@ class TimeOrderedDataSpec extends Specification {
 
     "demonstrate at compile time it's retaining the subtypes of Seq and HasTime it receives" in {
       val times: IndexedSeq[TimeWithSomeText] = IndexedSeq(time10, time21)
-      val timeOrderedData: TimeOrderedData[TimeWithSomeText, IndexedSeq[TimeWithSomeText]] = TimeOrderedData.create(times)
+      val timeOrderedData: TimeOrderedData[IndexedSeq[TimeWithSomeText]] = TimeOrderedData.create(times)
       true must beTrue  // nothing to do at runtime
     }
 
