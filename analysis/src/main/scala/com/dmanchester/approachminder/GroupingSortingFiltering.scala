@@ -108,6 +108,7 @@ object GroupingSortingFiltering {
     }
   }
 
+  // CAN DELETE THE FOLLOWING METHOD
   /**
    * Clean positions with the same time, picking the position furthest down in `positions` as the
    * winner and discarding the others of that time.
@@ -137,6 +138,7 @@ object GroupingSortingFiltering {
     }
   }
 
+  // CAN DELETE THE FOLLOWING METHOD
   /**
    * Segment an aircraft's historical positions into a series of trajectories, ending one trajectory
    * and beginning the next if adjoining positions are separated by at least a specified amount of
@@ -163,6 +165,7 @@ object GroupingSortingFiltering {
     }
   }
 
+  // CAN DELETE THE FOLLOWING METHOD
   @tailrec private def doSegmentIntoTrajectoriesByTime[T <: HasTime](historicalPositionsIterator: Iterator[T], minTimeInSeconds: Int, trajectoryInProgress: Seq[T], completedTrajectories: Seq[Trajectory[T]]): Seq[Trajectory[T]] = {
 
     if (!historicalPositionsIterator.hasNext) {

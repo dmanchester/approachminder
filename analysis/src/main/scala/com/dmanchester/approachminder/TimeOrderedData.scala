@@ -6,7 +6,42 @@ import scala.collection.BuildFrom
  * Contains a `Seq` of `HasTime` elements. The sequence is guaranteed to be time-ordered (ascending). The sequence is
  * additionally guaranteed to contain at most one element with a given time value.
  */
-case class TimeOrderedData[S <: Seq[_ <: HasTime]] private (seq: S)
+case class TimeOrderedData[T <: HasTime, S[X] <: Seq[X]] private (seq: S[T])(implicit bf: BuildFrom[S[T], T, S[T]]) {
+  // Before needing to add BuildFrom, definition was simply:
+  //
+  // case class TimeOrderedData[S <: Seq[_ <: HasTime]] private (seq: S) { ... }
+
+  def splitOnGaps(gapTime: BigInt): Seq[TimeOrderedData[T, S]] = {
+
+    if (seq.isEmpty) {
+      Seq(this)
+    } else {
+
+      val subseqInProgressInitial = Seq(seq.head)
+      val completedSubseqsInitial = Seq.empty[Seq[T]]
+      val initialVals = (subseqInProgressInitial, completedSubseqsInitial)
+
+      val (subseqInProgressMedial, completedSubseqsMedial) = seq.tail.foldLeft(initialVals) { case ((subseqInProgress, completedSubseqs), currentElement) =>
+        val previousElement = subseqInProgress.last
+
+        if (currentElement.timePosition - previousElement.timePosition >= gapTime) {
+          // Gap is sufficiently large. Complete subsequence in progress and start a new one with current element.
+          (Seq(currentElement), completedSubseqs :+ subseqInProgress)
+        } else {
+          // Gap is small. Append current element to subsequence in progess.
+          (subseqInProgress :+ currentElement, completedSubseqs)
+        }
+      }
+
+      val completedSubseqsFinal = completedSubseqsMedial :+ subseqInProgressMedial
+
+      completedSubseqsFinal.map { subseq =>
+        val subseqAsTypeS = subseq.to(bf.toFactory(seq))
+        new TimeOrderedData(subseqAsTypeS)
+      }
+    }
+  }
+}
 
 object TimeOrderedData {
 
@@ -40,7 +75,7 @@ object TimeOrderedData {
     }
   }
 
-  def create[T <: HasTime, S[X] <: Seq[X]](sourceSeq: S[T])(implicit bf: BuildFrom[S[T], T, S[T]]): TimeOrderedData[S[T]] = {
+  def create[T <: HasTime, S[X] <: Seq[X]](sourceSeq: S[T])(implicit bf: BuildFrom[S[T], T, S[T]]): TimeOrderedData[T, S] = {
     val sortedSeq = sourceSeq.sortBy(_.timePosition)
     val cleanedSeq = resolveTimeConflicts(sortedSeq)
     val cleanedSeqAsTypeS = cleanedSeq.to(bf.toFactory(sourceSeq))
