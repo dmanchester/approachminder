@@ -10,11 +10,11 @@ import java.time.format.DateTimeFormatter
 import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 import scala.math.BigDecimal.RoundingMode
-import scala.util.Using
+import scala.util.{Failure, Success, Try, Using}
 
 object IO {
 
-  val stateVectorReads: Reads[StateVector] = (
+  val stateVectorReads: Reads[OpenSkyVector] = (
     (JsPath \ 0).read[String] and
       // Callsigns (see next line) have trailing whitespace. (Interestingly, other String vector
       // fields do not.)
@@ -35,9 +35,9 @@ object IO {
       (JsPath \ 15).read[Boolean] and
       (JsPath \ 16).read[Int].map(PositionSource.byId) and
       (JsPath \ 17).read[Int].map(AircraftCategory.byId)
-    ) (StateVector.apply _)
+    ) (OpenSkyVector.apply _)
 
-  val multipleStateVectorsReads: Reads[Seq[StateVector]] = Reads.seq(stateVectorReads)
+  val multipleStateVectorsReads: Reads[Seq[OpenSkyVector]] = Reads.seq(stateVectorReads)
 
   // TODO Could we (easily) use combinator syntax in our Writes instead of what's below?
 
@@ -121,7 +121,50 @@ object IO {
     }
   }
 
-  class ReadUniqueVectorsResult(val filesReadSuccessfully: Int, val totalVectorsRead: Int, val uniqueVectors: Seq[StateVector], val filesErroredOut: Int, val errors: Seq[JsError]) {
+  sealed trait FileToOpenSkyVectorsResult
+  case class FileToOpenSkyVectorsSuccess(vectors: Seq[OpenSkyVector]) extends FileToOpenSkyVectorsResult
+  case class FileToOpenSkyVectorsFailure(message: String) extends FileToOpenSkyVectorsResult
+
+  def fileToOpenSkyVectors(file: Path): FileToOpenSkyVectorsResult = {
+    val wrappedResult = Try(doFileToOpenSkyVectors(file))
+
+    wrappedResult match {
+      case Success(result) =>
+        result
+      case Failure(exception) =>
+        FileToOpenSkyVectorsFailure(exception.getMessage)
+    }
+  }
+
+  private def doFileToOpenSkyVectors(file: Path): FileToOpenSkyVectorsResult = {
+
+    val fileBytes = Files.readAllBytes(file)
+
+    if (fileBytes.isEmpty) {
+      FileToOpenSkyVectorsSuccess(Seq.empty)
+    } else {
+
+      val jsValue = Json.parse(fileBytes)
+
+      val jsResultVectors = (jsValue \ "states").validate(multipleStateVectorsReads)
+      // If we made stateVectorReads implicit, we could avoid declaring multipleStateVectorsReads
+      // and just write ".validate[Seq[StateVector]]". But, the above syntax makes it clearer what's
+      // going on.
+
+      jsResultVectors match {
+
+        case JsSuccess(vectors, _) => {  // TODO Confirm "_" nothing of interest
+          FileToOpenSkyVectorsSuccess(vectors)
+        }
+
+        case JsError(errors) => {
+          FileToOpenSkyVectorsFailure(errors.toString)
+        }
+      }
+    }
+  }
+
+  class ReadUniqueVectorsResult(val filesReadSuccessfully: Int, val totalVectorsRead: Int, val uniqueVectors: Seq[OpenSkyVector], val filesErroredOut: Int, val errors: Seq[JsError]) {
 
     override def toString = s"${this.getClass.getSimpleName}(filesReadSuccessfully:$filesReadSuccessfully,totalVectorsRead:$totalVectorsRead,uniqueVectors.length:${uniqueVectors.length},filesErroredOut:$filesErroredOut,errors.length:${errors.length})"  // styled after case classes' toString
   }
@@ -131,7 +174,7 @@ object IO {
     // TODO Explain why using mutable
     var filesReadSuccessfully = 0
     var totalVectorsRead = 0
-    val uniqueVectors: mutable.Set[StateVector] = mutable.LinkedHashSet.empty
+    val uniqueVectors: mutable.Set[OpenSkyVector] = mutable.LinkedHashSet.empty
     var filesErroredOut = 0
     val errors: mutable.Buffer[JsError] = mutable.Buffer.empty  // mutable.Seq doesn't offer in-place "add..." methods, but mutable.Buffer does
 

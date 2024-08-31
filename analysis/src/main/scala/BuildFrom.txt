@@ -1,0 +1,37 @@
+import scala.collection.BuildFrom
+import scala.collection.generic.IsSeq
+
+trait HasTime {
+  def timePosition: BigInt
+}
+
+final case class Hour(timePosition: BigInt) extends HasTime
+
+def doNothing[T <: HasTime, S <: Seq[T]](seq: S)(implicit bf: BuildFrom[S, T, S]): S = {
+  seq.filter(x => true).to(bf.toFactory(seq))
+}
+
+def invokeDoNothing = {
+  val times = Vector(Hour(1), Hour(2))
+  val returnedVal = doNothing(times)
+}
+
+
+
+
+import scala.collection.generic.IsSeq
+
+trait HasTime {
+  def timePosition: BigInt
+}
+
+final case class Hour(timePosition: BigInt) extends HasTime
+
+def doNothing[T <: HasTime, S](seq: S)(implicit ev: IsSeq[S] { type A = T }): ev.C = {
+  ev(seq).filter(x => true)
+}
+
+def invokeDoNothing = {
+  val times = Vector(Hour(1), Hour(2))
+  val returnedVal = doNothing(times)
+}

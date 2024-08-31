@@ -4,7 +4,7 @@ import scala.annotation.tailrec
 
 object GroupingSortingFiltering {
 
-  def fullySpecifiedPositions(uniqueVectors: Seq[StateVector]): Seq[TimeBasedPosition] = {
+  def fullySpecifiedPositions(uniqueVectors: Seq[OpenSkyVector]): Seq[TimeBasedPosition] = {
     uniqueVectors.flatMap(TimeBasedPosition.option(_)) // flatMap's mapping operation turns the `Seq[StateVector]` into a `Seq[Option[TimeBasedPosition]]`. Its flattening operation eliminates the `None` elements and produces a `Seq[TimeBasedPosition]`.
   }
 

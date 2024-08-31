@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder
 
 // Reference: https://openskynetwork.github.io/opensky-api/rest.html
-case class StateVector(
+case class OpenSkyVector(
                         icao24: String,
                         callsign: Option[String],
                         originCountry: String,
