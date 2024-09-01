@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.IO.{FileToOpenSkyVectorsFailure, FileToOpenSkyVectorsSuccess}
+import com.dmanchester.approachminder.IO.{SingleFileToOpenSkyVectorsFailure, SingleFileToOpenSkyVectorsSuccess}
 import org.specs2.mutable._
 
 import java.nio.file.{Path, Paths}
@@ -47,48 +47,81 @@ class IOSpec extends Specification {
     AircraftCategory.byId(0)
   )
 
-  "fileToOpenSkyVectors" should {
+  private val pathEmptyJson = getResourcePath("empty.json")
+  private val pathTwoVectors = getResourcePath("two-vectors.json")
+  private val pathNotJson = getResourcePath("not-json.txt")
+  private val pathOneVectorTwoNonJsonLines = getResourcePath("one-vector--two-non-json-lines.json")
+  private val pathOneGoodVectorOneBad = getResourcePath("one-good-vector--one-bad-vector.json")
+
+  "singleFileToOpenSkyVectors" should {
 
     "handle an empty input file" in {
-      val path = getResourcePath("empty.json")
-      val result = IO.fileToOpenSkyVectors(path)
-      result mustEqual FileToOpenSkyVectorsSuccess(Seq.empty)
+      val result = IO.singleFileToOpenSkyVectors(pathEmptyJson)
+      result mustEqual SingleFileToOpenSkyVectorsSuccess(Seq.empty)
     }
 
     "process a typical file correctly" in {
-      val path = getResourcePath("two-vectors.json")
-      val result = IO.fileToOpenSkyVectors(path)
-      result mustEqual FileToOpenSkyVectorsSuccess(Seq(
+      val result = IO.singleFileToOpenSkyVectors(pathTwoVectors)
+      result mustEqual SingleFileToOpenSkyVectorsSuccess(Seq(
         vectorLAU802,
         vectorLAU1212
       ))
     }
 
     "handle a file that isn't JSON" in {
-      val path = getResourcePath("not-json.txt")
-      val result = IO.fileToOpenSkyVectors(path)
+      val result = IO.singleFileToOpenSkyVectors(pathNotJson)
       result must beLike {
-        case FileToOpenSkyVectorsFailure(message) =>
+        case SingleFileToOpenSkyVectorsFailure(message) =>
           message must startWith("Unrecognized token 'This'")
       }
     }
 
     "handle a file with mixed JSON/non-JSON content (OK to reject whole file)" in {
-      val path = getResourcePath("one-vector--two-non-json-lines.json")
-      val result = IO.fileToOpenSkyVectors(path)
+      val result = IO.singleFileToOpenSkyVectors(pathOneVectorTwoNonJsonLines)
       result must beLike {
-        case FileToOpenSkyVectorsFailure(message) =>
+        case SingleFileToOpenSkyVectorsFailure(message) =>
           message must startWith("Unrecognized token 'That'")
       }
     }
 
     "handle a file with bad vectors (OK to reject whole file)" in {
-      val path = getResourcePath("one-good-vector--one-bad-vector.json")
-      val result = IO.fileToOpenSkyVectors(path)
+      val result = IO.singleFileToOpenSkyVectors(pathOneGoodVectorOneBad)
       result must beLike {
-        case FileToOpenSkyVectorsFailure(message) =>
+        case SingleFileToOpenSkyVectorsFailure(message) =>
           message must contain("error.expected.jsstring")
       }
+    }
+  }
+
+  "filesToOpenSkyVectors" should {
+    "handle a mix of good and bad files" in {
+
+      val paths = Seq(
+        pathEmptyJson,  // will succeed
+        pathTwoVectors,  // will succeed
+        pathNotJson,  // will fail
+        pathOneVectorTwoNonJsonLines,  // will fail
+        pathTwoVectors,  // will succeed
+        pathEmptyJson,  // will succeed
+        pathOneGoodVectorOneBad  // will fail
+      )
+      val result = IO.filesToOpenSkyVectors(paths)
+
+      result.totalFiles mustEqual 7
+      result.successFiles mustEqual 4
+      result.failedFiles mustEqual 3
+
+      result.vectors mustEqual Seq(
+        vectorLAU802,
+        vectorLAU1212,
+        vectorLAU802,
+        vectorLAU1212
+      )
+
+      result.errors.length mustEqual 3
+      // Spot-check the middle error
+      result.errors(1).file mustEqual pathOneVectorTwoNonJsonLines
+      result.errors(1).message must startWith("Unrecognized token 'That'")
     }
   }
 

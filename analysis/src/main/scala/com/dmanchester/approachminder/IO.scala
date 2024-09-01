@@ -121,27 +121,27 @@ object IO {
     }
   }
 
-  sealed trait FileToOpenSkyVectorsResult
-  case class FileToOpenSkyVectorsSuccess(vectors: Seq[OpenSkyVector]) extends FileToOpenSkyVectorsResult
-  case class FileToOpenSkyVectorsFailure(message: String) extends FileToOpenSkyVectorsResult
+  sealed trait SingleFileToOpenSkyVectorsResult
+  case class SingleFileToOpenSkyVectorsSuccess(vectors: Seq[OpenSkyVector]) extends SingleFileToOpenSkyVectorsResult
+  case class SingleFileToOpenSkyVectorsFailure(message: String) extends SingleFileToOpenSkyVectorsResult
 
-  def fileToOpenSkyVectors(file: Path): FileToOpenSkyVectorsResult = {
-    val wrappedResult = Try(doFileToOpenSkyVectors(file))
+  def singleFileToOpenSkyVectors(file: Path): SingleFileToOpenSkyVectorsResult = {
+    val successOrFailure = Try(doSingleFileToOpenSkyVectors(file))
 
-    wrappedResult match {
+    successOrFailure match {
       case Success(result) =>
         result
       case Failure(exception) =>
-        FileToOpenSkyVectorsFailure(exception.getMessage)
+        SingleFileToOpenSkyVectorsFailure(exception.getMessage)
     }
   }
 
-  private def doFileToOpenSkyVectors(file: Path): FileToOpenSkyVectorsResult = {
+  private def doSingleFileToOpenSkyVectors(file: Path): SingleFileToOpenSkyVectorsResult = {
 
     val fileBytes = Files.readAllBytes(file)
 
     if (fileBytes.isEmpty) {
-      FileToOpenSkyVectorsSuccess(Seq.empty)
+      SingleFileToOpenSkyVectorsSuccess(Seq.empty)
     } else {
 
       val jsValue = Json.parse(fileBytes)
@@ -154,12 +154,41 @@ object IO {
       jsResultVectors match {
 
         case JsSuccess(vectors, _) => {  // TODO Confirm "_" nothing of interest
-          FileToOpenSkyVectorsSuccess(vectors)
+          SingleFileToOpenSkyVectorsSuccess(vectors)
         }
 
         case JsError(errors) => {
-          FileToOpenSkyVectorsFailure(errors.toString)
+          SingleFileToOpenSkyVectorsFailure(errors.toString)
         }
+      }
+    }
+  }
+
+  case class FailedFileError(file: Path, message: String)
+  case class FilesToOpenSkyVectorsResult(totalFiles: Int, vectors: Seq[OpenSkyVector], errors: Seq[FailedFileError]) {
+
+    def failedFiles = errors.length
+    def successFiles = totalFiles - failedFiles
+
+    def updateForSuccessFile(addlVectors: Seq[OpenSkyVector]): FilesToOpenSkyVectorsResult = {
+      this.copy(totalFiles = totalFiles + 1, vectors = vectors :++ addlVectors)
+    }
+
+    def updateForFailedFile(addlError: FailedFileError): FilesToOpenSkyVectorsResult = {
+      this.copy(totalFiles = totalFiles + 1, errors = errors :+ addlError)
+    }
+  }
+
+  object FilesToOpenSkyVectorsResult {
+    def apply(): FilesToOpenSkyVectorsResult = FilesToOpenSkyVectorsResult(0, Seq.empty, Seq.empty)
+  }
+
+  def filesToOpenSkyVectors(files: Seq[Path]): FilesToOpenSkyVectorsResult = {
+    files.foldLeft(FilesToOpenSkyVectorsResult()) { case (resultInProgress, file) =>
+
+      singleFileToOpenSkyVectors(file) match {
+        case SingleFileToOpenSkyVectorsSuccess(vectors) => resultInProgress.updateForSuccessFile(vectors)
+        case SingleFileToOpenSkyVectorsFailure(message) => resultInProgress.updateForFailedFile(FailedFileError(file, message))
       }
     }
   }
