@@ -42,7 +42,7 @@ class ExtractionAndEstimationSpec extends Specification {
 
     "determine a trajectory's approaches and landings, allocating the correct positions to each; correctly associate thresholds; and correctly interpolate crossing points" in {
 
-      val trajectory = Trajectory.newOption(Seq(pointK, pointL, pointM, pointN, pointO, pointP, pointQ)).get
+      val trajectory = Trajectory.newOption(stubProfile, Seq(pointK, pointL, pointM, pointN, pointO, pointP, pointQ)).get
 
       val approachesAndLandings = ExtractionAndEstimation.approachesAndLandings2(stubProfile, trajectory, thresholdsAndReferencePoints)
 

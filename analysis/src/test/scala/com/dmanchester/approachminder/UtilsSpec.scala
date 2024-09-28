@@ -1,12 +1,12 @@
 package com.dmanchester.approachminder
 
-import org.specs2.mutable._
-import SharedResources._
-import com.dmanchester.approachminder.MathUtils.{hypotenuseLength, interpolateScalar, isBetween, isoscelesBaseLength}
+import org.specs2.mutable.*
+import SharedResources.*
+import com.dmanchester.approachminder.Utils.{hypotenuseLength, interpolateScalar, isBetween, isoscelesBaseLength, mostCommonString}
 
 import scala.math.Pi
 
-class MathUtilsSpec extends Specification {
+class UtilsSpec extends Specification {
 
   "isBetween" should {
 
@@ -55,6 +55,19 @@ class MathUtilsSpec extends Specification {
   "hypotenuseLength" should {
     "calculate length" in {
       hypotenuseLength(6.0, 7.0) must beCloseTo(9.219544 within significantFigures)
+    }
+  }
+
+  "mostCommonString" should {
+
+    "determine the most-common string, picking the alphabetically first one among equally common ones" in {
+      val strings = Seq("Cherry", "Apple", "Banana", "Apple", "Cherry")
+      mostCommonString(strings) mustEqual("Apple")
+    }
+
+    "throw if there are no strings" in {
+      val strings = Seq()
+      mostCommonString(strings) must throwA[UnsupportedOperationException]
     }
   }
 }

@@ -48,7 +48,7 @@ class LongLatAltDistanceMeasure private(val positions: Seq[LongLatAlt], geograph
     val distance2D = geographicCalculator.distanceInMeters(a, b)
     val altitudeDifference = a.altitudeMeters - b.altitudeMeters
 
-    MathUtils.hypotenuseLength(distance2D, altitudeDifference)
+    Utils.hypotenuseLength(distance2D, altitudeDifference)
   }
 }
 

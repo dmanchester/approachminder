@@ -17,8 +17,10 @@ object ThrowawayMain {
     val positionsByAircraftUnfiltered = GroupingSortingFiltering.positionsByAircraft(allPositions)
     val positionsByAircraft = GroupingSortingFiltering.filterPossiblyFixedWingPowered(positionsByAircraftUnfiltered)
 
-    GroupingSortingFiltering.trajectories(positionsByAircraft, 300)
+//    GroupingSortingFiltering.trajectories(positionsByAircraft, 300)
+    null
   }
+
 
   def main(args: Array[String]): Unit = {
 

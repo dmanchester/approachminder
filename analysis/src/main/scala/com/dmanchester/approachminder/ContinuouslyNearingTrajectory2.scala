@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.MathUtils.interpolateScalar
+import com.dmanchester.approachminder.Utils.interpolateScalar
 
 import scala.annotation.tailrec
 

@@ -183,7 +183,7 @@ object IO {
     def apply(): FilesToOpenSkyVectorsResult = FilesToOpenSkyVectorsResult(0, Seq.empty, Seq.empty)
   }
 
-  def filesToOpenSkyVectors(files: Seq[Path]): FilesToOpenSkyVectorsResult = {
+  def filesToOpenSkyVectors(files: Iterable[Path]): FilesToOpenSkyVectorsResult = {
     files.foldLeft(FilesToOpenSkyVectorsResult()) { case (resultInProgress, file) =>
 
       singleFileToOpenSkyVectors(file) match {

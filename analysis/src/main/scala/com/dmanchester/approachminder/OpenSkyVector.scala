@@ -1,6 +1,28 @@
 package com.dmanchester.approachminder
 
-// Reference: https://openskynetwork.github.io/opensky-api/rest.html
+/**
+ * An OpenSky vector, as provided by their API.
+ *
+ * Reference: https://openskynetwork.github.io/opensky-api/rest.html
+ *
+ * @param icao24
+ * @param callsign
+ * @param originCountry
+ * @param timePosition
+ * @param lastContact
+ * @param longitude
+ * @param latitude
+ * @param baroAltitude
+ * @param onGround
+ * @param velocity
+ * @param trueTrack
+ * @param verticalRate
+ * @param geoAltitude
+ * @param squawk
+ * @param spi
+ * @param positionSource
+ * @param category
+ */
 case class OpenSkyVector(
                         icao24: String,
                         callsign: Option[String],
@@ -22,4 +44,13 @@ case class OpenSkyVector(
                         spi: Boolean,
                         positionSource: PositionSource,
                         category: AircraftCategory
-                      )
+                      ) {
+  def toPositionReport: Option[OpenSkyPositionReport] = {
+
+    this match {
+      case OpenSkyVector(icao24, callsign, originCountry, Some(timePosition), lastContact, Some(longitude), Some(latitude), baroAltitude, onGround, velocity, trueTrack, verticalRate, Some(geoAltitude), squawk, spi, positionSource, category) =>
+        Some(OpenSkyPositionReport(icao24, callsign, originCountry, timePosition, lastContact, longitude, latitude, baroAltitude, onGround, velocity, trueTrack, verticalRate, geoAltitude, squawk, spi, positionSource, category))
+      case _ => None
+    }
+  }
+}

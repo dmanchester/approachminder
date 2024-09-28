@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.MathUtils.interpolateScalar
+import com.dmanchester.approachminder.Utils.interpolateScalar
 
 import scala.annotation.tailrec
 
@@ -61,7 +61,7 @@ object ExtractionAndEstimation {
   private def approachAndLanding[A <: HasLongLatAlt](aircraftProfile: AircraftProfile, remainingTrajectory: Trajectory[A], segmentIndex: Int, thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint]) = {
 
     val checkSegment = (thresholdAndReferencePoint: ThresholdAndReferencePoint) => {
-      ApproachAndLanding2.newOption(aircraftProfile, remainingTrajectory, segmentIndex, thresholdAndReferencePoint)
+      ApproachAndLanding2.newOption(remainingTrajectory, segmentIndex, thresholdAndReferencePoint)
     }
 
     thresholdsAndReferencePoints.collectFirst { thresholdAndReferencePoint =>
