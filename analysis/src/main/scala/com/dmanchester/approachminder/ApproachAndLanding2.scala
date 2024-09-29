@@ -9,6 +9,8 @@ class ApproachAndLanding2[A <: HasLongLatAlt] private(val aircraftProfile: Aircr
 object ApproachAndLanding2 {
 
   /**
+   * TODO Stop using this complicated instantiation logic to enforce a variant; move to standalone function?
+   *
    * Tests whether:
    *
    *   - the specified segment of the full trajectory crosses the threshold in the inbound direction; and
