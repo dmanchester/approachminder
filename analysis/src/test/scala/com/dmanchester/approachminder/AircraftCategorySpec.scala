@@ -4,7 +4,7 @@ import org.specs2.mutable.*
 
 class AircraftCategorySpec extends Specification {
 
-  "mostCommonNonBlankCategory" should {
+  "mostCommonNonBlankCategoryInNonEmptyCollection" should {
 
     "determine the most-common non-blank category, picking the alphabetically first one among equally common ones" in {
       val categories = Seq(NoInfoAtAll, NoADSBEmitterCategoryInfo, Small, Small, Light, Light, Large, NoInfoAtAll, NoADSBEmitterCategoryInfo, NoInfoAtAll, NoADSBEmitterCategoryInfo)
