@@ -4,19 +4,40 @@ import scala.collection.immutable.ListMap
 
 object GroupingSortingFiltering {
 
-  def positionReportsToTrajectories3[R <: HasPositionReportIdentifiers, P](positionReports: Iterable[R], positionReportToTrajectoryPosition: R => P): Seq[Trajectory3[P]] = {
+  def positionReportsToTrajectories3[R <: HasPositionReportIdentifiers](positionReports: Iterable[R]): Seq[Trajectory3[R]] = {
     val icao24ToPositionReports = partitionElementsByICAO24(positionReports)
-    val jonxy = icao24ToPositionReports.map { case (icao24, positionReportsThisICAO24) =>
-      val sortedPositionReports = positionReportsThisICAO24.sortBy(_.timePosition)
-      val cleanedPositionReports = resolveTimeConflicts(sortedPositionReports)
 
-      // DAN YOU LEFT OFF HERE. GET THE MOST-COMMON CATEGORY.
-      // THEN, PARTITION ON TIME GAP OR CALLSIGN CHANGE (three-state state machine).
-      // ASSEMBLE ICAO24, CATEGORY, AND EACH PARTITION'S CALLSIGN AND POSITIONREPORTS INTO A TRAJECOTRY3.
-
-
+    for {
+      (icao24, positionReportsThisICAO24) <- icao24ToPositionReports
+      sortedPositionReports = positionReportsThisICAO24.sortBy(_.timePosition)
+      cleanedPositionReports = resolveTimeConflicts(sortedPositionReports)
+      categories = cleanedPositionReports.map(_.category)
+      mostCommonCategory = AircraftCategory.mostCommonNonBlankCategoryInNonEmptyCollection(categories)
+      partitionedReports = ReportsPartitioner.partition(cleanedPositionReports, 666)  // FIXME Take as argument
+      (callsign, reports) <- partitionedReports
+    } yield {
+      Trajectory3(icao24, callsign, mostCommonCategory, reports)
     }
-null
+    // DAN YOU JUST FINISHED THE ABOVE
+
+    // Version before for-comprehension (TODO delete):
+    //
+    //    icao24ToPositionReports.flatMap { case (icao24, positionReportsThisICAO24) =>
+    //
+    //      val sortedPositionReports = positionReportsThisICAO24.sortBy(_.timePosition)
+    //      val cleanedPositionReports = resolveTimeConflicts(sortedPositionReports)
+    //
+    //      val categories = cleanedPositionReports.map(_.category)
+    //      val mostCommonCategory = AircraftCategory.mostCommonNonBlankCategoryInNonEmptyCollection(categories)
+    //
+    //      val partitionedReports = ReportsPartitioner.partition(cleanedPositionReports, 666)  // FIXME Take as argument
+    //
+    //      partitionedReports.map { case (callsign, reports) =>
+    //        val positions = reports.map(positionReportToTrajectoryPosition)
+    //        Trajectory3(icao24, callsign, mostCommonCategory, positions)
+    //      }
+    //    }
+    //}
   }
 
   def partitionElementsByICAO24[I <: HasICAO24](elements: Iterable[I]): Seq[(String, Seq[I])] = {
