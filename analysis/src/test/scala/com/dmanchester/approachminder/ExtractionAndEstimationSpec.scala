@@ -38,17 +38,14 @@ class ExtractionAndEstimationSpec extends Specification {
       ThresholdAndReferencePoint(threshold, threshold.oppositeThreshold.center)
     }
 
-    val stubProfile = AircraftProfile("(icao24)", Some("(callsign)"), None)
-
     "determine a trajectory's approaches and landings, allocating the correct positions to each; correctly associate thresholds; and correctly interpolate crossing points" in {
 
-      val trajectory = Trajectory.newOption(stubProfile, Seq(pointK, pointL, pointM, pointN, pointO, pointP, pointQ)).get
+      val trajectory = trajectory3FromPositions(Seq(pointK, pointL, pointM, pointN, pointO, pointP, pointQ))
 
-      val approachesAndLandings = ExtractionAndEstimation.approachesAndLandings2(stubProfile, trajectory, thresholdsAndReferencePoints)
+      val approachesAndLandings = ExtractionAndEstimation.approachesAndLandings2(trajectory, thresholdsAndReferencePoints)
 
       approachesAndLandings.length must beEqualTo(2)
 
-      approachesAndLandings(0).aircraftProfile must beEqualTo(stubProfile)
       approachesAndLandings(0).trajectory.positions must beEqualTo(Seq(pointL, pointM, pointN))
       approachesAndLandings(0).threshold must beEqualTo(sfo.thresholdByName("10L").get)
       approachesAndLandings(0).crossingPointInterpolated must beCloseInThreeDimensionsTo(LongLatAlt(-122.393345, 37.628809, 23.035889), significantFigures) // confirmed correctness visually

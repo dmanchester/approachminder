@@ -7,7 +7,7 @@ object GroupingSortingFiltering {
   def positionReportsToTrajectories3[R <: HasPositionReportIdentifiers](positionReports: Iterable[R]): Seq[Trajectory3[R]] = {
     val icao24ToPositionReports = partitionElementsByICAO24(positionReports)
 
-    for {
+    (for {
       (icao24, positionReportsThisICAO24) <- icao24ToPositionReports
       sortedPositionReports = positionReportsThisICAO24.sortBy(_.timePosition)
       cleanedPositionReports = resolveTimeConflicts(sortedPositionReports)
@@ -16,9 +16,18 @@ object GroupingSortingFiltering {
       partitionedReports = ReportsPartitioner.partition(cleanedPositionReports, 666)  // FIXME Take as argument
       (callsign, reports) <- partitionedReports
     } yield {
-      Trajectory3(icao24, callsign, mostCommonCategory, reports)
-    }
-    // DAN YOU JUST FINISHED THE ABOVE
+      Trajectory3.createOption(reports, icao24, callsign, mostCommonCategory)
+    }).flatten
+
+    // FIXME Either here or in calling code, filter down to possibly FixedWingPowered aircraft/trajectories; the code
+    //  and comments from old filterPossiblyFixedWingPowered method:
+    //
+    // Retain only those aircraft whose category suggests a fixed-wing, powered aircraft, as well
+    // as those with no category at all. (We achieve the latter via `forall`: given an `Option`,
+    // it returns `true` on `None`).
+    //
+    // category.forall(AircraftCategory.fixedWingPowered.contains(_))
+
 
     // Version before for-comprehension (TODO delete):
     //
@@ -78,36 +87,6 @@ object GroupingSortingFiltering {
           element +: cleanedSeqInProgress
         }
       }
-    }
-  }
-
-
-  def fullySpecifiedPositions(uniqueVectors: Seq[OpenSkyVector]): Seq[TimeBasedPosition] = {
-    uniqueVectors.flatMap(TimeBasedPosition.option(_)) // flatMap's mapping operation turns the `Seq[StateVector]` into a `Seq[Option[TimeBasedPosition]]`. Its flattening operation eliminates the `None` elements and produces a `Seq[TimeBasedPosition]`.
-  }
-
-  def positionsByAircraft(positions: Seq[TimeBasedPosition]): Map[AircraftProfile, Seq[TimeBasedPosition]] = {
-
-    positions.groupBy(_.vector.icao24).map { case (icao24, positionsOneAircraftUnsorted) =>
-
-      val callsigns = positionsOneAircraftUnsorted.flatMap(_.vector.callsign)  // flatMap, because StateVector.callsign is an Option[String]
-      val theMostCommonCallsign = Utils.mostCommonString(callsigns)
-
-      val categories = positionsOneAircraftUnsorted.map(_.vector.category)
-      val theMostCommonNonBlankCategory = AircraftCategory.mostCommonNonBlankCategoryInNonEmptyCollection(categories)
-
-      val profile = AircraftProfile(icao24, theMostCommonCallsign, theMostCommonNonBlankCategory)
-
-      (profile, positionsOneAircraftUnsorted.sortBy(_.timePosition))
-    }
-  }
-
-  def filterPossiblyFixedWingPowered(positionsUnfiltered: Map[AircraftProfile, Seq[TimeBasedPosition]]): Map[AircraftProfile, Seq[TimeBasedPosition]] = {
-    positionsUnfiltered.filter { case (aircraftProfile, _) =>
-      // Retain only those aircraft whose category suggests a fixed-wing, powered aircraft, as well
-      // as those with no category at all. (We achieve the latter via `forall`: given an `Option`,
-      // it returns `true` on `None`).
-      aircraftProfile.category.forall(AircraftCategory.fixedWingPowered.contains(_))
     }
   }
 }

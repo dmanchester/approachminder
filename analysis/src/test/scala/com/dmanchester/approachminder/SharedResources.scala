@@ -91,4 +91,8 @@ object SharedResources {
       (distanceInMeters, distribution)
     }
   }
+
+  def trajectory3FromPositions[P](positions: Seq[P]): Trajectory3[P] = {
+    Trajectory3.createOption(positions, "(icao24)", Some("(callsign)"), None).get
+  }
 }

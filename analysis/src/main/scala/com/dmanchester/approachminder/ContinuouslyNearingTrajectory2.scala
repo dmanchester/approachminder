@@ -1,23 +1,25 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.Utils.interpolateScalar
-
 import scala.annotation.tailrec
 
 /**
- * A sequence of at least two positions that, when regarded as a sequence of segments, continuously nears a reference
- * point.
+ * An aircraft trajectory that continuously nears a reference point.
+ *
+ * The trajectory is specified via positions at which the aircraft has been observed.
+ *
+ * Is guaranteed to contain at least two positions.
+ *
+ * NOTE: This class does not include the non-position identifiers found in a Trajectory (icao24, callsign, and
+ * category), but if a need for them arose, it would be reasonable to add them.
  *
  * @param positions
  * @param referencePoint
  * @param calculator
  * @tparam L
  */
-case class ContinuouslyNearingTrajectory2[+L <: HasLongLat](positions: Seq[L], referencePoint: HasLongLat, calculator: GeographicCalculator)
+case class ContinuouslyNearingTrajectory2[+L <: HasLongLat] private (positions: Seq[L], referencePoint: HasLongLat, calculator: GeographicCalculator)
 
 object ContinuouslyNearingTrajectory2 {
-
-  // FIXME Do I need to suppress default "apply"? (Make private; use instead of "new"?)
 
   @tailrec
   private def accumulateSegmentsForward[L <: HasLongLat](remainingPositions: Seq[L], referencePoint: HasLongLat, calculator: GeographicCalculator, accumulator: Seq[L]): Seq[L] = {
@@ -43,7 +45,7 @@ object ContinuouslyNearingTrajectory2 {
   }
 
   /**
-   * From a sequence of positions regarded as a sequence of segments, creates a ContinuouslyNearingTrajectory2 instance
+   * From a sequence of positions representing a sequence of segments, creates a ContinuouslyNearingTrajectory2 instance
    * with the subsequence of segments that:
    *
    *   - includes a specified segment; and

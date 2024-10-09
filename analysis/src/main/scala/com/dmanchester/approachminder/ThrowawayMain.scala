@@ -7,37 +7,39 @@ import java.nio.charset.StandardCharsets
 
 object ThrowawayMain {
 
-  def filesToTrajectories(files: Seq[Path]): Seq[(AircraftProfile, Trajectory[TimeBasedPosition])] = {
-
-    val readUniqueVectorsResult = IO.readUniqueVectors(files)
-    println(readUniqueVectorsResult)
-    println(readUniqueVectorsResult.errors)
-
-    val allPositions = GroupingSortingFiltering.fullySpecifiedPositions(readUniqueVectorsResult.uniqueVectors)
-    val positionsByAircraftUnfiltered = GroupingSortingFiltering.positionsByAircraft(allPositions)
-    val positionsByAircraft = GroupingSortingFiltering.filterPossiblyFixedWingPowered(positionsByAircraftUnfiltered)
-
+//  TODO *** COMMENTED OUT 29 SEPT 2024 ***
+//
+//  def filesToTrajectories(files: Seq[Path]): Seq[(AircraftProfile, Trajectory[TimeBasedPosition])] = {
+//
+//    val readUniqueVectorsResult = IO.readUniqueVectors(files)
+//    println(readUniqueVectorsResult)
+//    println(readUniqueVectorsResult.errors)
+//
+//    val allPositions = GroupingSortingFiltering.fullySpecifiedPositions(readUniqueVectorsResult.uniqueVectors)
+//    val positionsByAircraftUnfiltered = GroupingSortingFiltering.positionsByAircraft(allPositions)
+//    val positionsByAircraft = GroupingSortingFiltering.filterPossiblyFixedWingPowered(positionsByAircraftUnfiltered)
+//
 //    GroupingSortingFiltering.trajectories(positionsByAircraft, 300)
-    null
-  }
-
+//  }
 
   def main(args: Array[String]): Unit = {
 
-    println("Starting...")
-
-    val dirPath = Paths.get("/home/dan/flight-tracking/opensky-data-as-of--2013-01-12--0029/")
-//    val dirPath = Paths.get("/home/dan/flight-tracking/opensky-data--sfo--as-of-2022-12-02/")
-//    val dirPath = Paths.get("/home/dan/flight-tracking/opensky-data--sfo--as-of-2022-09-01/")
-//    val glob = "*.json"
-    val glob = "all--2022-11-*.json"
-
-    val files = IO.resolveGlob(dirPath, glob)
-    val trajectories = filesToTrajectories(files)
-
-    println(s"${trajectories.length} trajectories")
-
-    val thresholds = Thresholds(Airports.sfo.thresholds ++: Airports.oak.thresholds)
+// TODO *** COMMENTED OUT 29 SEPT. 2024
+//
+//    println("Starting...")
+//
+//    val dirPath = Paths.get("/home/dan/flight-tracking/opensky-data-as-of--2013-01-12--0029/")
+////    val dirPath = Paths.get("/home/dan/flight-tracking/opensky-data--sfo--as-of-2022-12-02/")
+////    val dirPath = Paths.get("/home/dan/flight-tracking/opensky-data--sfo--as-of-2022-09-01/")
+////    val glob = "*.json"
+//    val glob = "all--2022-11-*.json"
+//
+//    val files = IO.resolveGlob(dirPath, glob)
+//    val trajectories = filesToTrajectories(files)
+//
+//    println(s"${trajectories.length} trajectories")
+//
+//    val thresholds = Thresholds(Airports.sfo.thresholds ++: Airports.oak.thresholds)
 
     // DAN YOU LEFT OFF HERE 8/9/2024; TO GET STUFF TO COMPILE, COMMENTED OUT THROUGH: "Files.write(Paths.get..."
 

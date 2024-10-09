@@ -99,20 +99,21 @@ object IO {
     }
   }
 
-  val trajectoryWithApproachSegmentsWrites = new Writes[(AircraftProfile, Seq[TimeBasedPositionWithApproachSegment])] {
-
-    override def writes(trajectory: (AircraftProfile, Seq[TimeBasedPositionWithApproachSegment])): JsValue = {
-
-      Json.obj(
-        "icao24" -> trajectory._1.icao24,
-        "callsign" -> trajectory._1.callsign,  // TODO What does this output in "None" case? -- Also, may be relying on default Some.toString, which seems sub-optimal
-        "category" -> trajectory._1.category.map(_.getClass.getSimpleName),  // FIXME Switch to a user-friendly category descriptor
-        "positions" -> multiplePositionWithApproachSegmentWrites.writes(trajectory._2)  // TODO Is this "right"/optimal? Could use combinator syntax instead?
-      )
-    }
-  }
-
-  val trajectoriesWithApproachesWrites = Writes.seq(trajectoryWithApproachSegmentsWrites)
+// TODO ** COMMENTED OUT 29 SEPT. 2024 ***
+//  val trajectoryWithApproachSegmentsWrites = new Writes[(AircraftProfile, Seq[TimeBasedPositionWithApproachSegment])] {
+//
+//    override def writes(trajectory: (AircraftProfile, Seq[TimeBasedPositionWithApproachSegment])): JsValue = {
+//
+//      Json.obj(
+//        "icao24" -> trajectory._1.icao24,
+//        "callsign" -> trajectory._1.callsign,  // TODO What does this output in "None" case? -- Also, may be relying on default Some.toString, which seems sub-optimal
+//        "category" -> trajectory._1.category.map(_.getClass.getSimpleName),  // FIXME Switch to a user-friendly category descriptor
+//        "positions" -> multiplePositionWithApproachSegmentWrites.writes(trajectory._2)  // TODO Is this "right"/optimal? Could use combinator syntax instead?
+//      )
+//    }
+//  }
+//
+//  val trajectoriesWithApproachesWrites = Writes.seq(trajectoryWithApproachSegmentsWrites)
 
   def resolveGlob(dir: Path, glob: String): Seq[Path] = {
 
