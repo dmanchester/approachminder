@@ -67,7 +67,7 @@ object AircraftCategory {
   )
 
   /**
-   * TODO Move to Utils?
+   * TODO Move to Utils? Or an AircraftCategories object?
    *
    * In a collection of aircraft categories, determine the most-common one that is "non-blank" (i.e., not `NoInfoAtAll`
    * or `NoADSBEmitterCategoryInfo`). The collection cannot be empty.

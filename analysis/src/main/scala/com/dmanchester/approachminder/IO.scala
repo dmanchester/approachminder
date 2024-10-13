@@ -7,14 +7,19 @@ import play.api.libs.json._
 import java.nio.file.{Files, Path}
 import java.time.Instant
 import java.time.format.DateTimeFormatter
-import scala.collection.mutable
 import scala.jdk.CollectionConverters._
 import scala.math.BigDecimal.RoundingMode
 import scala.util.{Failure, Success, Try, Using}
 
 object IO {
 
-  val stateVectorReads: Reads[OpenSkyVector] = (
+  def resolveGlob(dir: Path, glob: String): Seq[Path] = {
+    Using.resource(Files.newDirectoryStream(dir, glob)) { (dirStreamAsJavaIterable: java.lang.Iterable[Path]) =>
+      dirStreamAsJavaIterable.asScala.toSeq
+    }
+  }
+
+  private val stateVectorReads: Reads[OpenSkyVector] = (
     (JsPath \ 0).read[String] and
       // Callsigns (see next line) have trailing whitespace. (Interestingly, other String vector
       // fields do not.)
@@ -37,7 +42,77 @@ object IO {
       (JsPath \ 17).read[Int].map(AircraftCategory.byId)
     ) (OpenSkyVector.apply _)
 
-  val multipleStateVectorsReads: Reads[Seq[OpenSkyVector]] = Reads.seq(stateVectorReads)
+  private val multipleStateVectorsReads: Reads[Seq[OpenSkyVector]] = Reads.seq(stateVectorReads)
+
+  sealed trait SingleFileToOpenSkyVectorsResult
+  case class SingleFileToOpenSkyVectorsSuccess(vectors: Seq[OpenSkyVector]) extends SingleFileToOpenSkyVectorsResult
+  case class SingleFileToOpenSkyVectorsFailure(message: String) extends SingleFileToOpenSkyVectorsResult
+
+  private def doSingleFileToOpenSkyVectors(file: Path): SingleFileToOpenSkyVectorsResult = {
+
+    val fileBytes = Files.readAllBytes(file)
+
+    if (fileBytes.isEmpty) {
+      SingleFileToOpenSkyVectorsSuccess(Seq.empty)
+    } else {
+
+      val jsValue = Json.parse(fileBytes)
+
+      val jsResultVectors = (jsValue \ "states").validate(multipleStateVectorsReads)
+      // If we made stateVectorReads implicit, we could avoid declaring multipleStateVectorsReads
+      // and just write ".validate[Seq[StateVector]]". But, the above syntax makes it clearer what's
+      // going on.
+
+      jsResultVectors match {
+
+        case JsSuccess(vectors, _) => // TODO Confirm "_" nothing of interest
+          SingleFileToOpenSkyVectorsSuccess(vectors)
+
+        case JsError(errors) =>
+          SingleFileToOpenSkyVectorsFailure(errors.toString)
+      }
+    }
+  }
+
+  def singleFileToOpenSkyVectors(file: Path): SingleFileToOpenSkyVectorsResult = {
+    val successOrFailure = Try(doSingleFileToOpenSkyVectors(file))
+
+    successOrFailure match {
+      case Success(result) =>
+        result
+      case Failure(exception) =>
+        SingleFileToOpenSkyVectorsFailure(exception.getMessage)
+    }
+  }
+
+  case class FailedFileError(file: Path, message: String)
+  case class FilesToOpenSkyVectorsResult private (totalFiles: Int, vectors: Seq[OpenSkyVector], errors: Seq[FailedFileError]) {
+
+    def failedFiles: Int = errors.length
+    def successFiles: Int = totalFiles - failedFiles
+
+    def updateForSuccessFile(addlVectors: Seq[OpenSkyVector]): FilesToOpenSkyVectorsResult = {
+      this.copy(totalFiles = totalFiles + 1, vectors = vectors :++ addlVectors)
+    }
+
+    def updateForFailedFile(addlError: FailedFileError): FilesToOpenSkyVectorsResult = {
+      this.copy(totalFiles = totalFiles + 1, errors = errors :+ addlError)
+    }
+  }
+
+  object FilesToOpenSkyVectorsResult {
+    def apply(): FilesToOpenSkyVectorsResult = FilesToOpenSkyVectorsResult(0, Seq.empty, Seq.empty)
+  }
+
+  def filesToOpenSkyVectors(files: Iterable[Path]): FilesToOpenSkyVectorsResult = {
+    files.foldLeft(FilesToOpenSkyVectorsResult()) { case (resultInProgress, file) =>
+
+      singleFileToOpenSkyVectors(file) match {
+        case SingleFileToOpenSkyVectorsSuccess(vectors) => resultInProgress.updateForSuccessFile(vectors)
+        case SingleFileToOpenSkyVectorsFailure(message) => resultInProgress.updateForFailedFile(FailedFileError(file, message))
+      }
+    }
+  }
 
   // TODO Could we (easily) use combinator syntax in our Writes instead of what's below?
 
@@ -114,128 +189,6 @@ object IO {
 //  }
 //
 //  val trajectoriesWithApproachesWrites = Writes.seq(trajectoryWithApproachSegmentsWrites)
-
-  def resolveGlob(dir: Path, glob: String): Seq[Path] = {
-
-    Using.resource(Files.newDirectoryStream(dir, glob)) { (dirStreamAsJavaIterable: java.lang.Iterable[Path]) =>
-      dirStreamAsJavaIterable.asScala.toSeq
-    }
-  }
-
-  sealed trait SingleFileToOpenSkyVectorsResult
-  case class SingleFileToOpenSkyVectorsSuccess(vectors: Seq[OpenSkyVector]) extends SingleFileToOpenSkyVectorsResult
-  case class SingleFileToOpenSkyVectorsFailure(message: String) extends SingleFileToOpenSkyVectorsResult
-
-  def singleFileToOpenSkyVectors(file: Path): SingleFileToOpenSkyVectorsResult = {
-    val successOrFailure = Try(doSingleFileToOpenSkyVectors(file))
-
-    successOrFailure match {
-      case Success(result) =>
-        result
-      case Failure(exception) =>
-        SingleFileToOpenSkyVectorsFailure(exception.getMessage)
-    }
-  }
-
-  private def doSingleFileToOpenSkyVectors(file: Path): SingleFileToOpenSkyVectorsResult = {
-
-    val fileBytes = Files.readAllBytes(file)
-
-    if (fileBytes.isEmpty) {
-      SingleFileToOpenSkyVectorsSuccess(Seq.empty)
-    } else {
-
-      val jsValue = Json.parse(fileBytes)
-
-      val jsResultVectors = (jsValue \ "states").validate(multipleStateVectorsReads)
-      // If we made stateVectorReads implicit, we could avoid declaring multipleStateVectorsReads
-      // and just write ".validate[Seq[StateVector]]". But, the above syntax makes it clearer what's
-      // going on.
-
-      jsResultVectors match {
-
-        case JsSuccess(vectors, _) => {  // TODO Confirm "_" nothing of interest
-          SingleFileToOpenSkyVectorsSuccess(vectors)
-        }
-
-        case JsError(errors) => {
-          SingleFileToOpenSkyVectorsFailure(errors.toString)
-        }
-      }
-    }
-  }
-
-  case class FailedFileError(file: Path, message: String)
-  case class FilesToOpenSkyVectorsResult(totalFiles: Int, vectors: Seq[OpenSkyVector], errors: Seq[FailedFileError]) {
-
-    def failedFiles = errors.length
-    def successFiles = totalFiles - failedFiles
-
-    def updateForSuccessFile(addlVectors: Seq[OpenSkyVector]): FilesToOpenSkyVectorsResult = {
-      this.copy(totalFiles = totalFiles + 1, vectors = vectors :++ addlVectors)
-    }
-
-    def updateForFailedFile(addlError: FailedFileError): FilesToOpenSkyVectorsResult = {
-      this.copy(totalFiles = totalFiles + 1, errors = errors :+ addlError)
-    }
-  }
-
-  object FilesToOpenSkyVectorsResult {
-    def apply(): FilesToOpenSkyVectorsResult = FilesToOpenSkyVectorsResult(0, Seq.empty, Seq.empty)
-  }
-
-  def filesToOpenSkyVectors(files: Iterable[Path]): FilesToOpenSkyVectorsResult = {
-    files.foldLeft(FilesToOpenSkyVectorsResult()) { case (resultInProgress, file) =>
-
-      singleFileToOpenSkyVectors(file) match {
-        case SingleFileToOpenSkyVectorsSuccess(vectors) => resultInProgress.updateForSuccessFile(vectors)
-        case SingleFileToOpenSkyVectorsFailure(message) => resultInProgress.updateForFailedFile(FailedFileError(file, message))
-      }
-    }
-  }
-
-  class ReadUniqueVectorsResult(val filesReadSuccessfully: Int, val totalVectorsRead: Int, val uniqueVectors: Seq[OpenSkyVector], val filesErroredOut: Int, val errors: Seq[JsError]) {
-
-    override def toString = s"${this.getClass.getSimpleName}(filesReadSuccessfully:$filesReadSuccessfully,totalVectorsRead:$totalVectorsRead,uniqueVectors.length:${uniqueVectors.length},filesErroredOut:$filesErroredOut,errors.length:${errors.length})"  // styled after case classes' toString
-  }
-
-  def readUniqueVectors(files: Seq[Path]): ReadUniqueVectorsResult = {
-
-    // TODO Explain why using mutable
-    var filesReadSuccessfully = 0
-    var totalVectorsRead = 0
-    val uniqueVectors: mutable.Set[OpenSkyVector] = mutable.LinkedHashSet.empty
-    var filesErroredOut = 0
-    val errors: mutable.Buffer[JsError] = mutable.Buffer.empty  // mutable.Seq doesn't offer in-place "add..." methods, but mutable.Buffer does
-
-    files.foreach({ file =>
-
-      val fileBytes = Files.readAllBytes(file)
-      val json = Json.parse(fileBytes)
-
-      val jsResultStateVectors = (json \ "states").validate(multipleStateVectorsReads)
-      // If we made stateVectorReads implicit, we could avoid declaring multipleStateVectorsReads
-      // and just write ".validate[Seq[StateVector]]". But, the above syntax makes it clearer what's
-      // going on.
-
-      jsResultStateVectors match {
-
-        case JsSuccess(vectorsFromFile, _) => {  // TODO Confirm "_" nothing of interest
-          filesReadSuccessfully += 1
-          totalVectorsRead += vectorsFromFile.length
-          uniqueVectors.addAll(vectorsFromFile)
-        }
-
-        case error: JsError => {
-          filesErroredOut += 1
-          errors.addOne(error)
-        }
-      }
-    })
-
-    // TODO Confirm what I get from toSeq is immutable
-    new ReadUniqueVectorsResult(filesReadSuccessfully, totalVectorsRead, uniqueVectors.toSeq, filesErroredOut, errors.toSeq)
-  }
 
   def toWKT(trajectory: Seq[HasLongLat]): String = {
     val contents = trajectory.map({ point => s"${point.longitude} ${point.latitude}" }).mkString(", ")

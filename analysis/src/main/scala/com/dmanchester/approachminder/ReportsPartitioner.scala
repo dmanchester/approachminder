@@ -1,16 +1,25 @@
 package com.dmanchester.approachminder
 
-// TODO Odd that I need to import
-import com.dmanchester.approachminder.ReportsPartitioner.beginAccumlatingSeq
+private trait ReportsPartitioner[R <: HasPositionReportIdentifiers] {
 
-trait ReportsPartitioner[R <: HasPositionReportIdentifiers] {
   def processReport(report: R): ReportsPartitioner[R]
+
   def partitionedReports: Seq[(Option[String], Seq[R])]
+
+  // TODO Is there a better place to put this utility method? (Some object?)
+  protected def beginAccumlatingSeq[R1 <: HasPositionReportIdentifiers](report: R1, completedSeqs: Seq[(Option[String], Seq[R1])], timeGapForPartitioning: Int): ReportsPartitioner[R1] = {
+    report.callsign.map { theCallsign =>
+      new PartitionerAccumulatingWithCallsignState(Seq(report), theCallsign, completedSeqs, timeGapForPartitioning)
+    } getOrElse {
+      new PartitionerAccumulatingWithoutCallsignState(Seq(report), completedSeqs, timeGapForPartitioning)
+    }
+  }
+
 }
 
 // TODO For class params, "val" vs. "public val" vs ...?
 
-class PartitionerInitState[R <: HasPositionReportIdentifiers](val timeGapForPartitioning: Int) extends ReportsPartitioner[R] {
+private class PartitionerInitState[R <: HasPositionReportIdentifiers](val timeGapForPartitioning: Int) extends ReportsPartitioner[R] {
 
   override def processReport(report: R): ReportsPartitioner[R] = {
     beginAccumlatingSeq(report, Seq.empty, timeGapForPartitioning)
@@ -19,7 +28,7 @@ class PartitionerInitState[R <: HasPositionReportIdentifiers](val timeGapForPart
   override def partitionedReports: Seq[(Option[String], Seq[R])] = Seq.empty
 }
 
-class PartitionerAccumulatingWithoutCallsignState[R <: HasPositionReportIdentifiers](val seqInProgress: Seq[R], val completedSeqs: Seq[(Option[String], Seq[R])], val timeGapForPartitioning: Int) extends ReportsPartitioner[R] {
+private class PartitionerAccumulatingWithoutCallsignState[R <: HasPositionReportIdentifiers](val seqInProgress: Seq[R], val completedSeqs: Seq[(Option[String], Seq[R])], val timeGapForPartitioning: Int) extends ReportsPartitioner[R] {
 
   override def processReport(report: R): ReportsPartitioner[R] = {
 
@@ -39,7 +48,7 @@ class PartitionerAccumulatingWithoutCallsignState[R <: HasPositionReportIdentifi
   override def partitionedReports: Seq[(Option[String], Seq[R])] = completedSeqs :+ (None, seqInProgress)
 }
 
-class PartitionerAccumulatingWithCallsignState[R <: HasPositionReportIdentifiers](val seqInProgress: Seq[R], val callsign: String, val completedSeqs: Seq[(Option[String], Seq[R])], val timeGapForPartitioning: Int /*TODO Is Int big enough?*/) extends ReportsPartitioner[R] {
+private class PartitionerAccumulatingWithCallsignState[R <: HasPositionReportIdentifiers](val seqInProgress: Seq[R], val callsign: String, val completedSeqs: Seq[(Option[String], Seq[R])], val timeGapForPartitioning: Int /*TODO Is Int big enough?*/) extends ReportsPartitioner[R] {
 
   override def processReport(report: R): ReportsPartitioner[R] = {
     // Check for two criteria:
@@ -65,19 +74,9 @@ class PartitionerAccumulatingWithCallsignState[R <: HasPositionReportIdentifiers
 
 object ReportsPartitioner {
 
-  // TODO Get rid of/make private/etc.
-  def apply[R <: HasPositionReportIdentifiers](timeGapForPartitioning: Int): ReportsPartitioner[R] = new PartitionerInitState(timeGapForPartitioning)
+  private def apply[R <: HasPositionReportIdentifiers](timeGapForPartitioning: Int): ReportsPartitioner[R] = new PartitionerInitState(timeGapForPartitioning)
 
-  def beginAccumlatingSeq[R <: HasPositionReportIdentifiers](report: R, completedSeqs: Seq[(Option[String], Seq[R])], timeGapForPartitioning: Int): ReportsPartitioner[R] = {
-    report.callsign.map { theCallsign =>
-      new PartitionerAccumulatingWithCallsignState(Seq(report), theCallsign, completedSeqs, timeGapForPartitioning)
-    } getOrElse {
-      new PartitionerAccumulatingWithoutCallsignState(Seq(report), completedSeqs, timeGapForPartitioning)
-    }
-  }
-
-  // TODO This method doesn't even need to live in this companion object; could sit in a library of assorted functions
-  def partition[R <: HasPositionReportIdentifiers](reports: Iterable[R], timeGap: Int): Seq[(Option[String], Seq[R])] = {
+  def partitionOnTimeGapAndCallsignChange[R <: HasPositionReportIdentifiers](reports: Iterable[R], timeGap: Int): Seq[(Option[String], Seq[R])] = {
     reports.foldLeft(ReportsPartitioner[R](timeGap)) { (partitioner, report) =>
       partitioner.processReport(report)
     }.partitionedReports

@@ -72,6 +72,12 @@ object ExtractionAndEstimation {
     }
   }
 
+  /**
+   * Not a member of ContinuouslyNearingTrajectory2 because it requires HasLongLatAlt data. (CNT2 only required HasLongLat.)
+   * @param sourceTrajectory
+   * @param intervalLengthInMeters
+   * @return
+   */
   def interpolateAtIntervals(sourceTrajectory: ContinuouslyNearingTrajectory2[HasLongLatAlt], intervalLengthInMeters: BigDecimal): Option[DistanceKeyed3DTrajectory] = {
 
     val sourcePositions = sourceTrajectory.positions
@@ -79,7 +85,6 @@ object ExtractionAndEstimation {
     val calculator = sourceTrajectory.calculator
 
     val distanceCountdown = BoundedCountdown(calculator.distanceInMeters(sourcePositions.head, referencePoint), calculator.distanceInMeters(sourcePositions.last, referencePoint), intervalLengthInMeters)
-    // TODO The .head and .tail could become members of CNT2
 
     val targetTrajectoryOption = doInterpolateAtIntervals(sourcePositions, distanceCountdown, referencePoint, calculator: GeographicCalculator, Map.empty[BigDecimal, AngleAndAltitude])
     DistanceKeyed3DTrajectory.newOption(targetTrajectoryOption)

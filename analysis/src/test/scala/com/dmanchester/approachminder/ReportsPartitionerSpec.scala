@@ -25,7 +25,7 @@ class ReportsPartitionerSpec extends Specification {
     "partition reports without callsigns on time gaps *larger than* what the partitioner was initialized with" in {
       val reports = Seq(withoutCallsignTime10, withoutCallsignTime15, withoutCallsignTime25)
 
-      val partitionedReports = ReportsPartitioner.partition(reports, 9)
+      val partitionedReports = ReportsPartitioner.partitionOnTimeGapAndCallsignChange(reports, 9)
 
       partitionedReports mustEqual(Seq(
         (None, Seq(withoutCallsignTime10, withoutCallsignTime15)),
@@ -36,7 +36,7 @@ class ReportsPartitionerSpec extends Specification {
     "partition reports without callsigns on time gaps *equal to* what the partitioner was initialized with" in {
       val reports = Seq(withoutCallsignTime10, withoutCallsignTime15, withoutCallsignTime25)
 
-      val partitionedReports = ReportsPartitioner.partition(reports, 10)
+      val partitionedReports = ReportsPartitioner.partitionOnTimeGapAndCallsignChange(reports, 10)
 
       partitionedReports mustEqual(Seq(
         (None, Seq(withoutCallsignTime10, withoutCallsignTime15)),
@@ -47,7 +47,7 @@ class ReportsPartitionerSpec extends Specification {
     "partition reports with callsigns on time gaps *larger than* what the partitioner was initialized with" in {
       val reports = Seq(withCallsignEFGHTime30, withCallsignEFGHTime35, withCallsignEFGHTime45)
 
-      val partitionedReports = ReportsPartitioner.partition(reports, 9)
+      val partitionedReports = ReportsPartitioner.partitionOnTimeGapAndCallsignChange(reports, 9)
 
       partitionedReports mustEqual(Seq(
         (Some(efgh), Seq(withCallsignEFGHTime30, withCallsignEFGHTime35)),
@@ -58,7 +58,7 @@ class ReportsPartitionerSpec extends Specification {
     "partition reports with callsigns on time gaps *equal to* what the partitioner was initialized with" in {
       val reports = Seq(withCallsignEFGHTime30, withCallsignEFGHTime35, withCallsignEFGHTime45)
 
-      val partitionedReports = ReportsPartitioner.partition(reports, 10)
+      val partitionedReports = ReportsPartitioner.partitionOnTimeGapAndCallsignChange(reports, 10)
 
       partitionedReports mustEqual(Seq(
         (Some(efgh), Seq(withCallsignEFGHTime30, withCallsignEFGHTime35)),
@@ -69,7 +69,7 @@ class ReportsPartitionerSpec extends Specification {
     "partition reports with callsigns when the callsign changes" in {
       val reports = Seq(withCallsignABCDTime20, withCallsignEFGHTime30, withCallsignEFGHTime35, withCallsignEFGHTime45)
 
-      val partitionedReports = ReportsPartitioner.partition(reports, 1000)
+      val partitionedReports = ReportsPartitioner.partitionOnTimeGapAndCallsignChange(reports, 1000)
 
       partitionedReports mustEqual(Seq(
         (Some(abcd), Seq(withCallsignABCDTime20)),
@@ -80,7 +80,7 @@ class ReportsPartitionerSpec extends Specification {
     "accommodate reports without callsigns before and after reports with the same callsign; but partition upon finding a different callsign" in {
       val reports = Seq(withoutCallsignTime10, withoutCallsignTime15, withCallsignABCDTime20, withoutCallsignTime25, withCallsignEFGHTime30, withCallsignEFGHTime35, withoutCallsignTime40)
 
-      val partitionedReports = ReportsPartitioner.partition(reports, 10)
+      val partitionedReports = ReportsPartitioner.partitionOnTimeGapAndCallsignChange(reports, 10)
 
       partitionedReports mustEqual(Seq(
         (Some(abcd), Seq(withoutCallsignTime10, withoutCallsignTime15, withCallsignABCDTime20, withoutCallsignTime25)),

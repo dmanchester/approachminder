@@ -1,15 +1,15 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.GroupingSortingFiltering.partitionElementsByICAO24
+import com.dmanchester.approachminder.TrajectoryExtraction.partitionByICAO24
 import org.specs2.mutable.*
 
-class GroupingSortingFilteringSpec extends Specification {
+class TrajectoryExtractionSpec extends Specification {
 
   "partitionElementsByICAO24" should {
 
     "handle an empty Seq" in {
       val elements = Seq.empty[HasICAO24]
-      val partitionedElements = partitionElementsByICAO24(elements)
+      val partitionedElements = partitionByICAO24(elements)
       partitionedElements must empty
     }
 
@@ -37,7 +37,7 @@ class GroupingSortingFilteringSpec extends Specification {
         aircraftThreeElementTwo
       )
 
-      val partitionedElements = partitionElementsByICAO24(elements)
+      val partitionedElements = partitionByICAO24(elements)
 
       partitionedElements.length mustEqual(3)
 

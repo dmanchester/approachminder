@@ -13,6 +13,22 @@ package com.dmanchester.approachminder
  */
 case class Trajectory3[P] private (positions: Seq[P], icao24: String, callsign: Option[String], category: Option[AircraftCategory]) {
 
+  /**
+   * Whether trajectory's aircraft was possibly fixed-wing and powered.
+   *
+   * @return
+   */
+  def isPossiblyFixedWingPowered: Boolean = {
+    // `Option.forAll` returns `true` on `None`
+    category.forall { theCategory =>
+      AircraftCategory.fixedWingPowered.contains(theCategory)
+    }
+  }
+
+  def mapPositions[A](f: P => A): Trajectory3[A] = {
+    new Trajectory3(positions.map(f), icao24, callsign, category)
+  }
+
   def drop(n: Int): Option[Trajectory3[P]] = Trajectory3.createOption(positions.drop(n), icao24, callsign, category)
 
   def isSegmentIndexValid(index: Int): Boolean = {

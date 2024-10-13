@@ -1,10 +1,13 @@
 package com.dmanchester.approachminder
 
 /**
- * An OpenSky position report with only the dynamic fields (i.e., those that one would expect to vary in a trajectory
- * from one report to the next).
+ * An OpenSky position report with all the fields of an `OpenSkyVector`, but requires values for the following fields
+ * (`OpenSkyVector` has them as `Option[...]`):
  *
- * TODO Better way to manage these fields as they appear here and in OpenSkyPositionReportAllFields?
+ *   - timePosition
+ *   - longitude
+ *   - latitude
+ *   - geoAltitude
  *
  * @param icao24
  * @param callsign
@@ -24,7 +27,10 @@ package com.dmanchester.approachminder
  * @param positionSource
  * @param category
  */
-case class OpenSkyPositionReport(
+case class OpenSkyPositionReportAllFields(
+                        icao24: String,
+                        callsign: Option[String],
+                        originCountry: String,
                         timePosition: BigInt,
                         lastContact: BigInt,
                         longitude: BigDecimal,
@@ -37,5 +43,26 @@ case class OpenSkyPositionReport(
                         geoAltitude: BigDecimal,
                         squawk: Option[String],
                         spi: Boolean,
-                        positionSource: PositionSource
-                      )
+                        positionSource: PositionSource,
+                        category: AircraftCategory
+                      ) extends HasPositionReportIdentifiers {
+
+  def toPositionReport: OpenSkyPositionReport = {
+    OpenSkyPositionReport(
+      timePosition,
+      lastContact,
+      longitude,
+      latitude,
+      baroAltitude,
+      onGround,
+      velocity,
+      trueTrack,
+      verticalRate,
+      geoAltitude,
+      squawk,
+      spi,
+      positionSource
+    )
+  }
+
+}

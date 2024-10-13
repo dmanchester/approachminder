@@ -7,21 +7,6 @@ import java.nio.charset.StandardCharsets
 
 object ThrowawayMain {
 
-//  TODO *** COMMENTED OUT 29 SEPT 2024 ***
-//
-//  def filesToTrajectories(files: Seq[Path]): Seq[(AircraftProfile, Trajectory[TimeBasedPosition])] = {
-//
-//    val readUniqueVectorsResult = IO.readUniqueVectors(files)
-//    println(readUniqueVectorsResult)
-//    println(readUniqueVectorsResult.errors)
-//
-//    val allPositions = GroupingSortingFiltering.fullySpecifiedPositions(readUniqueVectorsResult.uniqueVectors)
-//    val positionsByAircraftUnfiltered = GroupingSortingFiltering.positionsByAircraft(allPositions)
-//    val positionsByAircraft = GroupingSortingFiltering.filterPossiblyFixedWingPowered(positionsByAircraftUnfiltered)
-//
-//    GroupingSortingFiltering.trajectories(positionsByAircraft, 300)
-//  }
-
   def main(args: Array[String]): Unit = {
 
 // TODO *** COMMENTED OUT 29 SEPT. 2024
@@ -33,9 +18,6 @@ object ThrowawayMain {
 ////    val dirPath = Paths.get("/home/dan/flight-tracking/opensky-data--sfo--as-of-2022-09-01/")
 ////    val glob = "*.json"
 //    val glob = "all--2022-11-*.json"
-//
-//    val files = IO.resolveGlob(dirPath, glob)
-//    val trajectories = filesToTrajectories(files)
 //
 //    println(s"${trajectories.length} trajectories")
 //
