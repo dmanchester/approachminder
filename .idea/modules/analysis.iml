@@ -24,6 +24,9 @@
     <orderEntry type="library" name="sbt: com.typesafe.play:play-json_2.13:2.10.3:jar" level="project" />
     <orderEntry type="library" name="sbt: com.typesafe.scala-logging:scala-logging_2.13:3.9.5:jar" level="project" />
     <orderEntry type="library" name="sbt: commons-pool:commons-pool:1.5.4:jar" level="project" />
+    <orderEntry type="library" name="sbt: io.dylemma:spac-core_2.13:0.12.1:jar" level="project" />
+    <orderEntry type="library" name="sbt: io.dylemma:xml-spac-javax_2.13:0.12.1:jar" level="project" />
+    <orderEntry type="library" name="sbt: io.dylemma:xml-spac_2.13:0.12.1:jar" level="project" />
     <orderEntry type="library" name="sbt: it.geosolutions.jgridshift:jgridshift-core:1.3:jar" level="project" />
     <orderEntry type="library" name="sbt: jakarta.annotation:jakarta.annotation-api:1.3.4:jar" level="project" />
     <orderEntry type="library" name="sbt: javax.inject:javax.inject:1:jar" level="project" />
@@ -57,6 +60,9 @@
     <orderEntry type="library" scope="TEST" name="sbt: org.specs2:specs2-core_2.13:4.20.4:jar" level="project" />
     <orderEntry type="library" scope="TEST" name="sbt: org.specs2:specs2-fp_2.13:4.20.4:jar" level="project" />
     <orderEntry type="library" scope="TEST" name="sbt: org.specs2:specs2-matcher_2.13:4.20.4:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.tpolecat:typename_2.13:1.1.0:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.typelevel:cats-core_2.13:2.10.0:jar" level="project" />
+    <orderEntry type="library" name="sbt: org.typelevel:cats-kernel_2.13:2.10.0:jar" level="project" />
     <orderEntry type="library" name="sbt: si.uom:si-quantity:2.0.1:jar" level="project" />
     <orderEntry type="library" name="sbt: si.uom:si-units:2.0.1:jar" level="project" />
     <orderEntry type="library" name="sbt: systems.uom:systems-common:2.0.2:jar" level="project" />
