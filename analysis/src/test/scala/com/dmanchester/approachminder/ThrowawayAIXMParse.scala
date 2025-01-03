@@ -4,7 +4,7 @@ import cats.implicits.{catsSyntaxTuple2Semigroupal, catsSyntaxTuple3Semigroupal,
 import io.dylemma.spac
 import io.dylemma.spac.{Parser, Splitter}
 import io.dylemma.spac.xml.JavaxQName.javaxQNameAsQName
-import io.dylemma.spac.xml.{JavaxSource, XmlParser, XmlParserApplyOps, XmlSplitterApplyOps, XmlSplitterOps, elem, extractElemName}
+import io.dylemma.spac.xml.{JavaxSource, XmlEvent, XmlParser, XmlParserApplyOps, XmlSplitterApplyOps, XmlSplitterOps, elem, extractElemName}
 
 import java.io.File
 import javax.xml.namespace.QName
@@ -109,8 +109,18 @@ object ThrowawayAIXMParse {
       case _ => Parser.pure(None)
     }.parseToList.map(_.flatten)
 
-    val threeTypeParserOutput = threeTypeParser.parse(JavaxSource.fromInputStream { getClass.getResourceAsStream("resources/APT_AIXM_truncated.xml") })
-//    val threeTypeParserOutput = threeTypeParser.parse(JavaxSource.fromFile(new File("/home/dan/APT_AIXM.xml")))
+    val threeTypeParserAlt: Parser[XmlEvent, List[AIXMWrapper]] = Splitter.xml("SubscriberFile" \ "Member").joinBy(
+      Parser.oneOf(
+        Splitter.xml(spac.xml.* \ "AirportHeliport").joinBy(airportParser).parseFirst.map(airportHeliport => AirportHeliportWrapper(airportHeliport)),
+        Splitter.xml(spac.xml.* \ "Runway").joinBy(runwayParser).parseFirst.map(runway => RunwayWrapper(runway)),
+        Splitter.xml(spac.xml.* \ "RunwayDirection").joinBy(runwayDirectionParser).parseFirst.map(runwayDirection => RunwayDirectionWrapper(runwayDirection)),
+      ).wrapSafe.map(_.toOption)
+    ).parseToList.map(_.flatten)
+
+    val t1 = System.nanoTime
+//    val threeTypeParserOutput = threeTypeParser.parse(JavaxSource.fromInputStream { getClass.getResourceAsStream("resources/APT_AIXM_truncated.xml") })
+    val threeTypeParserOutput = threeTypeParserAlt.parse(JavaxSource.fromFile(new File("/home/dan/APT_AIXM.xml")))
+    val duration = (System.nanoTime - t1) / 1e9d
 
     val (airports, runways, runwayDirections) = (
       threeTypeParserOutput.collect { case AirportHeliportWrapper(x) => x },
@@ -118,8 +128,7 @@ object ThrowawayAIXMParse {
       threeTypeParserOutput.collect { case RunwayDirectionWrapper(x) => x }
     )
 
-    println(airports)
-    println(runways)
-    println(runwayDirections)
+    println(s"${airports.length} airports, ${runways.length} runways, ${runwayDirections.length} runway directions")
+    println(s"Elapsed time (seconds): ${duration}")
   }
 }
