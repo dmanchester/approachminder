@@ -44,16 +44,16 @@ object IO {
 
   private val multipleStateVectorsReads: Reads[Seq[OpenSkyVector]] = Reads.seq(stateVectorReads)
 
-  sealed trait SingleFileToOpenSkyVectorsResult
-  case class SingleFileToOpenSkyVectorsSuccess(vectors: Seq[OpenSkyVector]) extends SingleFileToOpenSkyVectorsResult
-  case class SingleFileToOpenSkyVectorsFailure(message: String) extends SingleFileToOpenSkyVectorsResult
+  sealed trait SingleOpenSkyFileToVectorsResult
+  case class SingleOpenSkyFileToVectorsSuccess(vectors: Seq[OpenSkyVector]) extends SingleOpenSkyFileToVectorsResult
+  case class SingleOpenSkyFileToVectorsFailure(message: String) extends SingleOpenSkyFileToVectorsResult
 
-  private def doSingleFileToOpenSkyVectors(file: Path): SingleFileToOpenSkyVectorsResult = {
+  private def doSingleOpenSkyFileToVectors(file: Path): SingleOpenSkyFileToVectorsResult = {
 
     val fileBytes = Files.readAllBytes(file)
 
     if (fileBytes.isEmpty) {
-      SingleFileToOpenSkyVectorsSuccess(Seq.empty)
+      SingleOpenSkyFileToVectorsSuccess(Seq.empty)
     } else {
 
       val jsValue = Json.parse(fileBytes)
@@ -66,53 +66,54 @@ object IO {
       jsResultVectors match {
 
         case JsSuccess(vectors, _) => // TODO Confirm "_" nothing of interest
-          SingleFileToOpenSkyVectorsSuccess(vectors)
+          SingleOpenSkyFileToVectorsSuccess(vectors)
 
         case JsError(errors) =>
-          SingleFileToOpenSkyVectorsFailure(errors.toString)
+          SingleOpenSkyFileToVectorsFailure(errors.toString)
       }
     }
   }
 
-  def singleFileToOpenSkyVectors(file: Path): SingleFileToOpenSkyVectorsResult = {
-    val successOrFailure = Try(doSingleFileToOpenSkyVectors(file))
+  def singleOpenSkyFileToVectors(file: Path): SingleOpenSkyFileToVectorsResult = {
+    val successOrFailure = Try(doSingleOpenSkyFileToVectors(file))
 
     successOrFailure match {
-      case Success(result) =>
+      case Success(result) =>  // "success" in this case doesn't necessarily mean method doSingleOpenSkyFileToVectors succeeded (result can be a OpenSkyFileToVectorsFailure); only that the method didn't throw
         result
       case Failure(exception) =>
-        SingleFileToOpenSkyVectorsFailure(exception.getMessage)
+        SingleOpenSkyFileToVectorsFailure(exception.getMessage)
     }
   }
 
   case class FailedFileError(file: Path, message: String)
-  case class FilesToOpenSkyVectorsResult private (totalFiles: Int, vectors: Seq[OpenSkyVector], errors: Seq[FailedFileError]) {
+  case class OpenSkyFilesToVectorsResult private(totalFiles: Int, vectors: Seq[OpenSkyVector], errors: Seq[FailedFileError]) {
 
     def failedFiles: Int = errors.length
     def successFiles: Int = totalFiles - failedFiles
 
-    def updateForSuccessFile(addlVectors: Seq[OpenSkyVector]): FilesToOpenSkyVectorsResult = {
+    def updateForSuccessFile(addlVectors: Seq[OpenSkyVector]): OpenSkyFilesToVectorsResult = {
       this.copy(totalFiles = totalFiles + 1, vectors = vectors :++ addlVectors)
     }
 
-    def updateForFailedFile(addlError: FailedFileError): FilesToOpenSkyVectorsResult = {
+    def updateForFailedFile(addlError: FailedFileError): OpenSkyFilesToVectorsResult = {
       this.copy(totalFiles = totalFiles + 1, errors = errors :+ addlError)
     }
   }
 
-  object FilesToOpenSkyVectorsResult {
-    def apply(): FilesToOpenSkyVectorsResult = FilesToOpenSkyVectorsResult(0, Seq.empty, Seq.empty)
+  object OpenSkyFilesToVectorsResult {
+    val empty = OpenSkyFilesToVectorsResult(0, Seq.empty, Seq.empty)
   }
 
-  def filesToOpenSkyVectors(files: Iterable[Path]): FilesToOpenSkyVectorsResult = {
-    files.foldLeft(FilesToOpenSkyVectorsResult()) { case (resultInProgress, file) =>
+  def openSkyFilesToVectors(files: Iterable[Path]): OpenSkyFilesToVectorsResult = {
+    files.foldLeft(OpenSkyFilesToVectorsResult.empty) { case (resultInProgress, file) =>
 
-      singleFileToOpenSkyVectors(file) match {
-        case SingleFileToOpenSkyVectorsSuccess(vectors) => resultInProgress.updateForSuccessFile(vectors)
-        case SingleFileToOpenSkyVectorsFailure(message) => resultInProgress.updateForFailedFile(FailedFileError(file, message))
+      singleOpenSkyFileToVectors(file) match {
+        case SingleOpenSkyFileToVectorsSuccess(vectors) => resultInProgress.updateForSuccessFile(vectors)
+        case SingleOpenSkyFileToVectorsFailure(message) => resultInProgress.updateForFailedFile(FailedFileError(file, message))
       }
     }
   }
+
 
   // TODO Could we (easily) use combinator syntax in our Writes instead of what's below?
 

@@ -70,12 +70,13 @@ object TrajectoryExtraction {
    */
   def openSkyFilesToTrajectories(dir: Path, glob: String, timeGapForPartitioning: Int): Seq[Trajectory3[OpenSkyPositionReport]] = {
 
+    // TODO Change dir to a String and do Paths.get inside this method?
     // TODO Make println's into log statements
 
     val files = IO.resolveGlob(dir, glob)
     println(s"${files.length} files to be read...")
 
-    val filesResult = IO.filesToOpenSkyVectors(files)
+    val filesResult = IO.openSkyFilesToVectors(files)
     println(s"${filesResult.totalFiles} files read (success: ${filesResult.successFiles}; failure: ${filesResult.failedFiles})")
 
     val positionReportsAllFields = filesResult.vectors.flatMap(_.toPositionReportAllFields)
