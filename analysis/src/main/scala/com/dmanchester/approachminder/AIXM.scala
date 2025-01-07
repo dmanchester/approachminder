@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder
 
-import cats.implicits.{catsSyntaxTuple2Semigroupal, catsSyntaxTuple3Semigroupal, catsSyntaxTuple4Semigroupal, catsSyntaxTuple5Semigroupal}
+import cats.implicits.{catsSyntaxTuple2Semigroupal, catsSyntaxTuple4Semigroupal, catsSyntaxTuple5Semigroupal}
 import io.dylemma.spac
 import io.dylemma.spac.{Parser, Source, Splitter}
 import io.dylemma.spac.xml.JavaxQName.javaxQNameAsQName
@@ -16,8 +16,6 @@ object AIXM {
 
   case class AIXMWidthStrip(value: Int, uom: String)
   case class AIXMRunway(gmlId: String, associatedAirportHeliportGmlId: String, designator: String, widthStrip: Option[AIXMWidthStrip])
-
-  case class AIXMRunwayDirection(gmlId: String, usedRunwayGmlId: String, runwayEnd: Option[AIXMLongLat])
 
   private val GMLNamespaceUri = "http://www.opengis.net/gml/3.2"
   private val XlinkNamespaceUri = "http://www.w3.org/1999/xlink"
@@ -71,43 +69,28 @@ object AIXM {
     widthStripParser
   ).mapN(AIXMRunway.apply)).parseFirst
 
-  private val usedRunwayGmlIdParser: XmlParser[String] = Splitter.xml(spac.xml.* \ "timeSlice" \ "RunwayDirectionTimeSlice" \ "usedRunway").joinBy(XmlParser.attr(new QName(XlinkNamespaceUri, "href"))).parseFirst.map(extractGmlIdFromHref)
-
-  private val runwayEndParser: XmlParser[Option[AIXMLongLat]] = Splitter.xml(spac.xml.* \ "timeSlice" \ "RunwayDirectionTimeSlice" \ "extension" \ "RunwayDirectionExtension" \ "ElevatedPoint" \ "pos").text.parseFirstOpt.map(_.flatMap { longLat =>
-    Option.unless(longLat.isEmpty)(convertLongLatString(longLat))
-  })
-
-  private val runwayDirectionParser: XmlParser[AIXMRunwayDirection] = Splitter.xml(spac.xml.* \ "RunwayDirection").joinBy((
-    gmlIdParser,
-    usedRunwayGmlIdParser,
-    runwayEndParser
-  ).mapN(AIXMRunwayDirection.apply)).parseFirst
-
   private sealed trait AIXMWrapper
   private case class AirportHeliportWrapper(airportHeliport: AIXMAirportHeliport) extends AIXMWrapper
   private case class RunwayWrapper(runway: AIXMRunway) extends AIXMWrapper
-  private case class RunwayDirectionWrapper(runwayDirection: AIXMRunwayDirection) extends AIXMWrapper
 
   private val multiTypeParser: Parser[XmlEvent, List[AIXMWrapper]] = Splitter.xml("SubscriberFile" \ "Member").joinBy(
     Parser.oneOf(
       airportParser.map(AirportHeliportWrapper.apply),
-      runwayParser.map(RunwayWrapper.apply),
-      runwayDirectionParser.map(RunwayDirectionWrapper.apply),
+      runwayParser.map(RunwayWrapper.apply)
     ).wrapSafe.map(_.toOption)
   ).parseToList.map(_.flatten)
 
-  def parseAptXml(source: Source[XmlEvent]): (Seq[AIXMAirportHeliport], Seq[AIXMRunway], Seq[AIXMRunwayDirection]) = {
+  def parseAptXml(source: Source[XmlEvent]): (Seq[AIXMAirportHeliport], Seq[AIXMRunway]) = {
 
     val parserOutput = multiTypeParser.parse(source)
 
     (
       parserOutput.collect { case AirportHeliportWrapper(airportHeliport) => airportHeliport },
-      parserOutput.collect { case RunwayWrapper(runway) => runway },
-      parserOutput.collect { case RunwayDirectionWrapper(runwayDirection) => runwayDirection }
+      parserOutput.collect { case RunwayWrapper(runway) => runway }
     )
   }
 
-  def parseAptFile(file: String): (Seq[AIXMAirportHeliport], Seq[AIXMRunway], Seq[AIXMRunwayDirection]) = {
+  def parseAptFile(file: String): (Seq[AIXMAirportHeliport], Seq[AIXMRunway]) = {
     parseAptXml(JavaxSource.fromFile(new File(file)))
   }
 }

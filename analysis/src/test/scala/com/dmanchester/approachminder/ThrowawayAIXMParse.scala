@@ -4,9 +4,9 @@ object ThrowawayAIXMParse {
 
   def main(args: Array[String]): Unit = {
 
-    val (airportHeliports, runways, runwayDirections) = AIXM.parseAptFile("/home/dan/APT_AIXM.xml")
+    val (airportHeliports, runways) = AIXM.parseAptFile("/home/dan/APT_AIXM.xml")
 
-    println(s"${airportHeliports.length} airports, ${runways.length} runways, ${runwayDirections.length} runway directions")
-    println(s"10 airports/heliports:\n${airportHeliports.slice(1000, 1009).mkString("\n")}")
+    println(s"Airports/heliports:\n${airportHeliports.take(50).mkString("\n")}")
+    println(s"\n\nRunways:\n${runways.take(50).mkString("\n")}")
   }
 }
