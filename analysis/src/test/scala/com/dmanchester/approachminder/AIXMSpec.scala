@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.AIXM.{AIXMAirportHeliport, AIXMLongLat, AIXMRunway, AIXMWidthStrip}
+import com.dmanchester.approachminder.AIXM.{AIXMAirportHeliport, AIXMLongLat, AIXMRunway, AIXMRunwayDirection, AIXMWidthStrip}
 import io.dylemma.spac.xml.JavaxSource
 import org.specs2.mutable.*
 
@@ -11,7 +11,7 @@ class AIXMSpec extends Specification {
     "correctly parse APT XML" in {
 
       val source = JavaxSource.fromInputStream { getClass.getResourceAsStream("resources/APT_AIXM_snippet.xml") }
-      val (airportHeliports, runways) = AIXM.parseAptXml(source)
+      val (airportHeliports, runways, runwayDirections) = AIXM.parseAptXml(source)
 
       airportHeliports.length must beEqualTo(4)
 
@@ -44,9 +44,7 @@ class AIXMSpec extends Specification {
         )
       )
 
-      runways.length must beEqualTo(9)
-      // While the snippet includes four airports, it only includes the runway surfaces for the first three. Each runway
-      // surface has three AIXMRunway instances. So, there are nine total.
+      runways.length must beEqualTo(11)
 
       // AIXMRunway has one Option field: widthStrip. Examine an instance with a Some (#0); examine an instance
       // with a None (#1).
@@ -67,6 +65,30 @@ class AIXMSpec extends Specification {
           "RWY_BASE_END_0000001_1",
           "AH_0000001",
           "05",
+          None
+        )
+      )
+
+      runwayDirections.length must beEqualTo(7)
+
+      // AIXMRunwayDirection has one Option field: runwayEnd. Examine an instance with a Some (#0); examine an instance
+      // with a None (#6).
+
+      runwayDirections(0) must beEqualTo(
+        AIXMRunwayDirection(
+          "RWY_DIRECTION_BASE_END_0000001_1",
+          "RWY_BASE_END_0000001_1",
+          Some(AIXMLongLat(
+            BigDecimal("-176.657497"),
+            BigDecimal("51.878339")
+          ))
+        )
+      )
+
+      runwayDirections(6) must beEqualTo(
+        AIXMRunwayDirection(
+          "RWY_DIRECTION_BASE_END_0000001_4",
+          "RWY_BASE_END_0000001_4",
           None
         )
       )

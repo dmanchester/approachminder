@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- This is a snippet of the much larger APT_AIXM.xml file effective 3 Oct. 2024. It was created as follows (with this
+     comment header added after the fact):
+
+     { head -n 3884 APT_AIXM.xml && tail -n 1 APT_AIXM.xml; } > APT_AIXM_snippet.xml
+-->
 <faa:SubscriberFile gml:id="Subscriber-0000000" validFrom="2024-10-03T00:00:00.000-04:00" AIXMVersion="AIXM5.1" SubscriberFileType="APT" xsi:schemaLocation="http://www.faa.gov/aixm5.1 ../AIXM/extension/SubscriberFile-AIXM.xsd" xmlns:faa="http://www.faa.gov/aixm5.1"  xmlns:apt="http://www.faa.gov/aixm5.1/apt" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aixm="http://www.aixm.aero/schema/5.1" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xlink="http://www.w3.org/1999/xlink">
   <faa:Member>
     <aixm:AirportHeliport gml:id="AH_0000001">
@@ -3438,5 +3443,448 @@
         </aixm:AirportHeliportTimeSlice>
       </aixm:timeSlice>
     </aixm:AirportHeliport>
+  </faa:Member>
+  <faa:Member>
+    <aixm:OrganisationAuthority gml:id="OA_0000004">
+      <aixm:timeSlice>
+        <aixm:OrganisationAuthorityTimeSlice gml:id="ORGANISATION_AUTHORITY_AIRPORT_MANAGER_INFORMATION_TS_0000004">
+          <gml:validTime>
+            <gml:TimePeriod gml:id="ORGANISATION_AUTHORITY_AIRPORT_MANAGER_INFORMATION_TIME_PERIOD_0000004">
+              <gml:beginPosition>2024-10-03T00:00:00.000-04:00</gml:beginPosition>
+              <gml:endPosition indeterminatePosition="unknown"/>
+            </gml:TimePeriod>
+          </gml:validTime>
+          <aixm:interpretation>BASELINE</aixm:interpretation>
+          <aixm:name>NONE</aixm:name>
+          <aixm:annotation>
+            <aixm:Note gml:id="AIRPORT_MANAGER_INFORMATION_NOTE_0000004">
+              <aixm:propertyName>airportManagerInformation</aixm:propertyName>
+              <aixm:translatedNote>
+                <aixm:LinguisticNote gml:id="AIRPORT_MANAGER_INFORMATION_ID_0000004">
+                  <aixm:note>THIS ORGANISATION AUTHORITY CONTAINS MANAGER INFORMATION</aixm:note>
+                </aixm:LinguisticNote>
+              </aixm:translatedNote>
+            </aixm:Note>
+          </aixm:annotation>
+        </aixm:OrganisationAuthorityTimeSlice>
+      </aixm:timeSlice>
+    </aixm:OrganisationAuthority>
+  </faa:Member>
+  <faa:Member>
+    <aixm:Unit gml:id="Unit_1_0000004">
+      <aixm:timeSlice>
+        <aixm:UnitTimeSlice gml:id="UNIT_OWNER_INFORMATION_TIME_SLICE_1_0000004">
+          <gml:validTime>
+            <gml:TimePeriod gml:id="UNIT_OWNER_INFORMATION_TIME_PERIOD_1_0000004">
+              <gml:beginPosition>2024-10-03T00:00:00.000-04:00</gml:beginPosition>
+              <gml:endPosition indeterminatePosition="unknown"/>
+            </gml:TimePeriod>
+          </gml:validTime>
+          <aixm:interpretation>BASELINE</aixm:interpretation>
+          <aixm:name>PUBLIC DOMAIN</aixm:name>
+          <aixm:airportLocation xlink:href="#/faa:SubscriberFile/aixm:AirportHeliport%5B@gml:id ='AH_0000004'%5D"/>
+          <aixm:annotation>
+            <aixm:Note gml:id="UNIT_OWNER_INFORMATION_NOTE_1_0000004">
+              <aixm:propertyName>unitOwnerInformation</aixm:propertyName>
+              <aixm:translatedNote>
+                <aixm:LinguisticNote gml:id="UNIT_OWNER_INFORMATION_ID_1_0000004">
+                  <aixm:note>THIS UNIT CONTAINS OWNER INFORMATION</aixm:note>
+                </aixm:LinguisticNote>
+              </aixm:translatedNote>
+            </aixm:Note>
+          </aixm:annotation>
+        </aixm:UnitTimeSlice>
+      </aixm:timeSlice>
+    </aixm:Unit>
+  </faa:Member>
+  <faa:Member>
+    <aixm:Unit gml:id="Unit_2_0000004">
+      <aixm:timeSlice>
+        <aixm:UnitTimeSlice gml:id="UNIT_BOUNDARY_ARTCC_TIME_SLICE_2_0000004">
+          <gml:validTime>
+            <gml:TimePeriod gml:id="UNIT_BOUNDARY_ARTCC_TIME_PERIOD_2_0000004">
+              <gml:beginPosition>2024-10-03T00:00:00.000-04:00</gml:beginPosition>
+              <gml:endPosition indeterminatePosition="unknown"/>
+            </gml:TimePeriod>
+          </gml:validTime>
+          <aixm:interpretation>BASELINE</aixm:interpretation>
+          <aixm:name>ANCHORAGE</aixm:name>
+          <aixm:type>ARTCC</aixm:type>
+          <aixm:designator>ZAN</aixm:designator>
+          <aixm:airportLocation xlink:href="#/faa:SubscriberFile/faa:Member/aixm:AirportHeliport%5B@gml:id ='AH_0000004'%5D"/>
+          <aixm:annotation>
+            <aixm:Note gml:id="UNIT_BOUNDARY_ARTCC_ID_2_0000004">
+              <aixm:propertyName>type</aixm:propertyName>
+              <aixm:translatedNote>
+                <aixm:LinguisticNote gml:id="UNIT_BOUNDARY_ARTCC_NOTE_ID_2_0000004">
+                  <aixm:note>UNIT IS FOR BOUNDARY ARTCC</aixm:note>
+                </aixm:LinguisticNote>
+              </aixm:translatedNote>
+            </aixm:Note>
+          </aixm:annotation>
+          <aixm:annotation>
+            <aixm:Note gml:id="BOUNDARY_ARTCC_COMPUTER_IDENTIFIER_ID_2_0000004">
+              <aixm:propertyName>computerIdentifier</aixm:propertyName>
+              <aixm:translatedNote>
+                <aixm:LinguisticNote gml:id="BOUNDARY_ARTCC_COMPUTER_IDENTIER_NOTE_ID_2_0000004">
+                  <aixm:note>ZAN</aixm:note>
+                </aixm:LinguisticNote>
+              </aixm:translatedNote>
+            </aixm:Note>
+          </aixm:annotation>
+        </aixm:UnitTimeSlice>
+      </aixm:timeSlice>
+    </aixm:Unit>
+  </faa:Member>
+  <faa:Member>
+    <aixm:Unit gml:id="Unit_3_0000004">
+      <aixm:timeSlice>
+        <aixm:UnitTimeSlice gml:id="UNIT_RESPONSIBLE_ARTCC_TIME_SLICE_3_0000004">
+          <gml:validTime>
+            <gml:TimePeriod gml:id="UNIT_RESPONSIBLE_ARTCC_TIME_PERIOD_3_0000004">
+              <gml:beginPosition>2024-10-03T00:00:00.000-04:00</gml:beginPosition>
+              <gml:endPosition indeterminatePosition="unknown"/>
+            </gml:TimePeriod>
+          </gml:validTime>
+          <aixm:interpretation>BASELINE</aixm:interpretation>
+          <aixm:name>ANCHORAGE</aixm:name>
+          <aixm:type>ARTCC</aixm:type>
+          <aixm:designator>ZAN</aixm:designator>
+          <aixm:airportLocation xlink:href="#/faa:SubscriberFile/faa:Member/aixm:AirportHeliport%5B@gml:id ='AH_0000004'%5D"/>
+          <aixm:annotation>
+            <aixm:Note gml:id="UNIT_RESPONSIBLE_ARTCC_ID_3_0000004">
+              <aixm:propertyName>type</aixm:propertyName>
+              <aixm:translatedNote>
+                <aixm:LinguisticNote gml:id="UNIT_RESPONSIBLE_ARTCC_NOTE_ID3_0000004">
+                  <aixm:note>UNIT IS FOR RESPONSIBLE ARTCC</aixm:note>
+                </aixm:LinguisticNote>
+              </aixm:translatedNote>
+            </aixm:Note>
+          </aixm:annotation>
+          <aixm:annotation>
+            <aixm:Note gml:id="UNIT_RESPONSIBLE_ARTCC_COMPUTER_IDENTIFIER_ID_3_0000004">
+              <aixm:propertyName>computerIdentifier</aixm:propertyName>
+              <aixm:translatedNote>
+                <aixm:LinguisticNote gml:id="UNIT_RESPONSIBLE_ARTCC_COMPUTER_IDENTIFIER_NOTE_ID_3_0000004">
+                  <aixm:note>ZAN</aixm:note>
+                </aixm:LinguisticNote>
+              </aixm:translatedNote>
+            </aixm:Note>
+          </aixm:annotation>
+        </aixm:UnitTimeSlice>
+      </aixm:timeSlice>
+    </aixm:Unit>
+  </faa:Member>
+  <faa:Member>
+    <aixm:Unit gml:id="Unit_4_0000004">
+      <aixm:timeSlice>
+        <aixm:UnitTimeSlice gml:id="UNIT_TIE_IN_FSS_TIME_SLICE_4_0000004">
+          <gml:validTime>
+            <gml:TimePeriod gml:id="UNIT_TIE_IN_FSS_TIME_PERIOD_4_0000004">
+              <gml:beginPosition>2024-10-03T00:00:00.000-04:00</gml:beginPosition>
+              <gml:endPosition indeterminatePosition="unknown"/>
+            </gml:TimePeriod>
+          </gml:validTime>
+          <aixm:interpretation>BASELINE</aixm:interpretation>
+          <aixm:name>KENAI</aixm:name>
+          <aixm:type>ARTCC</aixm:type>
+          <aixm:designator>ENA</aixm:designator>
+          <aixm:airportLocation xlink:href="#/faa:SubscriberFile/faa:Member/aixm:AirportHeliport%5B@gml:id ='AH_0000004'%5D"/>
+          <aixm:contact>
+            <aixm:ContactInformation gml:id="UNIT_TIE_IN_FSS_CONTACT_INFORMATION_ID_4_0000004">
+              <aixm:phoneFax>
+                <aixm:TelephoneContact gml:id="UNIT_TIE_IN_FSS_TELEPHONE_CONTACT_ID_4_0000004">
+                  <aixm:annotation>
+                    <aixm:Note gml:id="AIRPORT_TO_FSS_TOLL_FREE_PHONE_ID_4_0000004">
+                      <aixm:propertyName>tollFreePhoneAPTtoFSS</aixm:propertyName>
+                      <aixm:translatedNote>
+                        <aixm:LinguisticNote gml:id="AIRPORT_TO_FSS_TOLL_FREE_PHONE_NOTE_ID_4_0000004">
+                          <aixm:note>1-866-864-1737</aixm:note>
+                        </aixm:LinguisticNote>
+                      </aixm:translatedNote>
+                    </aixm:Note>
+                  </aixm:annotation>
+                  <aixm:voice>907-283-7211</aixm:voice>
+                </aixm:TelephoneContact>
+              </aixm:phoneFax>
+            </aixm:ContactInformation>
+          </aixm:contact>
+          <aixm:annotation>
+            <aixm:Note gml:id="UNIT_TIE_IN_FSS_ID_4_0000004">
+              <aixm:propertyName>unitType</aixm:propertyName>
+              <aixm:translatedNote>
+                <aixm:LinguisticNote gml:id="UNIT_TIE_IN_FSS_NOTE_ID_4_0000004">
+                  <aixm:note>UNIT IS FOR TIE_IN FSS</aixm:note>
+                </aixm:LinguisticNote>
+              </aixm:translatedNote>
+            </aixm:Note>
+          </aixm:annotation>
+          <aixm:annotation>
+            <aixm:Note gml:id="TIE_IN_LOCATION_IN_FACILITY_ID_4_0000004">
+              <aixm:propertyName>tieInFssLocatedInFacility</aixm:propertyName>
+              <aixm:translatedNote>
+                <aixm:LinguisticNote gml:id="TIE_IN_L0CATION_IN_FACILITY_NOTE_ID4_0000004">
+                  <aixm:note>N</aixm:note>
+                </aixm:LinguisticNote>
+              </aixm:translatedNote>
+            </aixm:Note>
+          </aixm:annotation>
+        </aixm:UnitTimeSlice>
+      </aixm:timeSlice>
+    </aixm:Unit>
+  </faa:Member>
+  <faa:Member>
+    <aixm:Unit gml:id="Unit_5_0000004">
+      <aixm:timeSlice>
+        <aixm:UnitTimeSlice gml:id="UNIT_ISSUING_NOTICE_TO_NOTAM_TIME_SLICE_5_0000004">
+          <gml:validTime>
+            <gml:TimePeriod gml:id="UNIT_ISSUING_NOTICE_TO_NOTAM_TIME_PERIOD_5_0000004">
+              <gml:beginPosition>2024-10-03T00:00:00.000-04:00</gml:beginPosition>
+              <gml:endPosition indeterminatePosition="unknown"/>
+            </gml:TimePeriod>
+          </gml:validTime>
+          <aixm:interpretation>BASELINE</aixm:interpretation>
+          <aixm:designator>ENA</aixm:designator>
+          <aixm:airportLocation xlink:href="#/faa:SubscriberFile/faa:Member/aixm:AirportHeliport%5B@gml:id ='AH_0000004'%5D"/>
+          <aixm:annotation>
+            <aixm:Note gml:id="UNIT_ISSUING_NOTICE_TO_AIRMEN_NOTAM_ID_5_0000004">
+              <aixm:propertyName>issueNotamAndWeatherInfo</aixm:propertyName>
+              <aixm:translatedNote>
+                <aixm:LinguisticNote gml:id="UNIT_ISSUING_NOTICE_TO_AIRMEN_NOTAM_NOTE_ID_5_0000004">
+                  <aixm:note>THIS UNIT IS RESPONSIBLE FOR ISSUING NOTICE TO AIRMEN(NOTAMS) AND WEATHER INFORMATION FOR AIRPORT</aixm:note>
+                </aixm:LinguisticNote>
+              </aixm:translatedNote>
+            </aixm:Note>
+          </aixm:annotation>
+          <aixm:annotation>
+            <aixm:Note gml:id="NOTAM_D_SERVICE_AVAILABILITY_AT_AIRPORT_ID_5_0000004">
+              <aixm:propertyName>notamDAvailability</aixm:propertyName>
+              <aixm:translatedNote>
+                <aixm:LinguisticNote gml:id="NOTAM_D_SERVICE_AVAILABILITY_AT_AIRPORT_NOTE_ID_5_0000004">
+                  <aixm:note>Y</aixm:note>
+                </aixm:LinguisticNote>
+              </aixm:translatedNote>
+            </aixm:Note>
+          </aixm:annotation>
+        </aixm:UnitTimeSlice>
+      </aixm:timeSlice>
+    </aixm:Unit>
+  </faa:Member>
+  <faa:Member>
+    <aixm:AirTrafficControlService gml:id="AIR_TRAFFIC_CONTROL_SERVICE_0000004">
+      <aixm:timeSlice>
+        <aixm:AirTrafficControlServiceTimeSlice gml:id="AIR_TRAFFIC_CONTOL_SERVICE_TS_0000004">
+          <gml:validTime>
+            <gml:TimePeriod gml:id="AIR_TRAFFIC_CONTROL_SERVICE_TP_0000004">
+              <gml:beginPosition>2024-10-03T00:00:00.000-04:00</gml:beginPosition>
+              <gml:endPosition indeterminatePosition="unknown"/>
+            </gml:TimePeriod>
+          </gml:validTime>
+          <aixm:interpretation>BASELINE</aixm:interpretation>
+          <aixm:radioCommunication xlink:href="#/faa:SubscriberFile/faa:Member/aixm:RadioCommunicationChannel%5B@gml:id ='RADIO_COMMUNICATION_CHANNEL_0000004'%5D"/>
+          <aixm:clientAirport xlink:href="#/faa:SubscriberFile/faa:Member/aixm:AirportHeliport%5B@gml:id ='AH_0000004'%5D"/>
+        </aixm:AirTrafficControlServiceTimeSlice>
+      </aixm:timeSlice>
+    </aixm:AirTrafficControlService>
+  </faa:Member>
+  <faa:Member>
+    <aixm:RadioCommunicationChannel gml:id="RADIO_COMMUNICATION_CHANNEL_0000004">
+      <aixm:timeSlice>
+        <aixm:RadioCommunicationChannelTimeSlice gml:id="RADIO_COMMUNICATION_CHANNEL_TS_0000004">
+          <gml:validTime>
+            <gml:TimePeriod gml:id="RADIO_COMMUNICATION_CHANNEL_TP_0000004">
+              <gml:beginPosition>2024-10-03T00:00:00.000-04:00</gml:beginPosition>
+              <gml:endPosition indeterminatePosition="unknown"/>
+            </gml:TimePeriod>
+          </gml:validTime>
+          <aixm:interpretation>BASELINE</aixm:interpretation>
+          <aixm:frequencyTransmission uom="MHZ">122.900</aixm:frequencyTransmission>
+        </aixm:RadioCommunicationChannelTimeSlice>
+      </aixm:timeSlice>
+    </aixm:RadioCommunicationChannel>
+  </faa:Member>
+  <faa:Member>
+    <aixm:AirportSuppliesService gml:id="AIRPORT_SUPPLIES_SERVICE_0000004">
+      <aixm:timeSlice>
+        <aixm:AirportSuppliesServiceTimeSlice gml:id="AIRPORT_SUPPLIES_SERVICE_TS_0000004">
+          <gml:validTime>
+            <gml:TimePeriod gml:id="AIRPORT_SUPPILES_SERVICE_TIME_PERIOD_0000004">
+              <gml:beginPosition>2024-10-03T00:00:00.000-04:00</gml:beginPosition>
+              <gml:endPosition indeterminatePosition="unknown"/>
+            </gml:TimePeriod>
+          </gml:validTime>
+          <aixm:interpretation>BASELINE</aixm:interpretation>
+          <aixm:airportHeliport xlink:href="#/faa:SubscriberFile/faa:Member/aixm:AirportHeliport%5B@gml:id ='AH_0000004'%5D"/>
+          <aixm:oxygenSupply>
+            <aixm:Oxygen gml:id="BOTTLED_OXYGEN_TYPE_ID_0000004">
+              <aixm:type>OTHER</aixm:type>
+              <aixm:annotation>
+                <aixm:Note gml:id="BOTTLED_OXYGEN_ID_0000004">
+                  <aixm:propertyName>bottledType</aixm:propertyName>
+                  <aixm:translatedNote>
+                    <aixm:LinguisticNote gml:id="BOTTLED_OXYGEN_NOTE_ID_0000004">
+                      <aixm:note>NONE Bottled Oxygen not available</aixm:note>
+                    </aixm:LinguisticNote>
+                  </aixm:translatedNote>
+                </aixm:Note>
+              </aixm:annotation>
+            </aixm:Oxygen>
+          </aixm:oxygenSupply>
+          <aixm:oxygenSupply>
+            <aixm:Oxygen gml:id="BULK_OXYGEN_TYPE_ID_0000005">
+              <aixm:type>OTHER</aixm:type>
+              <aixm:annotation>
+                <aixm:Note gml:id="BULK_OXYGEN_TYPE_ID_NOTE_0000005">
+                  <aixm:propertyName>bulkType</aixm:propertyName>
+                  <aixm:translatedNote>
+                    <aixm:LinguisticNote gml:id="BULK_OXYGEN_NOTE_ID_0000005">
+                      <aixm:note>NONE Bulk Oxygen not available</aixm:note>
+                    </aixm:LinguisticNote>
+                  </aixm:translatedNote>
+                </aixm:Note>
+              </aixm:annotation>
+            </aixm:Oxygen>
+          </aixm:oxygenSupply>
+          <aixm:extension>
+            <apt:AirportSuppliesServiceExtension gml:id="AIRPORT_SUPPLIES_SERVICE_EXTENSION_0000004">
+              <apt:airframeRepairType>NONE</apt:airframeRepairType>
+              <apt:powerPlantRepairType>NONE</apt:powerPlantRepairType>
+            </apt:AirportSuppliesServiceExtension>
+          </aixm:extension>
+        </aixm:AirportSuppliesServiceTimeSlice>
+      </aixm:timeSlice>
+    </aixm:AirportSuppliesService>
+  </faa:Member>
+  <faa:Member>
+    <aixm:Runway gml:id="RWY_0000001_4">
+      <aixm:timeSlice>
+        <aixm:RunwayTimeSlice gml:id="RUNWAY_TIME_SLICE_0000001_4">
+          <gml:validTime>
+            <gml:TimePeriod gml:id="RUNWAY_TIME_PERIOD_0000001_4">
+              <gml:beginPosition>2024-10-03T00:00:00.000-04:00</gml:beginPosition>
+              <gml:endPosition indeterminatePosition="unknown"/>
+            </gml:TimePeriod>
+          </gml:validTime>
+          <aixm:interpretation>BASELINE</aixm:interpretation>
+          <aixm:designator>E/W</aixm:designator>
+          <aixm:lengthStrip uom="FT">5000</aixm:lengthStrip>
+          <aixm:widthStrip uom="FT">300</aixm:widthStrip>
+          <aixm:surfaceProperties>
+            <aixm:SurfaceCharacteristics gml:id="SURFACE_CHARACTERISTICS_TYPE_ID_0000001_4">
+              <aixm:composition>WATER</aixm:composition>
+              <aixm:preparation>NATURAL</aixm:preparation>
+            </aixm:SurfaceCharacteristics>
+          </aixm:surfaceProperties>
+          <aixm:associatedAirportHeliport xlink:href="#/faa:SubscriberFile/faa:Member/aixm:AirportHeliport%5B@gml:id='AH_0000004'%5D"/>
+        </aixm:RunwayTimeSlice>
+      </aixm:timeSlice>
+    </aixm:Runway>
+  </faa:Member>
+  <faa:Member>
+    <aixm:Runway gml:id="RWY_BASE_END_0000001_4">
+      <aixm:timeSlice>
+        <aixm:RunwayTimeSlice gml:id="RUNWAY_BASE_END_TS_0000001_4">
+          <gml:validTime>
+            <gml:TimePeriod gml:id="RUNWAY_BASE_END_TP_0000001_4">
+              <gml:beginPosition>2024-10-03T00:00:00.000-04:00</gml:beginPosition>
+              <gml:endPosition indeterminatePosition="unknown"/>
+            </gml:TimePeriod>
+          </gml:validTime>
+          <aixm:interpretation>BASELINE</aixm:interpretation>
+          <aixm:designator>E</aixm:designator>
+          <aixm:associatedAirportHeliport xlink:href="#/faa:SubscriberFile/faa:Member/aixm:AirportHeliport%5B@gml:id='AH_0000004'%5D"/>
+          <aixm:extension>
+            <apt:RunwayExtension gml:id="RUNWAY_BASE_END_EXTENSION_0000001_4">
+              <apt:controllingObjectClearanceSlope>50</apt:controllingObjectClearanceSlope>
+            </apt:RunwayExtension>
+          </aixm:extension>
+        </aixm:RunwayTimeSlice>
+      </aixm:timeSlice>
+    </aixm:Runway>
+  </faa:Member>
+  <faa:Member>
+    <aixm:RunwayMarking gml:id="RWY_MARKING_BASE_0000001_4">
+      <aixm:timeSlice>
+        <aixm:RunwayMarkingTimeSlice gml:id="RWY_MARKING_BASE_TS_0000001_4">
+          <gml:validTime>
+            <gml:TimePeriod gml:id="RWY_MARKING_BASE_TP_0000001_4">
+              <gml:beginPosition>2024-10-03T00:00:00.000-04:00</gml:beginPosition>
+              <gml:endPosition indeterminatePosition="unknown"/>
+            </gml:TimePeriod>
+          </gml:validTime>
+          <aixm:interpretation>BASELINE</aixm:interpretation>
+          <aixm:element>
+            <aixm:MarkingElement gml:id="RUNWAY_MARKING_BASE_ELEMENT_ID_0000001_4">
+              <aixm:annotation>
+                <aixm:Note gml:id="MARKING_BASE_ELEMENT_ID_0000001_4">
+                  <aixm:propertyName>runwayMarkingBaseElement</aixm:propertyName>
+                  <aixm:translatedNote>
+                    <aixm:LinguisticNote gml:id="RUNWAY_MARKING_BASE_ELEMENT_NOTE_ID_0000001_4">
+                      <aixm:note>NONE</aixm:note>
+                    </aixm:LinguisticNote>
+                  </aixm:translatedNote>
+                </aixm:Note>
+              </aixm:annotation>
+            </aixm:MarkingElement>
+          </aixm:element>
+          <aixm:markedRunway xlink:href="#/faa:SubscriberFile/faa:Member/aixm:Runway%5B@gml:id='RWY_BASE_END_0000001_4'%5D"/>
+        </aixm:RunwayMarkingTimeSlice>
+      </aixm:timeSlice>
+    </aixm:RunwayMarking>
+  </faa:Member>
+  <faa:Member>
+    <aixm:TouchDownLiftOff gml:id="TOUCHDOWN_LIFT_OFF_RUNWAY_BASE_END_0000001_4">
+      <aixm:timeSlice>
+        <aixm:TouchDownLiftOffTimeSlice gml:id="TOUCHDOWN_LIFT_OFF_BASE_END_TIME_SLICE_0000001_4">
+          <gml:validTime>
+            <gml:TimePeriod gml:id="TOUCHDOWN_LIFT_OFF_BASE_END_TIME_PERIOD_0000001_4">
+              <gml:beginPosition>2024-10-03T00:00:00.000-04:00</gml:beginPosition>
+              <gml:endPosition indeterminatePosition="unknown"/>
+            </gml:TimePeriod>
+          </gml:validTime>
+          <aixm:interpretation>BASELINE</aixm:interpretation>
+          <aixm:designator>E</aixm:designator>
+          <aixm:associatedAirportHeliport xlink:href="#/faa:SubscriberFile/faa:Member/aixm:AirportHeliport%5B@gml:id='AH_0000004'%5D"/>
+          <aixm:annotation>
+            <aixm:Note gml:id="TOUCHDOWN_LIFT_OFF_BASE_END_RIGHTHANDTRAFFICPATTERN_ID_0000001_4">
+              <aixm:propertyName>rightHandTrafficPattern</aixm:propertyName>
+              <aixm:translatedNote>
+                <aixm:LinguisticNote gml:id="TOUCHDOWN_LIFT_OFF_BASE_END_RIGHTHANDTRAFFICPATTERN_NOTE_ID_0000001_4">
+                  <aixm:note>NO</aixm:note>
+                </aixm:LinguisticNote>
+              </aixm:translatedNote>
+            </aixm:Note>
+          </aixm:annotation>
+        </aixm:TouchDownLiftOffTimeSlice>
+      </aixm:timeSlice>
+    </aixm:TouchDownLiftOff>
+  </faa:Member>
+  <faa:Member>
+    <aixm:RunwayDirection gml:id="RWY_DIRECTION_BASE_END_0000001_4">
+      <aixm:timeSlice>
+        <aixm:RunwayDirectionTimeSlice gml:id="RWY_DIRECTION_BASE_TS_0000001_4">
+          <gml:validTime>
+            <gml:TimePeriod gml:id="RWY_DIRECTION_BASE_TP_0000001_4">
+              <gml:beginPosition>2024-10-03T00:00:00.000-04:00</gml:beginPosition>
+              <gml:endPosition indeterminatePosition="unknown"/>
+            </gml:TimePeriod>
+          </gml:validTime>
+          <aixm:interpretation>BASELINE</aixm:interpretation>
+          <aixm:usedRunway xlink:href="#/faa:SubscriberFile/faa:Member/aixm:RUNWAY%5B@gml:id='RWY_BASE_END_0000001_4'%5D"/>
+          <aixm:extension>
+            <apt:RunwayDirectionExtension gml:id="RUNWAY_DIRECTION_BASE_END_EXTENSION_0000001_4">
+              <apt:runwayVisibilityValueEquipment>NO</apt:runwayVisibilityValueEquipment>
+              <apt:runwayCenterLnLightsAvailability>NO</apt:runwayCenterLnLightsAvailability>
+              <apt:runwayEndTDLightsAvailability>NO</apt:runwayEndTDLightsAvailability>
+              <apt:runwayEndIdentifierLightsAvailability>NO</apt:runwayEndIdentifierLightsAvailability>
+              <apt:ElevatedPoint gml:id="RUNWAY_DIRECTION_BASE_END_ELEVATED_POINT_0000001_4" srsName="urn:ogc:def:crs:OGC:1.3:CRS83">
+                <gml:pos></gml:pos>
+                <aixm:elevation uom="FT">0.0</aixm:elevation>
+              </apt:ElevatedPoint>
+            </apt:RunwayDirectionExtension>
+          </aixm:extension>
+        </aixm:RunwayDirectionTimeSlice>
+      </aixm:timeSlice>
+    </aixm:RunwayDirection>
   </faa:Member>
 </faa:SubscriberFile>
