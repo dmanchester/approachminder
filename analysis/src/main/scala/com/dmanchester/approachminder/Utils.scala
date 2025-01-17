@@ -1,5 +1,7 @@
 package com.dmanchester.approachminder
 
+import org.geotools.measure.Units
+
 import scala.math.{pow, sin, sqrt, toRadians}
 
 /**
@@ -113,4 +115,6 @@ object Utils {
    def mostCommonValueInNonEmptyCollection[T](values: Iterable[T])(leftComesFirst: (T, T) => Boolean): T = {
     mostCommonValue(values)(leftComesFirst).get
   }
+
+  val feetToMetersConverter = Units.FOOT.getConverterTo(Units.METRE)
 }

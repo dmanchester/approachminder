@@ -1,10 +1,8 @@
 package com.dmanchester.approachminder
 
-import org.geotools.measure.Units
+import com.dmanchester.approachminder.Utils.feetToMetersConverter
 
 object Airports {
-
-  val feetToMetersConverter = Units.FOOT.getConverterTo(Units.METRE)
 
   // Data from https://nfdc.faa.gov/webContent/28DaySub/extra/03_Nov_2022_APT_CSV.zip >
   // APT_BASE.csv, APT_RWY.csv, APT_RWY_END.csv.

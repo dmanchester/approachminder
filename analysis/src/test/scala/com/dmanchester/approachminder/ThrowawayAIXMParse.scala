@@ -17,8 +17,12 @@ object ThrowawayAIXMParse {
 //    println(s"$countRunwayDirectionsWithoutRunwayEnd of ${runwayDirections.length}; first is $firstRunwayDirectionWithoutRunwayEnd")
 
     val repository = AIXMRepository(airportHeliports, runways, runwayDirections)
-    repository.printAirportDetails("AH_0002432")
-    repository.printAirportDetails("AH_0005438")
-    repository.printAirportDetails("AH_0002750")
+//    repository.printAirportDetails("AH_0002432")
+//    repository.printAirportDetails("AH_0005438")
+//    repository.printAirportDetails("AH_0002750")
+//    airportHeliports.filter(airportHeliport => Set("AH_0002432", "AH_0005438", "AH_0002750").contains(airportHeliport.gmlId)).foreach { airportHeliport =>
+    airportHeliports.foreach { airportHeliport =>
+      println(s"\n${airportHeliport.icaoId.getOrElse(airportHeliport.gmlId)}:")
+      repository.printAirportDetails(airportHeliport.gmlId) }
   }
 }
