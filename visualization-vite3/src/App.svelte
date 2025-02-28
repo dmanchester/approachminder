@@ -6,9 +6,9 @@
       Cartesian3,
       Ion,
       IonResource,
+      IonImageryProvider,
       JulianDate,
       SampledPositionProperty,
-      Terrain,
       VelocityOrientationProperty,
       Viewer,
       createWorldTerrainAsync,
@@ -23,6 +23,7 @@
 
   // TODO Externalize this.
   Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI2MzQ3MmQ0ZC1mNWU1LTQ2YzItYTRjMS01NGIxYzRjMGIwZTUiLCJpZCI6MTMyMTg5LCJpYXQiOjE2ODA2NTY4ODN9.CSgIJqm0gEDGCXXvbuW932tn04Q1m8Y_AmssiRXgR8Y';
+  const useBingImagery = false;
 
   let viewer;
   const trajectoriesToEntities = new Map();
@@ -31,9 +32,14 @@
 
   onMount(async () => {
       try {
-          viewer = new Viewer('cesiumContainer', {
-              terrainProvider: await createWorldTerrainAsync()  // TODO Compare to: "terrain: Terrain.fromWorldTerrain()"
-          });
+          const viewerOptions = {
+            terrainProvider: await createWorldTerrainAsync()  // TODO Compare to: "terrain: Terrain.fromWorldTerrain()"
+          };
+          if (!useBingImagery) {
+            // TODO Confirm the following is actually working. And document!
+            viewerOptions.imageryProvider = await IonImageryProvider.fromAssetId(3954, {});  // based on https://cesium.com/learn/ion/optimizing-quotas/
+          }
+          viewer = new Viewer('cesiumContainer', viewerOptions);
       } catch(error) {
           console.log(error);
       }
