@@ -15,3 +15,5 @@ Miscellaneous
 * Where do I use subtypes when I could use supertypes? (e.g., `Seq` vs. `Iterable`)
 * Move away from "--legacy-peer-deps"/address underlying issue.
 * To the extent I'm manually converting between degrees and radians, switch to scala.math functions.
+* Address uses of "position distribution". (Changed class to AngleAndAltitudeWithStats.)
+* Rationalize use of `BigDecimal` vs. `Double` for longitude, latitude. (Notable, for example, that we preserve vectors' values as `BigDecimal`; but AIXM parse leads immediately to `Double`.)
