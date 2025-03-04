@@ -14,8 +14,8 @@ object AIXM {
   case class AIXMLongLat(longitude: BigDecimal, latitude: BigDecimal)
   case class AIXMAirportHeliport(gmlId: String, name: String, aixmType: String, icaoId: Option[String], longLat: AIXMLongLat)
 
-  case class AIXMWidthStrip(value: Int, uom: String)
-  case class AIXMRunway(gmlId: String, associatedAirportHeliportGmlId: String, designator: String, widthStrip: Option[AIXMWidthStrip])
+  case class AIXMValueWithUOM(value: Int, uom: String)
+  case class AIXMRunway(gmlId: String, associatedAirportHeliportGmlId: String, designator: String, lengthStrip: Option[AIXMValueWithUOM], widthStrip: Option[AIXMValueWithUOM])
 
   case class AIXMRunwayDirection(gmlId: String, usedRunwayGmlId: String, runwayEnd: Option[AIXMLongLat])
 
@@ -48,14 +48,22 @@ object AIXM {
     }
   }
 
-  private val widthStripParser: XmlParser[Option[AIXMWidthStrip]] = Splitter.xml(runwayTimeSliceMatcher \ "widthStrip").joinBy(
-    (XmlParser.forText.map(_.toInt), XmlParser.attr("uom")).mapN(AIXMWidthStrip.apply)
+  private val valueWithUomParser: (XmlParser[Int], XmlParser[String]) = (XmlParser.forText.map(_.toInt), XmlParser.attr("uom"))
+
+  // TODO If keeping lengthStripParser, create a function to reduce duplicated code
+  private val lengthStripParser: XmlParser[Option[AIXMValueWithUOM]] = Splitter.xml(runwayTimeSliceMatcher \ "lengthStrip").joinBy(
+    valueWithUomParser.mapN(AIXMValueWithUOM.apply)
+  ).parseFirstOpt
+
+  private val widthStripParser: XmlParser[Option[AIXMValueWithUOM]] = Splitter.xml(runwayTimeSliceMatcher \ "widthStrip").joinBy(
+    valueWithUomParser.mapN(AIXMValueWithUOM.apply)
   ).parseFirstOpt
 
   private val runwayParser: XmlParser[AIXMRunway] = Splitter.xml(spac.xml.* \ "Runway").joinBy((
     gmlIdParser,
     Splitter.xml(runwayTimeSliceMatcher \ "associatedAirportHeliport").joinBy(XmlParser.attr(new QName(XlinkNamespaceUri, "href"))).parseFirst.map(extractGmlIdFromHref),
     Splitter.xml(runwayTimeSliceMatcher \ "designator").text.parseFirst,
+    lengthStripParser,
     widthStripParser
   ).mapN(AIXMRunway.apply)).parseFirst
 

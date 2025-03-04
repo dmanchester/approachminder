@@ -22,7 +22,9 @@ object ThrowawayAIXMParse {
 //    repository.printAirportDetails("AH_0002750")
 //    airportHeliports.filter(airportHeliport => Set("AH_0002432", "AH_0005438", "AH_0002750").contains(airportHeliport.gmlId)).foreach { airportHeliport =>
     airportHeliports.foreach { airportHeliport =>
-      println(s"\n${airportHeliport.icaoId.getOrElse(airportHeliport.gmlId)}:")
-      repository.printAirportDetails(airportHeliport.gmlId) }
+//      println(s"\n${airportHeliport.icaoId.getOrElse(airportHeliport.gmlId)}:")
+//      repository.printAirportDetails(airportHeliport.gmlId)
+      repository.checkAirportRunwaysThrowaway(airportHeliport.icaoId.getOrElse(airportHeliport.gmlId), airportHeliport.gmlId)
+    }
   }
 }

@@ -5,6 +5,7 @@ import com.dmanchester.approachminder.AIXMRepository.{AirportHeliportGmlId, Runw
 import com.dmanchester.approachminder.Utils.feetToMetersConverter
 
 import scala.collection.immutable.Map
+import scala.math.abs
 
 case class AIXMRepository private(runwaysMain: Map[AirportHeliportGmlId, Seq[AIXMRunway]], runwaysBaseEnd: Map[RunwayGmlIdNumericPortion, AIXMRunway], runwaysReciprocalEnd: Map[RunwayGmlIdNumericPortion, AIXMRunway], runwayDirections: Map[RunwayGmlId, AIXMRunwayDirection]) {
 
@@ -42,6 +43,42 @@ case class AIXMRepository private(runwaysMain: Map[AirportHeliportGmlId, Seq[AIX
       val runwaySurfaceTemplate = getRunwaySurfaceTemplate(runwayMain)
       println(s"  Runway surface ${runwayMain.designator}: $runwaySurfaceTemplate")
     }
+  }
+
+
+  def checkRunwayLengthThrowaway(airportId: String, runwayMain: AIXMRunway): Unit = {
+
+    val foo = for {
+      runwayMainLengthStrip <- runwayMain.lengthStrip.filter(_.uom == expectedUom).toRight(s"Main runway does not include a length strip with UOM '$expectedUom'.")
+
+      (_, runwayGmlIdNumericPortion) = gmlIdNonNumericAndNumericPortions(runwayMain.gmlId)
+
+      runwayBaseEnd <- runwaysBaseEnd.get(runwayGmlIdNumericPortion).toRight(s"No base-end runway found whose GML ID has numeric portion '$runwayGmlIdNumericPortion'.")
+      runwayDirectionBaseEnd <- runwayDirections.get(runwayBaseEnd.gmlId).toRight(s"No runway direction found for base-end runway with GML ID '${runwayBaseEnd.gmlId}'.")
+      runwayDirectionBaseEndPoint <- runwayDirectionBaseEnd.runwayEnd.toRight("No point found for base-end runway direction.")
+
+      runwayReciprocalEnd <- runwaysReciprocalEnd.get(runwayGmlIdNumericPortion).toRight(s"No reciprocal-end runway found whose GML ID has numeric portion '$runwayGmlIdNumericPortion'.")
+      runwayDirectionReciprocalEnd <- runwayDirections.get(runwayReciprocalEnd.gmlId).toRight(s"No runway direction found for reciprocal-end runway with GML ID '${runwayReciprocalEnd.gmlId}'.")
+      runwayDirectionReciprocalEndPoint <- runwayDirectionReciprocalEnd.runwayEnd.toRight("No point found for reciprocal-end runway direction.")
+
+      lengthInMeters = feetToMetersConverter.convert(runwayMainLengthStrip.value)
+    } yield {
+      (lengthInMeters, toLongLat(runwayDirectionBaseEndPoint), toLongLat(runwayDirectionReciprocalEndPoint))
+    }
+
+    foo.foreach { case (lengthInMeters, runwayDirectionBaseEndPoint, runwayDirectionReciprocalEndPoint) =>
+      val calc = GeographicCalculator(runwayDirectionBaseEndPoint)
+      val lengthInMetersFromPoints = calc.distanceInMeters(runwayDirectionBaseEndPoint, runwayDirectionReciprocalEndPoint)
+      val pct = (lengthInMeters - lengthInMetersFromPoints) / lengthInMetersFromPoints
+      if (abs(pct) > .01) {
+        println(s"$airportId, runway surface ${runwayMain.designator}: $lengthInMeters   $lengthInMetersFromPoints   $pct")
+      }
+    }
+  }
+
+  def checkAirportRunwaysThrowaway(airportId: String, airportHeliportGmlId: AirportHeliportGmlId): Unit = {
+    val theRunwaysMain = runwaysMain(airportHeliportGmlId)
+    theRunwaysMain.foreach(foo => checkRunwayLengthThrowaway(airportId, foo))
   }
 }
 
