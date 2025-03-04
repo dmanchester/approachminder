@@ -142,6 +142,9 @@
     overflow: hidden;
   }
   #tableSection {
+    font-family: sans-serif;
+    font-size: small;
+    margin-left: 16px;
     /* TODO This is the CSS default. How to prevent "overflow: hidden" trickle-down (not from #cesiumContainer; from
          elsewhere) such that we obviate the need for this? */
     overflow: visible;
