@@ -61,7 +61,7 @@
 
       viewer.clock.shouldAnimate = true;
 
-      const airplaneUri = await IonResource.fromAssetId(1621363);
+      const airplaneUri = await IonResource.fromAssetId(3164521);  // "B737-800 Model"
 
       trajectories.theTrajectories.forEach(trajectory => {
 
