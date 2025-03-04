@@ -24,6 +24,7 @@
   // TODO Externalize this.
   Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI2MzQ3MmQ0ZC1mNWU1LTQ2YzItYTRjMS01NGIxYzRjMGIwZTUiLCJpZCI6MTMyMTg5LCJpYXQiOjE2ODA2NTY4ODN9.CSgIJqm0gEDGCXXvbuW932tn04Q1m8Y_AmssiRXgR8Y';
   const useBingImagery = false;
+  const maxThresholdDistanceMetersForApproach = 10000;
 
   let viewer;
   const trajectoriesToEntities = new Map();
@@ -103,14 +104,15 @@
         // Get the latest positions within the time window, one per aircraft.
         const latestPositionsWithinWindow = trajectories.latestPositionsWithinWindow(time, windowDuration);  // TODO Rather than a tuple, this function could return an Object that names the two members (I end up doing this below anyway)
         // TODO First time I've used the "observations" terminology. If it sticks, broaden back to the Scala code?
-        const observationsUnsorted = latestPositionsWithinWindow.map(([trajectory, timeBasedPosition]) => ({
+        const observations = latestPositionsWithinWindow.map(([trajectory, timeBasedPosition]) => ({
           trajectory: trajectory,
           position: timeBasedPosition,
           ageOfObservation: Math.round(JulianDate.secondsDifference(time, timeBasedPosition.time))
         }));
-        const observations = sortBy(observationsUnsorted, observation => observation.trajectory.aircraftProfile.icao24);  // TODO MOVE THIS INTO AircraftTable.svelte?
-        observationsAircraftOnApproach = observations.filter(observation => observation.position.approachSegment);
-        observationsOtherAircraft = observations.filter(observation => !observation.position.approachSegment);
+        const observationsAircraftOnApproachUnsorted = observations.filter(observation => observation.position.approachSegment?.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach);
+        // TODO Move sorting into AircraftTable.svelte?
+        observationsAircraftOnApproach = sortBy(observationsAircraftOnApproachUnsorted, observation => observation.position.approachSegment.thresholdDistanceMeters);
+        observationsOtherAircraft = sortBy(observations.filter(observation => !observation.position.approachSegment), observation => observation.trajectory.aircraftProfile.callsign);
         lastTimeProcessed = time;
       });
   });
@@ -129,7 +131,8 @@
     <h1>Aircraft on Approach</h1>
     <AircraftTable observations="{observationsAircraftOnApproach}" showApproachSegments={true} clickHandlerTrajectory={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
     <h1>Other Aircraft</h1>
-    <AircraftTable observations="{observationsAircraftOnApproach}" showApproachSegments={false} clickHandlerTrajectory={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
+    <AircraftTable observations="{observationsOtherAircraft}" showApproachSegments={false} clickHandlerTrajectory={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
+    <h1 id="appName">ApproachMinder</h1>
   </section>
 </SplitPane>
 
@@ -148,5 +151,11 @@
     /* TODO This is the CSS default. How to prevent "overflow: hidden" trickle-down (not from #cesiumContainer; from
          elsewhere) such that we obviate the need for this? */
     overflow: visible;
+  }
+  #appName {
+    color: #0056b3;
+    position: fixed;
+    bottom: 0px;
+    right: 16px;
   }
 </style>
