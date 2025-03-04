@@ -21,8 +21,8 @@
 
   window['CESIUM_BASE_URL'] = '/libs/cesium'
 
-  // TODO Externalize this.
-  Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI2MzQ3MmQ0ZC1mNWU1LTQ2YzItYTRjMS01NGIxYzRjMGIwZTUiLCJpZCI6MTMyMTg5LCJpYXQiOjE2ODA2NTY4ODN9.CSgIJqm0gEDGCXXvbuW932tn04Q1m8Y_AmssiRXgR8Y';
+  // TODO Externalize access token.
+  Ion.defaultAccessToken = '*** INSERT ACCESS TOKEN FROM https://ion.cesium.com/ ***';
   const useBingImagery = false;
   const maxThresholdDistanceMetersForApproach = 10000;
 
