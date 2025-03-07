@@ -43,11 +43,11 @@ The following still frame from the ApproachMinder visualization provides a persp
 
 ![UAL539 on approach to KSFO Runway 28L.](images/ual539.png)
 
-The still frame shows the result of analyzing ADS-B data from 4 December 2022. (In a strict sense, the data was not "live": it was loaded from a file. However, it was judged to be a suitable approximation of live data, as it was gathered _after_ the data that underpins the approach models used. Also, the ApproachMinder analysis for a given point in time did not access future data.)
+The still frame shows the result of analyzing ADS-B data from 4 December 2022. (In a strict sense, the data was not "live": it was loaded from a file. However, it was judged to be a suitable approximation of live data, as it was gathered after the data that underpins the approach models used. Also, the ApproachMinder analysis for a given point in time did not access future data.)
 
 The aircraft shown is United Airlines Flight 539 (UAL539). As highlighted in orange on the dashboard, **ApproachMinder examined the aircraft's trajectory against ApproachMinder's statistical models and correctly inferred that the aircraft is on approach to Runway 28L at KSFO.**
 
-Further, **ApproachMinder has calculated that:**
+Further, **ApproachMinder calculated that:**
 
 * 3,997 meters remain to the runway's threshold;
 * UAL539's current position deviates 11 meters vertically and 9 meters horizontally from a statistical mean of historical aircraft positions at that point in the approach; and
@@ -103,7 +103,7 @@ A future version will add them. If an aircraft deviates excessively from its inf
 
 Geospatial information about an airport's runways—their width; the coordinates of their thresholds' centers—must currently be input manually.
 
-A future version of ApproachMinder will source that data from XML-based [AIXM](https://aixm.aero/) files; in the case of the United States, files from the Federal Aviation Administration's [NASR data](https://www.faa.gov/air_traffic/flight_info/aeronav/aero_data/NASR_Subscription/).
+A future version of ApproachMinder will source that data from XML-based [AIXM](https://aixm.aero/) files; in the case of the United States, files from the [NASR data](https://www.faa.gov/air_traffic/flight_info/aeronav/aero_data/NASR_Subscription/) of the Federal Aviation Administration (FAA).
 
 Initial development against FAA AIXM data with the [xml-spac](https://github.com/dylemma/xml-spac) parser has been successful.
 
