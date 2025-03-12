@@ -16,7 +16,7 @@ object ThrowawayOpenSkyFilesToTrajectories {
 //    val glob = "*.json"
     val glob = "all--2022-11-*.json"
 
-    val jonx = openSkyFilesToTrajectories(dir, glob, 300)
+    val trajectories = openSkyFilesToTrajectories(dir, glob, 300)
     println("Done!")
   }
 }
