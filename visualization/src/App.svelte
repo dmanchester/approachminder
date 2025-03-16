@@ -132,30 +132,37 @@
     <AircraftTable observations="{observationsAircraftOnApproach}" showApproachSegments={true} clickHandlerTrajectory={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
     <h1>Other Aircraft</h1>
     <AircraftTable observations="{observationsOtherAircraft}" showApproachSegments={false} clickHandlerTrajectory={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
-    <h1 id="appName">ApproachMinder</h1>
+    <div id="bottomRightBox">
+      <div id="appName"><b><a href="https://github.com/dmanchester/approachminder#approachminder" target="_blank">ApproachMinder</a></b></div>
+      ADS-B data by <a href="https://opensky-network.org/" target="_blank">OpenSky Network</a>
+    </div>
   </section>
 </SplitPane>
 
 <style>
   #cesiumContainer {
-    width: 100%;
     height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
   }
+
   #tableSection {
+    width: auto;
+    overflow: visible;
     font-family: sans-serif;
     font-size: small;
+    /* Can also do padding-left, padding-right */
     margin-left: 16px;
-    /* TODO This is the CSS default. How to prevent "overflow: hidden" trickle-down (not from #cesiumContainer; from
-         elsewhere) such that we obviate the need for this? */
-    overflow: visible;
+    margin-right: 16px;
   }
-  #appName {
-    color: #0056b3;
+
+  #bottomRightBox {
     position: fixed;
-    bottom: 0px;
-    right: 16px;
+    bottom: 16px;
+    right: 32px;
+    text-align: right;
+  }
+
+  #appName {
+    font-size: medium;
+    margin-bottom: 8px;
   }
 </style>

@@ -6,7 +6,7 @@
   const numberFormat = new Intl.NumberFormat();
 </script>
 
-<table>
+<table id={showApproachSegments ? "table-with-segments" : "table-without-segments"}>
     <thead>
     <tr>
         <th>Callsign</th>
@@ -69,8 +69,11 @@
     border-collapse: collapse;
   }
 
+  #table-without-segments {
+    width: 57.14%;  /* 8/14 */
+  }
+
   th, td {
-    width: 75px;
     padding: 4px;
     border: 1px solid #ddd;
   }
@@ -78,6 +81,14 @@
   th {
     background-color: #f0f0f0;
     text-align: center;
+  }
+
+  #table-with-segments th {
+    width: 7.1429%;  /* 100%/14 */
+  }
+
+  #table-without-segments th {
+    width: 12.5%;  /* 100%/8 */
   }
 
   td {
@@ -104,6 +115,6 @@
   }
 
   .align-center {
-      text-align: center;
+    text-align: center;
   }
 </style>
