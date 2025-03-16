@@ -7,7 +7,9 @@ import { createHtmlPlugin } from 'vite-plugin-html'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import { viteExternalsPlugin } from 'vite-plugin-externals'
 
-// https://vitejs.dev/config/
+// Contents of this file based largely on https://github.com/s3xysteak/simply-cesium-vite-vue.
+//
+// See also: https://vitejs.dev/config/.
 
 const copyCesium = items =>
     viteStaticCopy({
