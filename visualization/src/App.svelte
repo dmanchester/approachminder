@@ -4,7 +4,6 @@
   import AircraftTable from './AircraftTable.svelte';
   import {
     Cartesian3,
-    createWorldTerrainAsync,
     Entity,
     ImageryLayer,
     Ion,
@@ -12,8 +11,9 @@
     IonImageryProvider,
     JulianDate,
     SampledPositionProperty,
+    Terrain,
     VelocityOrientationProperty,
-    Viewer
+    Viewer,
   } from "cesium";
   import sortBy from "lodash/sortBy.js";
   import IO from "../lib/IO.js";
@@ -39,7 +39,10 @@
             geocoder: false,
             homeButton: false,
             sceneModePicker: false,
-            terrainProvider: await createWorldTerrainAsync()  // TODO Compare to: "terrain: Terrain.fromWorldTerrain()"
+            terrain: Terrain.fromWorldTerrain()
+            // Using "terrain: ..." instead of "terrainProvider: await createWorldTerrainAsync()" per:
+            //
+            // https://github.com/CesiumGS/cesium-webpack-example/blob/23638ff7ce845a655c949de9a01e765c91ee94ba/webpack-5/src/index.js#L17
           };
 
           if (!useBingImagery) {
