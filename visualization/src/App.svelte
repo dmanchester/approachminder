@@ -3,16 +3,17 @@
   import { SplitPane } from '@rich_harris/svelte-split-pane';
   import AircraftTable from './AircraftTable.svelte';
   import {
-      Cartesian3,
-      Ion,
-      IonResource,
-      IonImageryProvider,
-      JulianDate,
-      SampledPositionProperty,
-      VelocityOrientationProperty,
-      Viewer,
-      createWorldTerrainAsync,
-      Entity
+    Cartesian3,
+    createWorldTerrainAsync,
+    Entity,
+    ImageryLayer,
+    Ion,
+    IonResource,
+    IonImageryProvider,
+    JulianDate,
+    SampledPositionProperty,
+    VelocityOrientationProperty,
+    Viewer
   } from "cesium";
   import sortBy from "lodash/sortBy.js";
   import IO from "../lib/IO.js";
@@ -34,16 +35,23 @@
   onMount(async () => {
       try {
           const viewerOptions = {
+            baseLayerPicker: false,
             geocoder: false,
             homeButton: false,
             sceneModePicker: false,
             terrainProvider: await createWorldTerrainAsync()  // TODO Compare to: "terrain: Terrain.fromWorldTerrain()"
           };
+
           if (!useBingImagery) {
-            // TODO Confirm the following is actually working. And document!
-            viewerOptions.imageryProvider = await IonImageryProvider.fromAssetId(3954, {});  // based on https://cesium.com/learn/ion/optimizing-quotas/
+            // Use Sentinel-2 imagery. See:
+            //
+            //   * https://sandcastle.cesium.com/?src=Sentinel-2.html
+            //   * https://cesium.com/learn/ion/optimizing-quotas/
+            viewerOptions.baseLayer = ImageryLayer.fromProviderAsync(IonImageryProvider.fromAssetId(3954));
           }
+
           viewer = new Viewer('cesiumContainer', viewerOptions);
+
       } catch(error) {
           console.log(error);
       }
