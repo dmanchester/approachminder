@@ -34,6 +34,9 @@
   onMount(async () => {
       try {
           const viewerOptions = {
+            geocoder: false,
+            homeButton: false,
+            sceneModePicker: false,
             terrainProvider: await createWorldTerrainAsync()  // TODO Compare to: "terrain: Terrain.fromWorldTerrain()"
           };
           if (!useBingImagery) {
