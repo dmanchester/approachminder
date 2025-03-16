@@ -2,7 +2,7 @@ import AircraftProfile from "./AircraftProfile.js";
 import TimeBasedPosition from "./TimeBasedPosition.js";
 import Trajectories from "./Trajectories.js";
 import Trajectory from "./Trajectory.js";
-import { Cartesian3, JulianDate } from "cesium";
+import { JulianDate } from "cesium";
 import ApproachSegment from "./ApproachSegment.js";
 
 class IO {
