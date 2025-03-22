@@ -15,12 +15,12 @@
         <th>Longitude</th>
         <th>Altitude</th>
         {#if showApproachSegments}
-            <th>Airport</th>
-            <th>Runway</th>
-            <th>Dist. to Threshold</th>
-            <th>Vertical Deviation</th>
-            <th>Horiz. Deviation</th>
-            <th>Standard Devs.</th>
+            <th class="td-emphasis">Airport</th>
+            <th class="td-emphasis">Runway</th>
+            <th class="td-emphasis">Dist. to Threshold</th>
+            <th class="td-emphasis">Vertical Deviation</th>
+            <th class="td-emphasis">Horiz. Deviation</th>
+            <th class="td-emphasis">Standard Devs.</th>
         {/if}
 <!--        <th>On Ground?</th>-->
         <th>Velocity</th>
@@ -46,12 +46,12 @@
             <td>{observation.position.longitude}°</td>
             <td>{numberFormat.format(observation.position.altitude)} m</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
             {#if showApproachSegments}
-                <td>{observation.position.approachSegment.airport}</td>
-                <td>{observation.position.approachSegment.threshold}</td>
-                <td>{numberFormat.format(observation.position.approachSegment.thresholdDistanceMeters)} m</td>
-                <td>{numberFormat.format(observation.position.approachSegment.verticalDevMeters)} m</td>
-                <td>{numberFormat.format(observation.position.approachSegment.horizontalDevMeters)} m</td>
-                <td>{observation.position.approachSegment.normalizedEuclideanDistance}</td>
+                <td class="td-emphasis">{observation.position.approachSegment.airport}</td>
+                <td class="td-emphasis">{observation.position.approachSegment.threshold}</td>
+                <td class="td-emphasis">{numberFormat.format(observation.position.approachSegment.thresholdDistanceMeters)} m</td>
+                <td class="td-emphasis">{numberFormat.format(observation.position.approachSegment.verticalDevMeters)} m</td>
+                <td class="td-emphasis">{numberFormat.format(observation.position.approachSegment.horizontalDevMeters)} m</td>
+                <td class="td-emphasis">{observation.position.approachSegment.normalizedEuclideanDistance}</td>
             {/if}
 <!--            <td>{observation.position.onGround}</td>-->
             <td>{observation.position.velocity} m/s</td>
@@ -79,7 +79,6 @@
   }
 
   th {
-    background-color: #f0f0f0;
     text-align: center;
   }
 
@@ -91,16 +90,24 @@
     width: 12.5%;  /* 100%/8 */
   }
 
+  thead tr {
+    background-color: #f0f0f0;
+  }
+
+  tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+  tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+  }
+
   td {
     text-align: right;
   }
 
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-
-  tr:nth-child(odd) {
-    background-color: #ffffff;
+  .td-emphasis {
+    background-color: #ffa5002f;
   }
 
   button {
