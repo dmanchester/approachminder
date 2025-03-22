@@ -3,7 +3,6 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 
-import { createHtmlPlugin } from 'vite-plugin-html'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import { viteExternalsPlugin } from 'vite-plugin-externals'
 
@@ -26,23 +25,24 @@ const copyCesium = items =>
     })
 
 export default defineConfig({
+  base: './',  // see https://github.com/vitejs/vite/discussions/5081
   plugins: [
     svelte(),
-    createHtmlPlugin({
-      minify: true,
-      inject: {
-        data: {
-          cesiumInjectScript: `<script src="libs/cesium/Cesium.js"></script>`
-        }
-      }
-    }),
     copyCesium(['Assets', 'ThirdParty', 'Widgets', 'Workers']),
     viteExternalsPlugin(
         { cesium: 'Cesium' },
         {
           disableInServe: true
         }
-    )
+    ),
+    {
+      transformIndexHtml: () => [
+        {
+          tag: 'script',
+          attrs: { src: `libs/cesium/Cesium.js` }
+        }
+      ]
+    }
   ],
   resolve: {
     alias: {

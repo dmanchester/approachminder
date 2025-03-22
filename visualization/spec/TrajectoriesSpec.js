@@ -1,4 +1,4 @@
-import { Cartesian3, JulianDate } from "cesium";
+import { JulianDate } from "cesium";
 import IO from "../lib/IO.js";
 
 describe("Trajectories", function() {
@@ -38,7 +38,7 @@ describe("Trajectories", function() {
       }
     ];
 
-  const trajectories = IO.trajectoriesFromParsedJSON(parsedJSON);
+  const trajectories = IO.trajectoriesFromParsedJSON(parsedJSON, JulianDate.fromIso8601);
 
   it("earliestTime() should give the earliest time of any trajectory", function() {
     const expectedDate = JulianDate.fromIso8601("2023-01-01T00:00:01Z");

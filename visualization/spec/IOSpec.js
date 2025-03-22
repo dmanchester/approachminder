@@ -1,5 +1,5 @@
 import IO from "../lib/IO.js";
-import { Cartesian3, JulianDate } from "cesium";
+import { JulianDate } from "cesium";
 
 describe("IO", function() {
 
@@ -36,7 +36,7 @@ describe("IO", function() {
           }
         ];
 
-      const trajectories = IO.trajectoriesFromParsedJSON(parsedJSON);
+      const trajectories = IO.trajectoriesFromParsedJSON(parsedJSON, JulianDate.fromIso8601);
 
       expect(trajectories.theTrajectories.length).toEqual(2);
 

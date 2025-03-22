@@ -59,7 +59,7 @@
           console.log(error);
       }
 
-      const trajectories = IO.trajectoriesFromParsedJSON(trajectoriesFromJSON);
+      const trajectories = IO.trajectoriesFromParsedJSON(trajectoriesFromJSON, JulianDate.fromIso8601);
 
       const start = trajectories.earliestTime();
       const stop = trajectories.latestTime();
