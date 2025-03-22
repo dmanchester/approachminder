@@ -173,6 +173,7 @@
     bottom: 16px;
     right: 32px;
     text-align: right;
+    background-color: white;  /* default background is transparent; workaround to make it opaque (and white) */
   }
 
   #appName {
