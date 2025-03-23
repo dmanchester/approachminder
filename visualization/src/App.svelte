@@ -33,7 +33,11 @@
   let observationsOtherAircraft = [];
 
   onMount(async () => {
-      try {
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const useBingImagery = urlParams.get('bing') === 'true';
+
+    try {
           const viewerOptions = {
             baseLayerPicker: false,
             geocoder: false,
