@@ -93,7 +93,7 @@
       positionProperty.addSamples(times, positions);
 
       const entity = new Entity({
-        name: trajectory.aircraftProfile.icao24,
+        name: trajectory.aircraftProfile.callsign,
         //  availability: new Cesium.TimeIntervalCollection([ new Cesium.TimeInterval({ start: start, stop: stop }) ]),
         position: positionProperty,
         model: { uri: airplaneUri },
