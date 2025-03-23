@@ -1,9 +1,10 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount } from 'svelte';
   import { SplitPane } from '@rich_harris/svelte-split-pane';
   import AircraftTable from './AircraftTable.svelte';
   import {
     Cartesian3,
+    ClockRange,
     Entity,
     ImageryLayer,
     Ion,
@@ -14,125 +15,129 @@
     Terrain,
     VelocityOrientationProperty,
     Viewer,
-  } from "cesium";
-  import sortBy from "lodash/sortBy.js";
-  import IO from "../lib/IO.js";
-  import "../node_modules/cesium/Source/Widgets/widgets.css";  // TODO Compare with 'import "cesium/Build/Cesium/Widgets/widgets.css"'; and, what do I get from this?
-  import trajectoriesFromJSON from "./data.json";
+  } from 'cesium';
+  import '../node_modules/cesium/Source/Widgets/widgets.css';  // TODO Compare with "import 'cesium/Build/Cesium/Widgets/widgets.css'"; and, what do I get from this?
+  import IO from '../lib/IO.js';
+  import trajectoriesFromJSON from './data.json';
+  import sortBy from 'lodash/sortBy.js';
 
-  window['CESIUM_BASE_URL'] = '/libs/cesium'
+  window.CESIUM_BASE_URL = '/libs/cesium';
 
   // TODO Externalize access token.
   Ion.defaultAccessToken = '*** INSERT ACCESS TOKEN FROM https://ion.cesium.com/ ***';
-  const useBingImagery = false;
-  const maxThresholdDistanceMetersForApproach = 10000;
 
-  let viewer;
+  const aircraft3DModelId = 3164521;  // "B737-800 Model"
+  const start = JulianDate.fromIso8601('2022-12-06T18:49:09Z');
+  const stop = JulianDate.fromIso8601('2022-12-06T18:56:01Z');
+  const maxThresholdDistanceMetersForApproach = 10000;
+  const windowDuration = 60;  // seconds
+  const firstCallsignToTrack = 'SKW4081';
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const useBingImagery = urlParams.get('bing') === 'true';
+
+  const trajectories = IO.trajectoriesFromParsedJSON(trajectoriesFromJSON, JulianDate.fromIso8601);
   const trajectoriesToEntities = new Map();
+  let viewer;
   let observationsAircraftOnApproach = [];
   let observationsOtherAircraft = [];
 
   onMount(async () => {
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const useBingImagery = urlParams.get('bing') === 'true';
+    // TODO What code that's currently in this function can be moved before it, to improve startup performance?
 
     try {
-          const viewerOptions = {
-            baseLayerPicker: false,
-            geocoder: false,
-            homeButton: false,
-            sceneModePicker: false,
-            terrain: Terrain.fromWorldTerrain()
-            // Using "terrain: ..." instead of "terrainProvider: await createWorldTerrainAsync()" per:
-            //
-            // https://github.com/CesiumGS/cesium-webpack-example/blob/23638ff7ce845a655c949de9a01e765c91ee94ba/webpack-5/src/index.js#L17
-          };
+      const viewerOptions = {
+        baseLayerPicker: false,
+        geocoder: false,
+        homeButton: false,
+        sceneModePicker: false,
+        terrain: Terrain.fromWorldTerrain()
+        // Using "terrain: ..." instead of "terrainProvider: await createWorldTerrainAsync()" per:
+        //
+        // https://github.com/CesiumGS/cesium-webpack-example/blob/23638ff7ce845a655c949de9a01e765c91ee94ba/webpack-5/src/index.js#L17
+      };
 
-          if (!useBingImagery) {
-            // Use Sentinel-2 imagery. See:
-            //
-            //   * https://sandcastle.cesium.com/?src=Sentinel-2.html
-            //   * https://cesium.com/learn/ion/optimizing-quotas/
-            viewerOptions.baseLayer = ImageryLayer.fromProviderAsync(IonImageryProvider.fromAssetId(3954));
-          }
-
-          viewer = new Viewer('cesiumContainer', viewerOptions);
-
-      } catch(error) {
-          console.log(error);
+      if (!useBingImagery) {
+        // Use Sentinel-2 imagery. See:
+        //
+        //   * https://sandcastle.cesium.com/?src=Sentinel-2.html
+        //   * https://cesium.com/learn/ion/optimizing-quotas/
+        viewerOptions.baseLayer = ImageryLayer.fromProviderAsync(IonImageryProvider.fromAssetId(3954));
       }
 
-      const trajectories = IO.trajectoriesFromParsedJSON(trajectoriesFromJSON, JulianDate.fromIso8601);
+      viewer = new Viewer('cesiumContainer', viewerOptions);
 
-      const start = trajectories.earliestTime();
-      const stop = trajectories.latestTime();
-      viewer.clock.startTime = start.clone();
-      viewer.clock.stopTime = stop.clone();
-      viewer.timeline.zoomTo(start, stop);
-// Speed up the playback speed 5x.
-//    viewer.clock.multiplier = 5;
-// Start playing the scene.
+    } catch(error) {
+       // TODO Error is likely fatal. Better to not catch and allow to propagate?
+      console.log(error);
+    }
 
-      const windowDuration = 60;  // seconds
-      let lastTimeProcessed = undefined;
+    // const start = trajectories.earliestTime();
+    // const stop = trajectories.latestTime();
+    viewer.clock.shouldAnimate = true;
+    viewer.clock.startTime = start.clone();
+    viewer.clock.stopTime = stop.clone();
+    viewer.clock.currentTime = start.clone();
+    viewer.clock.clockRange = ClockRange.CLAMPED;
+    viewer.timeline.zoomTo(start, stop);
 
-      viewer.clock.shouldAnimate = true;
+    const airplaneUri = await IonResource.fromAssetId(aircraft3DModelId);
 
-      const airplaneUri = await IonResource.fromAssetId(3164521);  // "B737-800 Model"
+    trajectories.theTrajectories.forEach(trajectory => {
 
-      trajectories.theTrajectories.forEach(trajectory => {
+      const times = trajectory.timeBasedPositions.map(timeBasedPosition => timeBasedPosition.time);
+      const positions = trajectory.timeBasedPositions.map(timeBasedPosition => Cartesian3.fromDegrees(timeBasedPosition.longitude, timeBasedPosition.latitude, timeBasedPosition.altitude));
 
-          const times = trajectory.timeBasedPositions.map(timeBasedPosition => timeBasedPosition.time);
-          const positions = trajectory.timeBasedPositions.map(timeBasedPosition => Cartesian3.fromDegrees(timeBasedPosition.longitude, timeBasedPosition.latitude, timeBasedPosition.altitude));
+      const positionProperty = new SampledPositionProperty();
+      positionProperty.addSamples(times, positions);
 
-          const positionProperty = new SampledPositionProperty();
-          positionProperty.addSamples(times, positions);
-
-          const entity = new Entity({
-              name: trajectory.aircraftProfile.icao24,
-              //  availability: new Cesium.TimeIntervalCollection([ new Cesium.TimeInterval({ start: start, stop: stop }) ]),
-              position: positionProperty,
-              model: { uri: airplaneUri },
-              // Automatically compute the orientation from the position.
-              orientation: new VelocityOrientationProperty(positionProperty)
-          });
-
-          trajectoriesToEntities.set(trajectory, entity);
+      const entity = new Entity({
+        name: trajectory.aircraftProfile.icao24,
+        //  availability: new Cesium.TimeIntervalCollection([ new Cesium.TimeInterval({ start: start, stop: stop }) ]),
+        position: positionProperty,
+        model: { uri: airplaneUri },
+        // Automatically compute the orientation from the position.
+        orientation: new VelocityOrientationProperty(positionProperty)
       });
 
-      for (const entity of trajectoriesToEntities.values()) {
-         viewer.entities.add(entity);
+      trajectoriesToEntities.set(trajectory, entity);
+    });
+
+    for (const entity of trajectoriesToEntities.values()) {
+       viewer.entities.add(entity);
+    }
+
+    // const firstTrajectory = trajectories.theTrajectories[0];  // TODO This is hacky. Also, concern ourselves with no-entities case?
+    const trajectoryToTrack = trajectories.theTrajectories.find(trajectory => trajectory.aircraftProfile.callsign === firstCallsignToTrack);
+    viewer.trackedEntity = trajectoriesToEntities.get(trajectoryToTrack);
+    // viewer.clock.currentTime = firstTrajectory.earliestTime().clone();
+
+    let lastTimeProcessed = undefined;
+
+    viewer.clock.onTick.addEventListener(() => {  // Whoa, this gets called all the time, even when clock is stopped!
+
+      const time = viewer.clock.currentTime;
+
+      if (JulianDate.equals(time, lastTimeProcessed)) {
+        // Nothing to do.
+        return;
       }
 
-      // TODO This is hacky. Also, concern ourselves with no-entities case?
-      const firstTrajectory = trajectories.theTrajectories[0];
-      viewer.trackedEntity = trajectoriesToEntities.get(firstTrajectory);
-      viewer.clock.currentTime = firstTrajectory.earliestTime().clone();
-
-      viewer.clock.onTick.addEventListener(() => {   // Whoa, this gets called all the time, even when clock is stopped!
-
-        const time = viewer.clock.currentTime;
-
-        if (JulianDate.equals(time, lastTimeProcessed)) {
-          // Nothing to do.
-          return;
-        }
-
-        // Get the latest positions within the time window, one per aircraft.
-        const latestPositionsWithinWindow = trajectories.latestPositionsWithinWindow(time, windowDuration);  // TODO Rather than a tuple, this function could return an Object that names the two members (I end up doing this below anyway)
-        // TODO First time I've used the "observations" terminology. If it sticks, broaden back to the Scala code?
-        const observations = latestPositionsWithinWindow.map(([trajectory, timeBasedPosition]) => ({
-          trajectory: trajectory,
-          position: timeBasedPosition,
-          ageOfObservation: Math.round(JulianDate.secondsDifference(time, timeBasedPosition.time))
-        }));
-        const observationsAircraftOnApproachUnsorted = observations.filter(observation => observation.position.approachSegment?.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach);
-        // TODO Move sorting into AircraftTable.svelte?
-        observationsAircraftOnApproach = sortBy(observationsAircraftOnApproachUnsorted, observation => observation.position.approachSegment.thresholdDistanceMeters);
-        observationsOtherAircraft = sortBy(observations.filter(observation => !observation.position.approachSegment), observation => observation.trajectory.aircraftProfile.callsign);
-        lastTimeProcessed = time;
-      });
+      // Get the latest positions within the time window, one per aircraft.
+      const latestPositionsWithinWindow = trajectories.latestPositionsWithinWindow(time, windowDuration);  // TODO Rather than a tuple, this function could return an Object that names the two members (I end up doing this below anyway)
+      // TODO First time I've used the "observations" terminology. If it sticks, broaden back to the Scala code?
+      const observations = latestPositionsWithinWindow.map(([trajectory, timeBasedPosition]) => ({
+        trajectory: trajectory,
+        position: timeBasedPosition,
+        ageOfObservation: Math.round(JulianDate.secondsDifference(time, timeBasedPosition.time))
+      }));
+      const observationsAircraftOnApproachUnsorted = observations.filter(observation => observation.position.approachSegment?.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach);
+      // TODO Move sorting into AircraftTable.svelte?
+      observationsAircraftOnApproach = sortBy(observationsAircraftOnApproachUnsorted, observation => observation.position.approachSegment.thresholdDistanceMeters);
+      observationsOtherAircraft = sortBy(observations.filter(observation => !observation.position.approachSegment), observation => observation.trajectory.aircraftProfile.callsign);
+      lastTimeProcessed = time;
+    });
   });
 </script>
 
