@@ -73,7 +73,12 @@ ApproachMinder's analysis component is written in [Scala](https://www.scala-lang
 ApproachMinder's visualization component is written in JavaScript. It employs libraries as follows:
 * **[CesiumJS](https://cesium.com/platform/cesiumjs/):** Provide in-browser, three-dimensional visualizations of aircraft in flight. Offer various controls to the user, including a time slider.
 * **[Svelte](https://svelte.dev/):** Display a dashboard pane of aircraft data, keeping it synchronized with the clock time as managed by CesiumJS. Offer clickable callsigns for tracking aircraft.
+* **[svelte-split-pane](https://www.npmjs.com/package/@rich_harris/svelte-split-pane):** Provide a draggable split pane between the CesiumJS portion of the visualization and the Svelte-based dashboard.
 * **[Jasmine](https://jasmine.github.io/):** Automated testing.
+
+**[Vite](https://vite.dev/)** ([pronunciation](https://vite.dev/guide/#overview)) is the build tool of the ApproachMinder visualization and hosts it in development mode. Vite also produces production builds of the visualization and handles associated tasks, including bundling and minification.
+
+ApproachMinder's Vite configuration is derived from the "[simply-cesium-vite-vue](https://github.com/s3xysteak/simply-cesium-vite-vue)" example.
 
 ## Future Development
 

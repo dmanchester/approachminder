@@ -6,8 +6,6 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import { viteExternalsPlugin } from 'vite-plugin-externals'
 
-// Contents of this file based largely on https://github.com/s3xysteak/simply-cesium-vite-vue.
-//
 // See also: https://vitejs.dev/config/.
 
 // FIXME The configuration below of "base: './'" notwithstanding, some references to "libs"-based assets are still using
