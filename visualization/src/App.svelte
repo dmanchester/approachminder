@@ -21,7 +21,7 @@
   import trajectoriesFromJSON from './data.json';
   import sortBy from 'lodash/sortBy.js';
 
-  window.CESIUM_BASE_URL = '/libs/cesium';
+  window.CESIUM_BASE_URL = './libs/cesium';
 
   // TODO Externalize access token.
   Ion.defaultAccessToken = '*** INSERT ACCESS TOKEN FROM https://ion.cesium.com/ ***';
