@@ -4,7 +4,9 @@ ApproachMinder is a proof of concept for **detecting incorrectly flown aircraft 
 
 Created by [Daniel Manchester](https://www.dmanchester.com/), ApproachMinder is still under development, but the initial results are encouraging.
 
-![DAL1152 about to cross the threshold of KSFO Runway 28L.](images/dal1152-at-185101.png)
+<!-- To apply borders to images in GitHub Markdown, wrap in "kbd" tags. See:
+     https://stackoverflow.com/questions/37349314/is-it-possible-to-add-border-to-image-in-github-markdown -->
+<kbd>![DAL1152 about to cross the threshold of KSFO Runway 28L.](images/dal1152-at-185101.png)</kbd>
 
 ## Motivation
 
@@ -41,7 +43,7 @@ The sections that follow walk through those initial results by ApproachMinder's 
 
 For point #1 of the ApproachMinder concept (extracting approaches and landings from historical ADS-B data), using [OpenSky Network](https://opensky-network.org/) ADS-B data from the San Francisco Bay Area, as well as readily available geospatial information about the runways at San Francisco International Airport (KSFO) and Oakland International Airport (KOAK), **ApproachMinder's analysis component was able to extract approaches and landings for the airports' runways ([interactive map](https://www.google.com/maps/d/viewer?mid=19HSJa4v0cnq09HmCCfV7Ui6AVoEluMc&usp=sharing)):**
 
-![Approaches and landings extracted by ApproachMinder.](images/extracted-approaches-and-landings.png)
+<kbd>![Approaches and landings extracted by ApproachMinder.](images/extracted-approaches-and-landings.png)</kbd>
 
 ### Visualization Component
 
@@ -57,7 +59,7 @@ The demo shows the results of analyzing ADS-B data from 6 December 2022.
 
 The demo begins around 18:49:10. (All times are [UTC](https://en.wikipedia.org/wiki/Coordinated_Universal_Time).) It initially tracks SkyWest Airlines 4081 (callsign SKW4081):
 
-![SKW4081 at 9.2 km from KOAK Runway 30.](images/skw4081-at-184910-with-highlight.png)
+<kbd>![SKW4081 at 9.2 km from KOAK Runway 30.](images/skw4081-at-184910-with-highlight.png)</kbd>
 
 In the dashboard, the plain-colored columns are taken directly from ADS-B data. **The orange columns represent ApproachMinder's inferences and calculations.**
 
@@ -83,7 +85,7 @@ As the demo progresses, **ApproachMinder's continuously re-examines SKW4081's tr
 
 At 18:51:17, ApproachMinder shows that SKW4081 will imminently cross the threshold of KOAK's Runway 30, the runway that—at 18:49:10 (over two minutes prior)—ApproachMinder had surmised the aircraft was targeting:
 
-![SKW4081 about to cross the threshold of KOAK Runway 30.](images/skw4081-at-185117-with-highlight.png)
+<kbd>![SKW4081 about to cross the threshold of KOAK Runway 30.](images/skw4081-at-185117-with-highlight.png)</kbd>
 
 ##### Interactivity
 
