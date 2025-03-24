@@ -104,18 +104,16 @@ With the help of the [CesiumJS](https://cesium.com/platform/cesiumjs/) library, 
 * Clicking an aircraft in the view sometimes leads to occurrences in the Developer Tools console of a warning (`WebGL: INVALID_VALUE: uniform3fv: no array`).
 * The same 3D model—a Boeing 737-800 with its landing gear extended—is used for all aircraft, regardless of their actual type and the status of their landing gear.
 
-## Technical Architecture; Attributions
+## Architecture and Libraries
 
-### Analysis Component
-ApproachMinder's analysis component is written in [Scala](https://www.scala-lang.org/). It relies on various libraries in Scala and Java, employing them as follows:
+ApproachMinder's **analysis component** is written in [Scala](https://www.scala-lang.org/). It relies on various libraries in Scala and Java, employing them as follows:
 * **[Play JSON](https://www.playframework.com/documentation/2.9.x/ScalaJson#The-Play-JSON-library):** Parse JSON-based ADS-B reports from the OpenSky Network. Produce JSON for the visualization component.
 * **[GeoTools](https://geotools.org/):** Convert latitude and longitude positions to the meters-based [Universal Transverse Mercator](https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system) (UTM) projection.
 * **[JTS Topology Suite](https://github.com/locationtech/jts?tab=readme-ov-file#jts-topology-suite):** Perform calculations on UTM coordinates.
 * **[Apache Commons Math](https://commons.apache.org/proper/commons-math/):** Calculate statistics.
 * **[specs2](https://etorreborre.github.io/specs2/):** Automated testing.
 
-### Visualization Component
-ApproachMinder's visualization component is written in JavaScript. It employs libraries as follows:
+ApproachMinder's **visualization component** is written in JavaScript. It employs libraries as follows:
 * **[CesiumJS](https://cesium.com/platform/cesiumjs/):** Provide in-browser, three-dimensional visualizations of aircraft in flight. Offer various controls to the user.
 * **[Svelte](https://svelte.dev/):** Display a dashboard of aircraft data, keeping it synchronized with the clock time as managed by CesiumJS.
 * **[svelte-split-pane](https://www.npmjs.com/package/@rich_harris/svelte-split-pane):** Provide a draggable split pane between the CesiumJS-based view and the Svelte-based dashboard.
