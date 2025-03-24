@@ -57,7 +57,7 @@ The demo shows the results of analyzing ADS-B data from 6 December 2022.
 
 ##### Initial View
 
-The demo begins around 18:49:10. (All times are [UTC](https://en.wikipedia.org/wiki/Coordinated_Universal_Time).) It initially tracks SkyWest Airlines 4081 (callsign SKW4081):
+The demo begins around 18:49:10. (All times are [UTC](https://en.wikipedia.org/wiki/Coordinated_Universal_Time).) It initially tracks SkyWest Airlines Flight 4081 (callsign SKW4081):
 
 <kbd>![SKW4081 at 9.2 km from KOAK Runway 30.](images/skw4081-at-184910-with-highlight.png)</kbd>
 
