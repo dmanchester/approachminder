@@ -61,7 +61,7 @@ The demo begins around 18:49:10. (All times are [UTC](https://en.wikipedia.org/w
 
 <kbd>![SKW4081 at 9.2 km from KOAK Runway 30.](images/skw4081-at-184910-with-highlight.png)</kbd>
 
-In the dashboard, the plain-colored columns are taken directly from ADS-B data. **The orange columns represent ApproachMinder's inferences and calculations.**
+In the dashboard, the plain-colored columns are taken directly from the ADS-B data. **The orange columns represent ApproachMinder's inferences and calculations.**
 
 As can be seen, **ApproachMinder examines SKW4081's trajectory against its statistical models of runways and correctly infers that the aircraft is on approach to KOAK's Runway 30.** In drawing that inference, it relies on trajectory data only up to the point in time shown.
 
@@ -79,9 +79,9 @@ ApproachMinder does not yet support alerts, but standard deviation values will l
 
 ##### Progression
 
-As the demo progresses, **ApproachMinder's continuously re-examines SKW4081's trajectory against its statistical models.** It re-confirms that KOAK's Runway 30 is SKW4081's most likely target, and it re-calculates the vertical and horizontal deviations and the combined standard deviation.
+As the demo progresses, **ApproachMinder continuously re-examines SKW4081's trajectory against its statistical models.** It re-confirms that KOAK's Runway 30 is SKW4081's most likely target, and it re-calculates the vertical and horizontal deviations and the combined standard deviation.
 
-**It also continuously re-analyzes the trajectories of the other aircraft it had inferred were on approach at the start of the demo** (FDX3809 and DAL1152), and **it draws on-approach inferences for other aircraft as appropriate** (for example, SWA1972 at 18:50:35).
+**It also continuously re-analyzes the trajectories of the other aircraft it had inferred were on approach at the start of the demo** (FDX3809 and DAL1152), and **it makes on-approach inferences for other aircraft as appropriate** (for example, SWA1972 at 18:50:35).
 
 At 18:51:17, ApproachMinder shows that SKW4081 will imminently cross the threshold of KOAK's Runway 30, the runway that—at 18:49:10 (over two minutes prior)—ApproachMinder had surmised the aircraft was targeting:
 
@@ -93,8 +93,8 @@ With the help of the [CesiumJS](https://cesium.com/platform/cesiumjs/) library, 
 
 * Pan, zoom, and rotate the 3D view. (At the top-right corner of the visualization, see the "?" button for instructions.)
 * Speed up or slow down the visualization, jump to arbitrary points in time, or play it in reverse.
-* Click an aircraft's callsign on the dashboard to begin tracking it in the view.
-* Click an aircraft in the view to confirm its callsign.
+* Click an aircraft's callsign on the dashboard to begin tracking the aircraft in the view.
+* Click an aircraft in the view to display its callsign.
 * Drag the divider between the view and the dashboard to allocate more space to one or the other.
 
 #### Weaknesses
