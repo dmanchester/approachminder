@@ -2,9 +2,9 @@
 
 ApproachMinder is a proof of concept for **detecting incorrectly flown aircraft approaches** in real time using [ADS-B](https://skybrary.aero/articles/automatic-dependent-surveillance-broadcast-ads-b) data.
 
-Created by [Daniel Manchester](https://www.dmanchester.com/), ApproachMinder is still under development, and its code has not been refined, but the initial results are encouraging.
+Created by [Daniel Manchester](https://www.dmanchester.com/), ApproachMinder is still under development, but the initial results are encouraging.
 
-![SWA269 on approach to KOAK Runway 30.](images/swa269.png)
+![DAL1152 about to cross the threshold of KSFO Runway 28L.](images/dal1152-at-185101.png)
 
 ## Motivation
 
@@ -31,35 +31,78 @@ With ADS-B (Automatic Dependent Surveillance - Broadcast), aircraft continually 
 
 Various stores of historical ADS-B data exist, as do multiple networks for collecting live data. Accordingly, **applying the ApproachMinder concept to an airport would not involve installing or operating additional equipment at that airport. The real-time monitoring and alerting could occur centrally.**
 
-## Status
+## Initial Results
 
-As mentioned above, ApproachMinder is still under development, and the underlying software has not been refined. However, **development has progressed far enough to have produced encouraging initial results.**
+As mentioned above, ApproachMinder is still under development, and the underlying software has not been refined. However, **work on ApproachMinder has progressed far enough to have produced encouraging initial results.**
 
-For point #1 of the concept (extracting approaches and landings from historical ADS-B data), using [OpenSky Network](https://opensky-network.org/) ADS-B data from the San Francisco Bay area, as well as readily available geospatial information about the runways at San Francisco International Airport (KSFO) and Oakland International Airport (KOAK), **ApproachMinder was able to extract approaches and landings for the airports' runways ([live map](https://www.google.com/maps/d/viewer?mid=19HSJa4v0cnq09HmCCfV7Ui6AVoEluMc&usp=sharing)):**
+The sections that follow walk through those initial results by ApproachMinder's two components: **analysis** and **visualization.**
+
+### Analysis Component
+
+For point #1 of the ApproachMinder concept (extracting approaches and landings from historical ADS-B data), using [OpenSky Network](https://opensky-network.org/) ADS-B data from the San Francisco Bay Area, as well as readily available geospatial information about the runways at San Francisco International Airport (KSFO) and Oakland International Airport (KOAK), **ApproachMinder's analysis component was able to extract approaches and landings for the airports' runways ([interactive map](https://www.google.com/maps/d/viewer?mid=19HSJa4v0cnq09HmCCfV7Ui6AVoEluMc&usp=sharing)):**
 
 ![Approaches and landings extracted by ApproachMinder.](images/extracted-approaches-and-landings.png)
 
-The following still frame from the ApproachMinder visualization provides a perspective on the implementation of point #2 (training statistical models) and point #3 (inferring which aircraft are on approach and their intended runways; quantifying deviation from the models):
+### Visualization Component
 
-![UAL539 on approach to KSFO Runway 28L.](images/ual539.png)
+**An interactive demo of ApproachMinder's visualization component is available.** It provides a perspective on the implementation of point #2 (training statistical models) and point #3 (inferring which aircraft are on approach and their intended runways; quantifying deviation from the models) of the ApproachMinder concept.
 
-The still frame shows the result of analyzing ADS-B data from 4 December 2022. (In a strict sense, the data was not "live": it was loaded from a file. However, it was judged to be a suitable approximation of live data, as it was gathered after the data that underpins the approach models used. Also, the ApproachMinder analysis for a given point in time did not access future data.)
+**[The demo is accessible here](https://www.dmanchester.com/approachminder-demo/?bing=true).** Due to its use of satellite imagery, the demo is fairly bandwidth-intensive: the initial download is approximately **50 MB,** and additional imagery is downloaded as the demo progresses.
 
-The aircraft shown is United Airlines Flight 539 (UAL539). As highlighted in orange on the dashboard, **ApproachMinder examined the aircraft's trajectory against ApproachMinder's statistical models and correctly inferred that the aircraft is on approach to Runway 28L at KSFO.**
+#### Walkthrough of Demo
 
-Further, **ApproachMinder calculated that:**
+The demo shows the results of analyzing ADS-B data from 6 December 2022.
 
-* 3,997 meters remain to the runway's threshold;
-* UAL539's current position deviates 11 meters vertically and 9 meters horizontally from a statistical mean of historical aircraft positions at that point in the approach; and
-* the combined vertical and horizontal deviation is 1.1 [standard deviations](https://en.wikipedia.org/wiki/Standard_deviation) from that historical mean.
+##### Initial View
+
+The demo begins around 18:49:10. (All times are [UTC](https://en.wikipedia.org/wiki/Coordinated_Universal_Time).) It initially tracks SkyWest Airlines 4081 (callsign SKW4081):
+
+![SKW4081 at 9.2 km from KOAK Runway 30.](images/skw4081-at-184910-with-highlight.png)
+
+In the dashboard, the plain-colored columns are taken directly from ADS-B data. **The orange columns represent ApproachMinder's inferences and calculations.**
+
+As can be seen, **ApproachMinder examines SKW4081's trajectory against its statistical models of runways and correctly infers that the aircraft is on approach to KOAK's Runway 30.** In drawing that inference, it relies on trajectory data only up to the point in time shown.
+
+Further, **ApproachMinder calculates that:**
+
+* 9,209 meters remain to the runway's threshold;
+* SKW4081's current position deviates 3 meters vertically and less than 1 meter horizontally from a statistical mean of historical aircraft positions at that point in the approach; and
+* the combined vertical and horizontal deviation is 0.1 [standard deviations](https://en.wikipedia.org/wiki/Standard_deviation) from that historical mean.
 
 Standard deviation values put an aircraft's meters-based deviations in context. For example, early in an approach, a vertical deviation of 100 meters and a horizontal one of 50 meters could be acceptable and statistically common, and would thus lead to a small standard deviation. But that same magnitude of vertical and horizontal deviation late in an approach could signal a serious problem and be statistically rare, leading to a large standard deviation.
 
+###### Alerts
+
 ApproachMinder does not yet support alerts, but standard deviation values will likely be at their core: **If the standard deviation calculated for an aircraft's approach and position exceeds some threshold, ApproachMinder will raise an alert.**
 
-## Technical Architecture
+##### Progression
 
-ApproachMinder consists of **analysis** and **visualization** components.
+As the demo progresses, **ApproachMinder's continuously re-examines SKW4081's trajectory against its statistical models.** It re-confirms that KOAK's Runway 30 is SKW4081's most likely target, and it re-calculates the vertical and horizontal deviations and the combined standard deviation.
+
+**It also continuously re-analyzes the trajectories of the other aircraft it had inferred were on approach at the start of the demo** (FDX3809 and DAL1152), and **it draws on-approach inferences for other aircraft as appropriate** (for example, SWA1972 at 18:50:35).
+
+At 18:51:17, ApproachMinder shows that SKW4081 will imminently cross the threshold of KOAK's Runway 30, the runway that—at 18:49:10 (over two minutes prior)—ApproachMinder had surmised the aircraft was targeting:
+
+![SKW4081 about to cross the threshold of KOAK Runway 30.](images/skw4081-at-185117-with-highlight.png)
+
+##### Interactivity
+
+With the help of the [CesiumJS](https://cesium.com/platform/cesiumjs/) library, the ApproachMinder visualization offers multiple kinds of interactivity. A user can:
+
+* Pan, zoom, and rotate the 3D view. (At the top-right corner of the visualization, see the "?" button for instructions.)
+* Speed up or slow down the visualization, jump to arbitrary points in time, or play it in reverse.
+* Click an aircraft's callsign on the dashboard to begin tracking it in the view.
+* Click an aircraft in the view to confirm its callsign.
+* Drag the divider between the view and the dashboard to allocate more space to one or the other.
+
+#### Weaknesses
+
+* The dashboard doesn't indicate which aircraft the 3D view is tracking.
+* When an aircraft being tracked in the view is no longer visible, a new one isn't automatically selected.
+* Clicking an aircraft in the view sometimes leads to occurrences in the Developer Tools console of a warning (`WebGL: INVALID_VALUE: uniform3fv: no array`).
+* The same 3D model—a Boeing 737-800 with its landing gear extended—is used for all aircraft, regardless of their actual type and the status of their landing gear.
+
+## Technical Architecture; Attributions
 
 ### Analysis Component
 ApproachMinder's analysis component is written in [Scala](https://www.scala-lang.org/). It relies on various libraries in Scala and Java, employing them as follows:
@@ -71,9 +114,10 @@ ApproachMinder's analysis component is written in [Scala](https://www.scala-lang
 
 ### Visualization Component
 ApproachMinder's visualization component is written in JavaScript. It employs libraries as follows:
-* **[CesiumJS](https://cesium.com/platform/cesiumjs/):** Provide in-browser, three-dimensional visualizations of aircraft in flight. Offer various controls to the user, including a time slider.
-* **[Svelte](https://svelte.dev/):** Display a dashboard pane of aircraft data, keeping it synchronized with the clock time as managed by CesiumJS. Offer clickable callsigns for tracking aircraft.
-* **[svelte-split-pane](https://www.npmjs.com/package/@rich_harris/svelte-split-pane):** Provide a draggable split pane between the CesiumJS portion of the visualization and the Svelte-based dashboard.
+* **[CesiumJS](https://cesium.com/platform/cesiumjs/):** Provide in-browser, three-dimensional visualizations of aircraft in flight. Offer various controls to the user.
+* **[Svelte](https://svelte.dev/):** Display a dashboard of aircraft data, keeping it synchronized with the clock time as managed by CesiumJS.
+* **[svelte-split-pane](https://www.npmjs.com/package/@rich_harris/svelte-split-pane):** Provide a draggable split pane between the CesiumJS-based view and the Svelte-based dashboard.
+* **[B737-800 Model](https://skfb.ly/oSG9Q):** 3D model used in the view. (Created by [hikami3150](https://sketchfab.com/hikami3150). Licensed under the [Creative Commons Attribution](http://creativecommons.org/licenses/by/4.0/) license.)
 * **[Jasmine](https://jasmine.github.io/):** Automated testing.
 
 **[Vite](https://vite.dev/)** ([pronunciation](https://vite.dev/guide/#overview)) is the build tool of the ApproachMinder visualization and hosts it in development mode. Vite also produces production builds of the visualization and handles associated tasks, including bundling and minification.
@@ -82,7 +126,7 @@ ApproachMinder's Vite configuration is derived from the "[simply-cesium-vite-vue
 
 ## Future Development
 
-The following future ApproachMinder development is anticipated.
+Future ApproachMinder development is anticipated to address the weaknesses of the visualization component discussed above, and to implement the following items.
 
 ### More-Advanced Approach Models
 
@@ -115,7 +159,3 @@ Initial development against FAA AIXM data with the [xml-spac](https://github.com
 ### TypeScript Migration
 
 A future version of ApproachMinder will migrate the visualization component to [TypeScript](https://www.typescriptlang.org/).
-
-## Attributions
-
-"[B737-800 Model](https://skfb.ly/oSG9Q)", the 3D model used in the still frames, was created by [hikami3150](https://sketchfab.com/hikami3150) and is licensed under the [Creative Commons Attribution](http://creativecommons.org/licenses/by/4.0/) license.
