@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ScalaCompilerConfiguration">
-    <profile name="sbt 1" modules="analysis">
+    <option name="separateProdTestSources" value="true" />
+    <profile name="sbt 1" modules="analysis" />
+    <profile name="sbt 2" modules="analysis.main,analysis.test">
       <option name="deprecationWarnings" value="true" />
       <parameters>
         <parameter value="-Xsource:3" />
