@@ -11,7 +11,7 @@ object ReportUtils {
    * @return The partitioned reports.
    */
   def partition[R <: HasPositionReportIdentifiers](reports: Iterable[R], timeGapSecs: Int): Seq[(Option[String], Seq[R])] = {
-    reports.foldLeft(PartitionerState.initial[R](timeGapSecs)) { (partitionerState, report) =>
+    reports.foldLeft(ReportPartitionerState.initial[R](timeGapSecs)) { (partitionerState, report) =>
       partitionerState.processReport(report)
     }.partitions
   }
