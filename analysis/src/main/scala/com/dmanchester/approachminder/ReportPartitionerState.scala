@@ -12,14 +12,14 @@ trait PartitionerState[R <: HasPositionReportIdentifiers] {
 
   def processReport(report: R): PartitionerState[R]
 
-  def partitionedReports: Seq[(Option[String], Seq[R])]
+  def partitions: Seq[(Option[String], Seq[R])]
 
   // TODO Is there a better place to put this utility method? (Some object?)
-  protected def beginAccumlatingNewSeq[R1 <: HasPositionReportIdentifiers](report: R1, completedSeqs: Seq[(Option[String], Seq[R1])], timeGapSecs: Int): PartitionerState[R1] = {
+  protected def beginAccumlatingNewPartition[R1 <: HasPositionReportIdentifiers](report: R1, completedPartitions: Seq[(Option[String], Seq[R1])], timeGapSecs: Int): PartitionerState[R1] = {
     report.callsign.map { theCallsign =>
-      new StateAccumulatingWithCallsign(Seq(report), theCallsign, completedSeqs, timeGapSecs)
+      new StateAccumulatingWithCallsign(Seq(report), theCallsign, completedPartitions, timeGapSecs)
     } getOrElse {
-      new StateAccumulatingWithoutCallsign(Seq(report), completedSeqs, timeGapSecs)
+      new StateAccumulatingWithoutCallsign(Seq(report), completedPartitions, timeGapSecs)
     }
   }
 }
@@ -27,52 +27,52 @@ trait PartitionerState[R <: HasPositionReportIdentifiers] {
 class StateInitial[R <: HasPositionReportIdentifiers](timeGapSecs: Int) extends PartitionerState[R] {
 
   override def processReport(report: R): PartitionerState[R] = {
-    beginAccumlatingNewSeq(report, Seq.empty, timeGapSecs)
+    beginAccumlatingNewPartition(report, Seq.empty, timeGapSecs)
   }
 
-  override def partitionedReports: Seq[(Option[String], Seq[R])] = Seq.empty
+  override def partitions: Seq[(Option[String], Seq[R])] = Seq.empty
 }
 
-class StateAccumulatingWithoutCallsign[R <: HasPositionReportIdentifiers](seqInProgress: Seq[R], completedSeqs: Seq[(Option[String], Seq[R])], timeGapSecs: Int) extends PartitionerState[R] {
+class StateAccumulatingWithoutCallsign[R <: HasPositionReportIdentifiers](partitionInProgress: Seq[R], completedPartitions: Seq[(Option[String], Seq[R])], timeGapSecs: Int) extends PartitionerState[R] {
 
   override def processReport(report: R): PartitionerState[R] = {
 
-    if (report.timePosition - seqInProgress.last.timePosition >= timeGapSecs) {
-      beginAccumlatingNewSeq(report, partitionedReports, timeGapSecs)
+    if (report.timePosition - partitionInProgress.last.timePosition >= timeGapSecs) {
+      beginAccumlatingNewPartition(report, partitions, timeGapSecs)
     } else {
-      val seqInProgressUpdated = seqInProgress :+ report
+      val partitionInProgressUpdated = partitionInProgress :+ report
       report.callsign.map { theCallsign =>
-        new StateAccumulatingWithCallsign(seqInProgressUpdated, theCallsign, completedSeqs, timeGapSecs)
+        new StateAccumulatingWithCallsign(partitionInProgressUpdated, theCallsign, completedPartitions, timeGapSecs)
       } getOrElse {
-        new StateAccumulatingWithoutCallsign(seqInProgressUpdated, completedSeqs, timeGapSecs)
+        new StateAccumulatingWithoutCallsign(partitionInProgressUpdated, completedPartitions, timeGapSecs)
       }
     }
   }
 
-  override def partitionedReports: Seq[(Option[String], Seq[R])] = completedSeqs :+ (None, seqInProgress)
+  override def partitions: Seq[(Option[String], Seq[R])] = completedPartitions :+ (None, partitionInProgress)
 }
 
-class StateAccumulatingWithCallsign[R <: HasPositionReportIdentifiers](seqInProgress: Seq[R], callsign: String, completedSeqs: Seq[(Option[String], Seq[R])], timeGapSecs: Int /*TODO Is Int big enough?*/) extends PartitionerState[R] {
+class StateAccumulatingWithCallsign[R <: HasPositionReportIdentifiers](partitionInProgress: Seq[R], callsign: String, completedPartitions: Seq[(Option[String], Seq[R])], timeGapSecs: Int /*TODO Is Int big enough?*/) extends PartitionerState[R] {
 
   override def processReport(report: R): PartitionerState[R] = {
     // Check for two criteria:
     //
-    //   * whether the new report has the same callsign as the sequence in progress, or has no callsign; and
-    //   * whether the time gap between the new report and the sequence in progress's last report isn't large enough to
+    //   * whether the new report has the same callsign as the partition in progress, or has no callsign; and
+    //   * whether the time gap between the new report and the partition in progress's last report isn't large enough to
     //     warrant partitioning.
     if ((report.callsign.contains(callsign) || report.callsign.isEmpty) &&
-      report.timePosition - seqInProgress.last.timePosition < timeGapSecs) {
-      // The above two criteria are met. Append the new report to the sequence in progress.
-      val seqInProgressUpdated = seqInProgress :+ report
-      new StateAccumulatingWithCallsign(seqInProgressUpdated, callsign, completedSeqs, timeGapSecs)
+      report.timePosition - partitionInProgress.last.timePosition < timeGapSecs) {
+      // The above two criteria are met. Append the new report to the partition in progress.
+      val partitionInProgressUpdated = partitionInProgress :+ report
+      new StateAccumulatingWithCallsign(partitionInProgressUpdated, callsign, completedPartitions, timeGapSecs)
     } else {
-      // At least one of the above two criteria are not met. Treat the sequence in progress as complete and begin a new
+      // At least one of the above two criteria are not met. Treat the partition in progress as complete and begin a new
       // one.
-      beginAccumlatingNewSeq(report, partitionedReports, timeGapSecs)
+      beginAccumlatingNewPartition(report, partitions, timeGapSecs)
     }
   }
 
-  override def partitionedReports: Seq[(Option[String], Seq[R])] = completedSeqs :+ (Some(callsign), seqInProgress)
+  override def partitions: Seq[(Option[String], Seq[R])] = completedPartitions :+ (Some(callsign), partitionInProgress)
 }
 
 object PartitionerState {

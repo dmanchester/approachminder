@@ -13,6 +13,6 @@ object ReportUtils {
   def partition[R <: HasPositionReportIdentifiers](reports: Iterable[R], timeGapSecs: Int): Seq[(Option[String], Seq[R])] = {
     reports.foldLeft(PartitionerState.initial[R](timeGapSecs)) { (partitionerState, report) =>
       partitionerState.processReport(report)
-    }.partitionedReports
+    }.partitions
   }
 }
