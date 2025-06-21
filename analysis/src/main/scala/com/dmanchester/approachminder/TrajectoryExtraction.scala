@@ -55,7 +55,7 @@ object TrajectoryExtraction {
       cleanedPositionReports = resolveTimeConflicts(sortedPositionReports)
       categories = cleanedPositionReports.map(_.category)
       mostCommonCategory = AircraftCategory.mostCommonNonBlankCategoryInNonEmptyCollection(categories)
-      partitionedReports = ReportsPartitioner.partitionOnTimeGapAndCallsignChange(cleanedPositionReports, timeGapForPartitioning)
+      partitionedReports = ReportUtils.partition(cleanedPositionReports, timeGapForPartitioning)
       (callsign, reports) <- partitionedReports
     } yield {
       Trajectory3.createOption(reports, icao24, callsign, mostCommonCategory)
