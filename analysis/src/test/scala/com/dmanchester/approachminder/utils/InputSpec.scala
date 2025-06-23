@@ -1,11 +1,12 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.IO.{SingleOpenSkyFileToVectorsFailure, SingleOpenSkyFileToVectorsSuccess}
-import org.specs2.mutable._
+import com.dmanchester.approachminder.utils.Input.{SingleOpenSkyFileToVectorsFailure, SingleOpenSkyFileToVectorsSuccess}
+import com.dmanchester.approachminder.{AircraftCategory, OpenSkyVector, PositionSource}
+import org.specs2.mutable.*
 
 import java.nio.file.{Path, Paths}
 
-class IOSpec extends Specification {
+class InputSpec extends Specification {
 
   private val vectorLAU802 = OpenSkyVector(
     "abcd12",
@@ -56,12 +57,12 @@ class IOSpec extends Specification {
   "singleFileToOpenSkyVectors" should {
 
     "handle an empty input file" in {
-      val result = IO.singleOpenSkyFileToVectors(pathEmptyJson)
+      val result = Input.singleOpenSkyFileToVectors(pathEmptyJson)
       result mustEqual SingleOpenSkyFileToVectorsSuccess(Seq.empty)
     }
 
     "process a typical file correctly" in {
-      val result = IO.singleOpenSkyFileToVectors(pathTwoVectors)
+      val result = Input.singleOpenSkyFileToVectors(pathTwoVectors)
       result mustEqual SingleOpenSkyFileToVectorsSuccess(Seq(
         vectorLAU802,
         vectorLAU1212
@@ -69,7 +70,7 @@ class IOSpec extends Specification {
     }
 
     "handle a file that isn't JSON" in {
-      val result = IO.singleOpenSkyFileToVectors(pathNotJson)
+      val result = Input.singleOpenSkyFileToVectors(pathNotJson)
       result must beLike {
         case SingleOpenSkyFileToVectorsFailure(message) =>
           message must startWith("Unrecognized token 'This'")
@@ -77,7 +78,7 @@ class IOSpec extends Specification {
     }
 
     "handle a file with mixed JSON/non-JSON content (OK to reject whole file)" in {
-      val result = IO.singleOpenSkyFileToVectors(pathOneVectorTwoNonJsonLines)
+      val result = Input.singleOpenSkyFileToVectors(pathOneVectorTwoNonJsonLines)
       result must beLike {
         case SingleOpenSkyFileToVectorsFailure(message) =>
           message must startWith("Unrecognized token 'That'")
@@ -85,7 +86,7 @@ class IOSpec extends Specification {
     }
 
     "handle a file with bad vectors (OK to reject whole file)" in {
-      val result = IO.singleOpenSkyFileToVectors(pathOneGoodVectorOneBad)
+      val result = Input.singleOpenSkyFileToVectors(pathOneGoodVectorOneBad)
       result must beLike {
         case SingleOpenSkyFileToVectorsFailure(message) =>
           message must contain("error.expected.jsstring")
@@ -105,7 +106,7 @@ class IOSpec extends Specification {
         pathEmptyJson,  // will succeed
         pathOneGoodVectorOneBad  // will fail
       )
-      val result = IO.openSkyFilesToVectors(paths)
+      val result = Input.openSkyFilesToVectors(paths)
 
       result.totalFiles mustEqual 7
       result.successFiles mustEqual 4
@@ -125,5 +126,5 @@ class IOSpec extends Specification {
     }
   }
 
-  private def getResourcePath(filename: String): Path = Paths.get(getClass.getResource(s"resources/$filename").toURI)
+  private def getResourcePath(filename: String): Path = Paths.get(getClass.getResource(s"../resources/$filename").toURI)
 }
