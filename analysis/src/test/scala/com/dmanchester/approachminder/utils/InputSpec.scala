@@ -54,7 +54,7 @@ class InputSpec extends Specification {
   private val pathOneVectorTwoNonJsonLines = getResourcePath("one-vector--two-non-json-lines.json")
   private val pathOneGoodVectorOneBad = getResourcePath("one-good-vector--one-bad-vector.json")
 
-  "singleFileToOpenSkyVectors" should {
+  "singleOpenSkyFileToVectors" should {
 
     "handle an empty input file" in {
       val result = Input.singleOpenSkyFileToVectors(pathEmptyJson)
@@ -94,7 +94,7 @@ class InputSpec extends Specification {
     }
   }
 
-  "filesToOpenSkyVectors" should {
+  "openSkyFilesToVectors" should {
     "handle a mix of good and bad files" in {
 
       val paths = Seq(

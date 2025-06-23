@@ -19,8 +19,7 @@ object Input {
 
   private val stateVectorReads: Reads[OpenSkyVector] = (
     (JsPath \ 0).read[String] and
-      // Callsigns (see next line) have trailing whitespace. (Interestingly, other String vector
-      // fields do not.)
+      // Callsigns (see next line) have trailing whitespace. (Interestingly, other String vector fields do not.)
       (JsPath \ 1).readNullable[String].map(_.map(_.trim)) and // TODO Cleaner way to write the double "map" (first one gets Option[String]; second one gets String)?
       (JsPath \ 2).read[String] and
       (JsPath \ 3).readNullable[BigInt] and
@@ -32,7 +31,7 @@ object Input {
       (JsPath \ 9).readNullable[BigDecimal] and
       (JsPath \ 10).readNullable[BigDecimal] and
       (JsPath \ 11).readNullable[BigDecimal] and
-      // skip "sensors"; see StateVector for more information
+      // skip "sensors"; see OpenSkyVector for more information
       (JsPath \ 13).readNullable[BigDecimal] and
       (JsPath \ 14).readNullable[String] and
       (JsPath \ 15).read[Boolean] and
@@ -57,9 +56,8 @@ object Input {
       val jsValue = Json.parse(fileBytes)
 
       val jsResultVectors = (jsValue \ "states").validate(multipleStateVectorsReads)
-      // If we made stateVectorReads implicit, we could avoid declaring multipleStateVectorsReads
-      // and just write ".validate[Seq[StateVector]]". But, the above syntax makes it clearer what's
-      // going on.
+      // If we made stateVectorReads implicit, we could avoid declaring multipleStateVectorsReads and just write
+      // ".validate[Seq[StateVector]]". But, the above syntax makes it clearer what's going on.
 
       jsResultVectors match {
 
@@ -98,8 +96,8 @@ object Input {
     }
   }
 
-  object OpenSkyFilesToVectorsResult {
-    val empty = OpenSkyFilesToVectorsResult(0, Seq.empty, Seq.empty)
+  private object OpenSkyFilesToVectorsResult {
+    val empty: OpenSkyFilesToVectorsResult = OpenSkyFilesToVectorsResult(0, Seq.empty, Seq.empty)
   }
 
   def openSkyFilesToVectors(files: Iterable[Path]): OpenSkyFilesToVectorsResult = {
