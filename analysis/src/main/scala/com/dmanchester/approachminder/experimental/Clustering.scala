@@ -1,8 +1,10 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.experimental
 
+import com.dmanchester.approachminder.*
 import org.apache.commons.math3.ml.clustering.{Clusterable, DBSCANClusterer}
 import org.apache.commons.math3.ml.distance.DistanceMeasure
-import scala.jdk.CollectionConverters._
+
+import scala.jdk.CollectionConverters.*
 
 object Clustering {
 

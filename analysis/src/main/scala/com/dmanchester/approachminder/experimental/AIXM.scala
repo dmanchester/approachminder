@@ -1,10 +1,10 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.experimental
 
-import cats.implicits.{catsSyntaxTuple2Semigroupal, catsSyntaxTuple3Semigroupal, catsSyntaxTuple4Semigroupal, catsSyntaxTuple5Semigroupal}
+import cats.implicits.{catsSyntaxTuple2Semigroupal, catsSyntaxTuple3Semigroupal, catsSyntaxTuple5Semigroupal}
 import io.dylemma.spac
-import io.dylemma.spac.{ContextMatcher, Parser, Source, Splitter}
 import io.dylemma.spac.xml.JavaxQName.javaxQNameAsQName
 import io.dylemma.spac.xml.{JavaxSource, XmlEvent, XmlParser, XmlParserApplyOps, XmlSplitterApplyOps, XmlSplitterOps, elem}
+import io.dylemma.spac.{ContextMatcher, Parser, Source, Splitter}
 
 import java.io.File
 import javax.xml.namespace.QName

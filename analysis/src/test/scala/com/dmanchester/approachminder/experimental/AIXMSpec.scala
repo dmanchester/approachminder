@@ -1,6 +1,6 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.experimental
 
-import com.dmanchester.approachminder.AIXM.{AIXMAirportHeliport, AIXMLongLat, AIXMRunway, AIXMRunwayDirection, AIXMValueWithUOM}
+import com.dmanchester.approachminder.experimental.AIXM.{AIXMAirportHeliport, AIXMLongLat, AIXMRunwayDirection}
 import io.dylemma.spac.xml.JavaxSource
 import org.specs2.mutable.*
 

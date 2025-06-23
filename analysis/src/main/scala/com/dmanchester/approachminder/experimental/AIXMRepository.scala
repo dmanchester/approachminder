@@ -1,10 +1,10 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.experimental
 
-import com.dmanchester.approachminder.AIXM.{AIXMAirportHeliport, AIXMLongLat, AIXMRunway, AIXMRunwayDirection}
-import com.dmanchester.approachminder.AIXMRepository.{AirportHeliportGmlId, RunwayGmlId, RunwayGmlIdNumericPortion, gmlIdNonNumericAndNumericPortions}
 import com.dmanchester.approachminder.Utils.feetToMetersConverter
+import com.dmanchester.approachminder.experimental.AIXM.{AIXMAirportHeliport, AIXMLongLat, AIXMRunway, AIXMRunwayDirection}
+import com.dmanchester.approachminder.experimental.AIXMRepository.{AirportHeliportGmlId, RunwayGmlId, RunwayGmlIdNumericPortion, gmlIdNonNumericAndNumericPortions}
+import com.dmanchester.approachminder.{GeographicCalculator, LongLat, RunwaySurfaceTemplate}
 
-import scala.collection.immutable.Map
 import scala.math.abs
 
 case class AIXMRepository private(runwaysMain: Map[AirportHeliportGmlId, Seq[AIXMRunway]], runwaysBaseEnd: Map[RunwayGmlIdNumericPortion, AIXMRunway], runwaysReciprocalEnd: Map[RunwayGmlIdNumericPortion, AIXMRunway], runwayDirections: Map[RunwayGmlId, AIXMRunwayDirection]) {
