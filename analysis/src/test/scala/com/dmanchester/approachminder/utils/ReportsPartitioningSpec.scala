@@ -1,17 +1,16 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.{Light, PositionReportIdentifiers}
+import com.dmanchester.approachminder.simpletypes.CallsignAndTime
 import org.specs2.mutable.*
 
 class ReportsPartitioningSpec extends Specification {
 
   "partition()" should {
 
-    val icao24 = "anICAO24Value"
     val abcd = "abcd"
     val efgh = "efgh"
-    def reportWithoutCallsign(timePosition: BigInt) = PositionReportIdentifiers(icao24, None, timePosition, Light)
-    def reportWithCallsign(callsign: String, timePosition: BigInt) = PositionReportIdentifiers(icao24, Some(callsign), timePosition, Light)
+    def reportWithoutCallsign(timePosition: BigInt) = CallsignAndTime(None, timePosition)
+    def reportWithCallsign(callsign: String, timePosition: BigInt) = CallsignAndTime(Some(callsign), timePosition)
 
     val withoutCallsignTime10 = reportWithoutCallsign(10)
     val withoutCallsignTime15 = reportWithoutCallsign(15)

@@ -1,6 +1,8 @@
 package com.dmanchester.approachminder
 
-trait HasPositionReportIdentifiers extends HasICAO24 with HasTime {
+import com.dmanchester.approachminder.simpletypes.HasCallsignAndTime
+
+trait HasPositionReportIdentifiers extends HasICAO24 with HasTime with HasCallsignAndTime {
   def icao24: String
   def callsign: Option[String]
   def timePosition: BigInt

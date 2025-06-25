@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.HasPositionReportIdentifiers
+import com.dmanchester.approachminder.simpletypes.HasCallsignAndTime
 
 object ReportsPartitioning {
 
@@ -9,12 +9,12 @@ object ReportsPartitioning {
    *
    * @tparam R The reports' type.
    */
-  private trait PartitioningState[R <: HasPositionReportIdentifiers] {
+  private trait PartitioningState[R <: HasCallsignAndTime] {
     def processReport(report: R): PartitioningState[R]
     def partitions: Seq[(Option[String], Seq[R])]
   }
 
-  private def beginNewAccumulatingPartition[R <: HasPositionReportIdentifiers](report: R, completedPartitions: Seq[(Option[String], Seq[R])], timeGapSecs: Int): PartitioningState[R] = {
+  private def beginNewAccumulatingPartition[R <: HasCallsignAndTime](report: R, completedPartitions: Seq[(Option[String], Seq[R])], timeGapSecs: Int): PartitioningState[R] = {
     report.callsign.map { callsign =>
       new StateAccumulatingWithCallsign(Seq(report), callsign, completedPartitions, timeGapSecs)
     } getOrElse {
@@ -22,7 +22,7 @@ object ReportsPartitioning {
     }
   }
 
-  private class StateInitial[R <: HasPositionReportIdentifiers](timeGapSecs: Int) extends PartitioningState[R] {
+  private class StateInitial[R <: HasCallsignAndTime](timeGapSecs: Int) extends PartitioningState[R] {
 
     override def processReport(report: R): PartitioningState[R] = {
       beginNewAccumulatingPartition(report, Seq.empty, timeGapSecs)
@@ -31,7 +31,7 @@ object ReportsPartitioning {
     override def partitions: Seq[(Option[String], Seq[R])] = Seq.empty
   }
 
-  private class StateAccumulatingWithoutCallsign[R <: HasPositionReportIdentifiers](partitionInProgress: Seq[R], completedPartitions: Seq[(Option[String], Seq[R])], timeGapSecs: Int) extends PartitioningState[R] {
+  private class StateAccumulatingWithoutCallsign[R <: HasCallsignAndTime](partitionInProgress: Seq[R], completedPartitions: Seq[(Option[String], Seq[R])], timeGapSecs: Int) extends PartitioningState[R] {
 
     override def processReport(report: R): PartitioningState[R] = {
 
@@ -50,7 +50,7 @@ object ReportsPartitioning {
     override def partitions: Seq[(Option[String], Seq[R])] = completedPartitions :+ (None, partitionInProgress)
   }
 
-  private class StateAccumulatingWithCallsign[R <: HasPositionReportIdentifiers](partitionInProgress: Seq[R], callsign: String, completedPartitions: Seq[(Option[String], Seq[R])], timeGapSecs: Int /*TODO Is Int big enough?*/) extends PartitioningState[R] {
+  private class StateAccumulatingWithCallsign[R <: HasCallsignAndTime](partitionInProgress: Seq[R], callsign: String, completedPartitions: Seq[(Option[String], Seq[R])], timeGapSecs: Int /*TODO Is Int big enough?*/) extends PartitioningState[R] {
 
     override def processReport(report: R): PartitioningState[R] = {
       // Check for two criteria:
@@ -81,7 +81,7 @@ object ReportsPartitioning {
    * @tparam R The reports' type.
    * @return The partitioned reports.
    */
-  def partition[R <: HasPositionReportIdentifiers](reports: Iterable[R], timeGapSecs: Int): Seq[(Option[String], Seq[R])] = {
+  def partition[R <: HasCallsignAndTime](reports: Iterable[R], timeGapSecs: Int): Seq[(Option[String], Seq[R])] = {
     reports.foldLeft(new StateInitial(timeGapSecs): PartitioningState[R]) { (partitionerState, report) =>
       partitionerState.processReport(report)
     }.partitions
