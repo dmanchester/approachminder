@@ -1,5 +1,6 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.utils
 
+import com.dmanchester.approachminder.{Light, PositionReportIdentifiers}
 import org.specs2.mutable.*
 
 class ReportsPartitioningSpec extends Specification {

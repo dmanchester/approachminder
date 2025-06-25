@@ -1,4 +1,6 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.utils
+
+import com.dmanchester.approachminder.HasPositionReportIdentifiers
 
 object ReportsPartitioning {
 
