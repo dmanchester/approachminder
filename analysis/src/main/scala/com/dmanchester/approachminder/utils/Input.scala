@@ -17,7 +17,7 @@ object Input {
     }
   }
 
-  private val stateVectorReads: Reads[OpenSkyVector] = (
+  private val openSkyVectorReads: Reads[OpenSkyVector] = (
     (JsPath \ 0).read[String] and
       // Callsigns (see next line) have trailing whitespace. (Interestingly, other String vector fields do not.)
       (JsPath \ 1).readNullable[String].map(_.map(_.trim)) and // TODO Cleaner way to write the double "map" (first one gets Option[String]; second one gets String)?
@@ -39,7 +39,7 @@ object Input {
       (JsPath \ 17).read[Int].map(AircraftCategory.byId)
     ) (OpenSkyVector.apply _)
 
-  private val multipleStateVectorsReads: Reads[Seq[OpenSkyVector]] = Reads.seq(stateVectorReads)
+  private val multipleOpenSkyVectorsReads: Reads[Seq[OpenSkyVector]] = Reads.seq(openSkyVectorReads)
 
   sealed trait SingleOpenSkyFileToVectorsResult
   case class SingleOpenSkyFileToVectorsSuccess(vectors: Seq[OpenSkyVector]) extends SingleOpenSkyFileToVectorsResult
@@ -55,7 +55,7 @@ object Input {
 
       val jsValue = Json.parse(fileBytes)
 
-      val jsResultVectors = (jsValue \ "states").validate(multipleStateVectorsReads)
+      val jsResultVectors = (jsValue \ "states").validate(multipleOpenSkyVectorsReads)
       // If we made stateVectorReads implicit, we could avoid declaring multipleStateVectorsReads and just write
       // ".validate[Seq[StateVector]]". But, the above syntax makes it clearer what's going on.
 
