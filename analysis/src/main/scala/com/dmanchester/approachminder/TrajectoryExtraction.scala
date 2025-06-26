@@ -81,13 +81,13 @@ object TrajectoryExtraction {
     val filesResult = Input.openSkyFilesToVectors(files)
     println(s"${filesResult.totalFiles} files read (success: ${filesResult.successFiles}; failure: ${filesResult.failedFiles})")
 
-    val positionReportsAllFields = filesResult.vectors.flatMap(_.toPositionReportAllFields)
+    val positionReportsAllFields = filesResult.vectors.flatMap(OpenSkyPositionReportAllFields.fromVector)
     println(s"${filesResult.vectors.length} vectors distilled to ${positionReportsAllFields.length} position reports")
     val trajectoriesUnfiltered = positionReportsToTrajectories(positionReportsAllFields, timeGapForPartitioning)
     // TODO Can we force calling code to do this filtering? Or, change name of method to reflect?
     val trajectories = trajectoriesUnfiltered.filter(_.isPossiblyFixedWingPowered)
     println(s"${trajectories.length} trajectories (${trajectoriesUnfiltered.length} before filtering)")
     // FIXME Make OSPR just a trait; OSPRAF as an implementer. Then can do away with this method.
-    trajectories.map(_.mapPositions(_.toPositionReport))
+    trajectories
   }
 }

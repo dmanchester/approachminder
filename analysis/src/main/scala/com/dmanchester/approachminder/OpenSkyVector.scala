@@ -29,13 +29,4 @@ case class OpenSkyVector(
                         spi: Boolean,
                         positionSource: PositionSource,
                         category: AircraftCategory
-                      ) {
-  def toPositionReportAllFields: Option[OpenSkyPositionReportAllFields] = {
-
-    this match {
-      case OpenSkyVector(icao24, callsign, originCountry, Some(timePosition), lastContact, Some(longitude), Some(latitude), baroAltitude, onGround, velocity, trueTrack, verticalRate, Some(geoAltitude), squawk, spi, positionSource, category) =>
-        Some(OpenSkyPositionReportAllFields(icao24, callsign, originCountry, timePosition, lastContact, longitude, latitude, baroAltitude, onGround, velocity, trueTrack, verticalRate, geoAltitude, squawk, spi, positionSource, category))
-      case _ => None
-    }
-  }
-}
+                      )

@@ -13,7 +13,7 @@ import com.dmanchester.approachminder.complextypes.AircraftCategory
  * @param category
  * @tparam P
  */
-case class Trajectory3[P] private (positions: Seq[P], icao24: String, callsign: Option[String], category: Option[AircraftCategory]) {
+case class Trajectory3[+P] private (positions: Seq[P], icao24: String, callsign: Option[String], category: Option[AircraftCategory]) {
 
   /**
    * Whether trajectory's aircraft was possibly fixed-wing and powered.
@@ -27,6 +27,7 @@ case class Trajectory3[P] private (positions: Seq[P], icao24: String, callsign: 
     }
   }
 
+  // TODO Can likely delete.
   def mapPositions[A](f: P => A): Trajectory3[A] = {
     new Trajectory3(positions.map(f), icao24, callsign, category)
   }
