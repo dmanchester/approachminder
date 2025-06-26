@@ -1,7 +1,5 @@
 package com.dmanchester.approachminder.simpletypes
 
-import com.dmanchester.approachminder.complextypes.AircraftCategory
-
 /**
  * An OpenSky vector, as provided by their API.
  *

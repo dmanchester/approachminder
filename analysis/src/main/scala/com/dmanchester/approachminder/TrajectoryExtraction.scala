@@ -1,8 +1,7 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.complextypes.AircraftCategory
-import com.dmanchester.approachminder.simpletypes.{OpenSkyPositionReport, OpenSkyPositionReportAllFields}
-import com.dmanchester.approachminder.utils.{Input, ReportsPartitioning}
+import com.dmanchester.approachminder.simpletypes.{AircraftCategory, OpenSkyPositionReport, OpenSkyPositionReportAllFields}
+import com.dmanchester.approachminder.utils.{AircraftCategories, Input, ReportsPartitioning}
 
 import scala.collection.immutable.ListMap
 
@@ -58,7 +57,7 @@ object TrajectoryExtraction {
       sortedPositionReports = positionReportsThisICAO24.sortBy(_.timePosition)
       cleanedPositionReports = resolveTimeConflicts(sortedPositionReports)
       categories = cleanedPositionReports.map(_.category)
-      mostCommonCategory = AircraftCategory.mostCommonNonBlankCategoryInNonEmptyCollection(categories)
+      mostCommonCategory = AircraftCategories.mostCommonNonBlankCategoryInNonEmptyCollection(categories)
       partitionedReports = ReportsPartitioning.partition(cleanedPositionReports, timeGapSecsForPartitioning)
       (callsign, reports) <- partitionedReports
     } yield {

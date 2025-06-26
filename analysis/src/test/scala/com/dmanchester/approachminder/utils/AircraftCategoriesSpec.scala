@@ -1,24 +1,25 @@
-package com.dmanchester.approachminder.complextypes
+package com.dmanchester.approachminder.utils
 
+import com.dmanchester.approachminder.simpletypes.*
 import org.specs2.mutable.*
 
-class AircraftCategorySpec extends Specification {
+class AircraftCategoriesSpec extends Specification {
 
   "mostCommonNonBlankCategoryInNonEmptyCollection" should {
 
     "determine the most-common non-blank category, picking the alphabetically first one among equally common ones" in {
       val categories = Seq(NoInfoAtAll, NoADSBEmitterCategoryInfo, Small, Small, Light, Light, Large, NoInfoAtAll, NoADSBEmitterCategoryInfo, NoInfoAtAll, NoADSBEmitterCategoryInfo)
-      AircraftCategory.mostCommonNonBlankCategoryInNonEmptyCollection(categories) must beSome(beEqualTo(Light))
+      AircraftCategories.mostCommonNonBlankCategoryInNonEmptyCollection(categories) must beSome(beEqualTo(Light))
     }
 
     "return `None` if all categories are blank" in {
       val categories = Seq(NoInfoAtAll, NoADSBEmitterCategoryInfo)
-      AircraftCategory.mostCommonNonBlankCategoryInNonEmptyCollection(categories) must beNone
+      AircraftCategories.mostCommonNonBlankCategoryInNonEmptyCollection(categories) must beNone
     }
 
     "throw if there are no categories" in {
       val categories = Seq()
-      AircraftCategory.mostCommonNonBlankCategoryInNonEmptyCollection(categories) must throwA[UnsupportedOperationException]
+      AircraftCategories.mostCommonNonBlankCategoryInNonEmptyCollection(categories) must throwA[UnsupportedOperationException]
     }
   }
 }
