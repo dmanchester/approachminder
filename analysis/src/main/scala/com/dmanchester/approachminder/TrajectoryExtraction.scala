@@ -1,6 +1,7 @@
 package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.complextypes.AircraftCategory
+import com.dmanchester.approachminder.simpletypes.{OpenSkyPositionReport, OpenSkyPositionReportAllFields}
 import com.dmanchester.approachminder.utils.{Input, ReportsPartitioning}
 
 import scala.collection.immutable.ListMap
@@ -87,7 +88,6 @@ object TrajectoryExtraction {
     // TODO Can we force calling code to do this filtering? Or, change name of method to reflect?
     val trajectories = trajectoriesUnfiltered.filter(_.isPossiblyFixedWingPowered)
     println(s"${trajectories.length} trajectories (${trajectoriesUnfiltered.length} before filtering)")
-    // FIXME Make OSPR just a trait; OSPRAF as an implementer. Then can do away with this method.
     trajectories
   }
 }

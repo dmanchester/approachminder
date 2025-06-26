@@ -1,7 +1,6 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.simpletypes
 
 import com.dmanchester.approachminder.complextypes.AircraftCategory
-import com.dmanchester.approachminder.simpletypes.PositionSource
 
 /**
  * An OpenSky vector, as provided by their API.
