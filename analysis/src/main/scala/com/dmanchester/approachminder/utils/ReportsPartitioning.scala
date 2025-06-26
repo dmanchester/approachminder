@@ -2,6 +2,9 @@ package com.dmanchester.approachminder.utils
 
 import com.dmanchester.approachminder.simpletypes.HasCallsignAndTime
 
+/**
+ * Functionality for partitioning position reports.
+ */
 object ReportsPartitioning {
 
   /**
@@ -74,7 +77,7 @@ object ReportsPartitioning {
   }
 
   /**
-   * Partition reports from a single aircraft on a time gap or callsign change.
+   * Partition position reports from a single aircraft on a time gap or callsign change.
    *
    * @param reports The reports to partition.
    * @param timeGapSecs The time gap. A gap of at least this many seconds will lead to a new partition.

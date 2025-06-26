@@ -5,16 +5,33 @@ import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.*
 import play.api.libs.json.Reads.*
 
-import java.nio.file.{Files, Path}
+import java.nio.file.{Files, Path, Paths}
 import scala.jdk.CollectionConverters.*
 import scala.util.{Failure, Success, Try, Using}
 
 object Input {
 
-  def resolveGlob(dir: Path, glob: String): Seq[Path] = {
-    Using.resource(Files.newDirectoryStream(dir, glob)) { (dirStreamAsJavaIterable: java.lang.Iterable[Path]) =>
+  /**
+   * Resolve a glob against a filesystem directory.
+   *
+   * For example, given...
+   *
+   *   foo/
+   *     bar.txt
+   *     baz.txt
+   *     qux.txt
+   *
+   * ...an invocation of resolveGlob("foo/", "b*.txt") produces Seq("foo/bar.txt", "foo/baz.txt").
+   *
+   * @param dir The directory.
+   * @param glob The glob.
+   * @return The files in the directory matching the glob, prepended with the directory. Sorted alphabetically.
+   */
+  def resolveGlob(dir: String, glob: String): Seq[Path] = {
+    val dirAsPath = Paths.get(dir)
+    Using.resource(Files.newDirectoryStream(dirAsPath, glob)) { (dirStreamAsJavaIterable: java.lang.Iterable[Path]) =>
       dirStreamAsJavaIterable.asScala.toSeq
-    }
+    }.sorted
   }
 
   private val openSkyVectorReads: Reads[OpenSkyVector] = (
@@ -82,6 +99,7 @@ object Input {
   }
 
   case class FailedFileError(file: Path, message: String)
+
   case class OpenSkyFilesToVectorsResult private(totalFiles: Int, vectors: Seq[OpenSkyVector], errors: Seq[FailedFileError]) {
 
     def failedFiles: Int = errors.length
@@ -100,6 +118,14 @@ object Input {
     val empty: OpenSkyFilesToVectorsResult = OpenSkyFilesToVectorsResult(0, Seq.empty, Seq.empty)
   }
 
+  /**
+   * Parse a series of JSON files from the OpenSky API and produce vectors from them.
+   *
+   * @param files The files.
+   * @return A result object that includes the vectors, some metrics (e.g., files processed successfully vs. failed),
+   *         and information on errors. The vectors are ordered based on the files' order and on the vectors' order
+   *         within the files.
+   */
   def openSkyFilesToVectors(files: Iterable[Path]): OpenSkyFilesToVectorsResult = {
     files.foldLeft(OpenSkyFilesToVectorsResult.empty) { case (resultInProgress, file) =>
 

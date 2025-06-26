@@ -10,7 +10,7 @@ object ThrowawayOpenSkyFilesToTrajectories {
 
     println("Starting...")
 
-    val dir = Paths.get("/home/dan/flight-tracking/opensky-data-as-of--2013-01-12--0029/")
+    val dir = "/home/dan/flight-tracking/opensky-data-as-of--2013-01-12--0029/"
 //    val glob = "*.json"
     val glob = "all--2022-11-*.json"
 
