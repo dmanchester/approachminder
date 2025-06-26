@@ -1,27 +1,12 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.complextypes.AircraftCategory
+import com.dmanchester.approachminder.simpletypes.PositionSource
+
 /**
  * An OpenSky vector, as provided by their API.
  *
  * Reference: https://openskynetwork.github.io/opensky-api/rest.html
- *
- * @param icao24
- * @param callsign
- * @param originCountry
- * @param timePosition
- * @param lastContact
- * @param longitude
- * @param latitude
- * @param baroAltitude
- * @param onGround
- * @param velocity
- * @param trueTrack
- * @param verticalRate
- * @param geoAltitude
- * @param squawk
- * @param spi
- * @param positionSource
- * @param category
  */
 case class OpenSkyVector(
                         icao24: String,

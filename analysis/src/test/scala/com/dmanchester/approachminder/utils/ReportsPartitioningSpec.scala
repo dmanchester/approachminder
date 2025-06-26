@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.simpletypes.CallsignAndTime
+import com.dmanchester.approachminder.testingtypes.CallsignAndTime
 import org.specs2.mutable.*
 
 class ReportsPartitioningSpec extends Specification {

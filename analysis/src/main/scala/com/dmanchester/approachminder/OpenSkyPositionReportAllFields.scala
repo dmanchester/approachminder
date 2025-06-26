@@ -1,5 +1,8 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.complextypes.AircraftCategory
+import com.dmanchester.approachminder.simpletypes.PositionSource
+
 /**
  * An OpenSky position report with all the fields of an `OpenSkyVector`, but requires values for the following fields
  * (`OpenSkyVector` has them as `Option[...]`):

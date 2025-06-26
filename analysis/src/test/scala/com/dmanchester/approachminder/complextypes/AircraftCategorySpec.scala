@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.complextypes
 
 import org.specs2.mutable.*
 

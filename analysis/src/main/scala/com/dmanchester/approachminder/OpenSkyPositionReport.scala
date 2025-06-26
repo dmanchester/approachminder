@@ -1,5 +1,7 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.simpletypes.PositionSource
+
 /**
  * An OpenSky position report with only the dynamic fields (i.e., those that one would expect to vary in a trajectory
  * from one report to the next).
