@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.simpletypes.HasCallsignAndTime
+import com.dmanchester.approachminder.typeswithoutbehavior.HasCallsignAndTime
 
 /**
  * Functionality for partitioning position reports.

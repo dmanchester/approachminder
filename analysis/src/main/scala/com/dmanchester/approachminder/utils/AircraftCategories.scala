@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder.utils
 
 import com.dmanchester.approachminder.Utils
-import com.dmanchester.approachminder.simpletypes.AircraftCategory
+import com.dmanchester.approachminder.typeswithoutbehavior.AircraftCategory
 
 object AircraftCategories {
 

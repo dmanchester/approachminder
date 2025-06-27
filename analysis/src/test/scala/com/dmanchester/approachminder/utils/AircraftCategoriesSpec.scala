@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.simpletypes.*
+import com.dmanchester.approachminder.typeswithoutbehavior.*
 import org.specs2.mutable.*
 
 class AircraftCategoriesSpec extends Specification {

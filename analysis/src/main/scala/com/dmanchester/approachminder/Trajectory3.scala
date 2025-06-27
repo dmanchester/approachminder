@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.simpletypes.AircraftCategory
+import com.dmanchester.approachminder.typeswithoutbehavior.AircraftCategory
 
 /**
  * A trajectory of an aircraft, specified via positions at which it has been observed.

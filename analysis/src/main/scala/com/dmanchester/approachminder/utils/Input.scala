@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.simpletypes.{AircraftCategory, OpenSkyVector, PositionSource}
+import com.dmanchester.approachminder.typeswithoutbehavior.{AircraftCategory, OpenSkyVector, PositionSource}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.*
 import play.api.libs.json.Reads.*

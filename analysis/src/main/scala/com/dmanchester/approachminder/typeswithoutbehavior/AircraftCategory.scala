@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder.simpletypes
+package com.dmanchester.approachminder.typeswithoutbehavior
 
 sealed abstract class AircraftCategory(val description: String)
 

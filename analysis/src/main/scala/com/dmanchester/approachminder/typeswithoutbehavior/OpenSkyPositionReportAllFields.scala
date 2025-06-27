@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder.simpletypes
+package com.dmanchester.approachminder.typeswithoutbehavior
 
 /**
  * An OpenSky position report with all the fields of an `OpenSkyVector`, but requires values for the following fields

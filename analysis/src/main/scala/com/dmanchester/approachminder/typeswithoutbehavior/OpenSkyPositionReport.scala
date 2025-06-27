@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder.simpletypes
+package com.dmanchester.approachminder.typeswithoutbehavior
 
 import com.dmanchester.approachminder.HasPositionReportIdentifiers
 

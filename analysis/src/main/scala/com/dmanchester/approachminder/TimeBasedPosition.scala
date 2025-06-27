@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.simpletypes.OpenSkyVector
+import com.dmanchester.approachminder.typeswithoutbehavior.OpenSkyVector
 
 /**
  * A time-based position of an aircraft, derived from an OpenSky vector. Includes the vector.
