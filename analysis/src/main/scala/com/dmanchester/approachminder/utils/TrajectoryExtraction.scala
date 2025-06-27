@@ -31,7 +31,7 @@ object TrajectoryExtraction extends StrictLogging {
    * Resolve time conflicts among elements. More specifically, given multiple elements having the same time, pick the
    * element furthest down in `timeSortedElements` as the winner and discard the other elements with that time.
    *
-   * TODO Test coverage needed.
+   * TODO Add tests.
    *
    * @param timeSortedElements Must be sorted (ascending)!
    * @tparam T The elements' type.
@@ -62,7 +62,7 @@ object TrajectoryExtraction extends StrictLogging {
   /**
    * Create trajectories from a series of position reports.
    *
-   * TODO Test coverage needed.
+   * TODO Add tests.
    *
    * @param reports The reports.
    * @param timeGapSecsForPartitioning The time gap on which to partition the reports for a given callsign. A gap of at
@@ -90,7 +90,7 @@ object TrajectoryExtraction extends StrictLogging {
   /**
    * Parse a series of JSON files from the OpenSky API and produce trajectories from them.
    *
-   * TODO Test coverage needed.
+   * TODO Add tests.
    *
    * @param dir The directory containing the files.
    * @param glob A glob that identifies the files (typically via wildcard).
