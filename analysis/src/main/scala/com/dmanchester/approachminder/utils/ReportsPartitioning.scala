@@ -82,7 +82,7 @@ object ReportsPartitioning {
    * @param reports The reports to partition.
    * @param timeGapSecs The time gap. A gap of at least this many seconds will lead to a new partition.
    * @tparam R The reports' type.
-   * @return The partitioned reports.
+   * @return The partitioned reports, keyed by callsign. The order of the input is maintained.
    */
   def partition[R <: HasCallsignAndTime](reports: Iterable[R], timeGapSecs: Int): Seq[(Option[String], Seq[R])] = {
     reports.foldLeft(new StateInitial(timeGapSecs): PartitioningState[R]) { (partitionerState, report) =>

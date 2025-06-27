@@ -2,11 +2,19 @@ package com.dmanchester.approachminder.utils
 
 import com.dmanchester.approachminder.typeswithoutbehavior.{OpenSkyPositionReport, OpenSkyPositionReportAllFields}
 import com.dmanchester.approachminder.{HasICAO24, HasPositionReportIdentifiers, HasTime, Trajectory3}
+import com.typesafe.scalalogging.StrictLogging
 
 import scala.collection.immutable.ListMap
 
-object TrajectoryExtraction {
+object TrajectoryExtraction extends StrictLogging {
 
+  /**
+   * Partition elements (typically, position reports) by ICAO24 identifier (so, by aircraft).
+   *
+   * @param elements The elements to partition.
+   * @tparam I The elements' type.
+   * @return The partitioned elements, keyed by ICAO24. The order of the input is maintained.
+   */
   def partitionByICAO24[I <: HasICAO24](elements: Iterable[I]): Seq[(String, Seq[I])] = {
 
     // Conceptually, this is a group-by operation, with the added guarantee of elements' order being maintained.
@@ -20,14 +28,16 @@ object TrajectoryExtraction {
   }
 
   /**
-   * Resolve time conflicts among elements. More specifically, given multiple elements having the same time, picks the
-   * element furthest down in `timeSortedElements` as the winner and discards the other elements with that time.
+   * Resolve time conflicts among elements. More specifically, given multiple elements having the same time, pick the
+   * element furthest down in `timeSortedElements` as the winner and discard the other elements with that time.
    *
-   * @param timeSortedElements Must be sorted (ascending).
-   * @tparam T
-   * @return
+   * TODO Test coverage needed.
+   *
+   * @param timeSortedElements Must be sorted (ascending)!
+   * @tparam T The elements' type.
+   * @return The elements, with time conflicts resolved.
    */
-  def resolveTimeConflicts[T <: HasTime](timeSortedElements: Seq[T]): Seq[T] = {
+  private def resolveTimeConflicts[T <: HasTime](timeSortedElements: Seq[T]): Seq[T] = {
 
     if (timeSortedElements.isEmpty) {
       Seq.empty[T]
@@ -49,16 +59,28 @@ object TrajectoryExtraction {
     }
   }
 
-  def positionReportsToTrajectories[R <: HasPositionReportIdentifiers](positionReports: Iterable[R], timeGapSecsForPartitioning: Int): Seq[Trajectory3[R]] = {
-    val icao24ToPositionReports = partitionByICAO24(positionReports)
+  /**
+   * Create trajectories from a series of position reports.
+   *
+   * TODO Test coverage needed.
+   *
+   * @param reports The reports.
+   * @param timeGapSecsForPartitioning The time gap on which to partition the reports for a given callsign. A gap of at
+   *                                   least this many seconds will lead to a new trajectory for that callsign.
+   * @tparam R The reports' type.
+   * @return The trajectories.
+   */
+  private def positionReportsToTrajectories[R <: HasPositionReportIdentifiers](reports: Iterable[R], timeGapSecsForPartitioning: Int): Seq[Trajectory3[R]] = {
+
+    val icao24ToReports = partitionByICAO24(reports)
 
     (for {
-      (icao24, positionReportsThisICAO24) <- icao24ToPositionReports
-      sortedPositionReports = positionReportsThisICAO24.sortBy(_.timePosition)
-      cleanedPositionReports = resolveTimeConflicts(sortedPositionReports)
-      categories = cleanedPositionReports.map(_.category)
+      (icao24, reportsThisICAO24) <- icao24ToReports
+      sortedReports = reportsThisICAO24.sortBy(_.timePosition)
+      cleanedReports = resolveTimeConflicts(sortedReports)
+      categories = cleanedReports.map(_.category)
       mostCommonCategory = AircraftCategories.mostCommonNonBlankCategoryInNonEmptyCollection(categories)
-      partitionedReports = ReportsPartitioning.partition(cleanedPositionReports, timeGapSecsForPartitioning)
+      partitionedReports = ReportsPartitioning.partition(cleanedReports, timeGapSecsForPartitioning)
       (callsign, reports) <- partitionedReports
     } yield {
       Trajectory3.createOption(reports, icao24, callsign, mostCommonCategory)
@@ -66,27 +88,29 @@ object TrajectoryExtraction {
   }
 
   /**
-   * Trajectories restricted to those that are possibly fixed-wing powered.
+   * Parse a series of JSON files from the OpenSky API and produce trajectories from them.
    *
-   * @param fileGlob
-   * @return
+   * TODO Test coverage needed.
+   *
+   * @param dir The directory containing the files.
+   * @param glob A glob that identifies the files (typically via wildcard).
+   * @param timeGapSecsForPartitioning The time gap on which to partition the trajectories for a given callsign. A gap
+   *                                   of at least this many seconds will lead to a new trajectory for that callsign.
+   * @return The trajectories.
    */
-  def openSkyFilesToTrajectories(dir: String, glob: String, timeGapForPartitioning: Int): Seq[Trajectory3[OpenSkyPositionReport]] = {
-
-    // TODO Make println's into log statements
+  def openSkyFilesToTrajectories(dir: String, glob: String, timeGapSecsForPartitioning: Int): Seq[Trajectory3[OpenSkyPositionReport]] = {
 
     val files = Input.resolveGlob(dir, glob)
-    println(s"${files.length} files to be read...")
+    logger.info(s"${files.length} files to be read...")
 
     val filesResult = Input.openSkyFilesToVectors(files)
-    println(s"${filesResult.totalFiles} files read (success: ${filesResult.successFiles}; failure: ${filesResult.failedFiles})")
+    logger.info(s"${filesResult.totalFiles} files read (success: ${filesResult.successFiles}; failure: ${filesResult.failedFiles})")
 
     val positionReportsAllFields = filesResult.vectors.flatMap(OpenSkyPositionReportAllFields.fromVector)
-    println(s"${filesResult.vectors.length} vectors distilled to ${positionReportsAllFields.length} position reports")
-    val trajectoriesUnfiltered = positionReportsToTrajectories(positionReportsAllFields, timeGapForPartitioning)
-    // TODO Can we force calling code to do this filtering? Or, change name of method to reflect?
-    val trajectories = trajectoriesUnfiltered.filter(_.isPossiblyFixedWingPowered)
-    println(s"${trajectories.length} trajectories (${trajectoriesUnfiltered.length} before filtering)")
+    logger.info(s"${filesResult.vectors.length} vectors distilled to ${positionReportsAllFields.length} position reports")
+    val trajectories = positionReportsToTrajectories(positionReportsAllFields, timeGapSecsForPartitioning)
+
+    logger.info(s"${trajectories.length} trajectories created")
     trajectories
   }
 }
