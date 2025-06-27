@@ -1,6 +1,7 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.TrajectoryExtraction.partitionByICAO24
+import com.dmanchester.approachminder.utils.TrajectoryExtraction.partitionByICAO24
+import com.dmanchester.approachminder.{HasICAO24, ICAO24WithSomeText}
 import org.specs2.mutable.*
 
 class TrajectoryExtractionSpec extends Specification {

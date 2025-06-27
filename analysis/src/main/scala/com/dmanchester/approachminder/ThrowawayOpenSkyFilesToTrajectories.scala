@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.TrajectoryExtraction.openSkyFilesToTrajectories
+import com.dmanchester.approachminder.utils.TrajectoryExtraction.openSkyFilesToTrajectories
 
 import java.nio.file.Paths
 
