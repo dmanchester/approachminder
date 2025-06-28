@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.Utils.interpolateScalar
-import com.dmanchester.approachminder.typeswithoutbehavior.Trajectory
+import com.dmanchester.approachminder.typeswithbehavior.Trajectory
 
 import scala.annotation.tailrec
 

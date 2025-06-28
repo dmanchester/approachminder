@@ -1,6 +1,7 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.typeswithoutbehavior.{HasICAO24, HasPositionReportIdentifiers, HasTime, OpenSkyPositionReport, OpenSkyPositionReportAllFields, Trajectory}
+import com.dmanchester.approachminder.typeswithbehavior.Trajectory
+import com.dmanchester.approachminder.typeswithoutbehavior.{HasICAO24, HasPositionReportIdentifiers, HasTime, OpenSkyPositionReport, OpenSkyPositionReportAllFields}
 import com.typesafe.scalalogging.StrictLogging
 
 import scala.collection.immutable.ListMap
