@@ -1,6 +1,7 @@
 package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.Utils.interpolateScalar
+import com.dmanchester.approachminder.typeswithoutbehavior.Trajectory
 
 import scala.annotation.tailrec
 
@@ -28,12 +29,12 @@ object ExtractionAndEstimation {
    * @tparam A
    * @return
    */
-  def approachesAndLandings2[A <: HasLongLatAlt](trajectory: Trajectory3[A], thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint]): Seq[ApproachAndLanding2[A]] = {
+  def approachesAndLandings2[A <: HasLongLatAlt](trajectory: Trajectory[A], thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint]): Seq[ApproachAndLanding2[A]] = {
     doApproachesAndLandings2(trajectory, 0, thresholdsAndReferencePoints, Seq.empty)
   }
 
   @tailrec
-  private def doApproachesAndLandings2[A <: HasLongLatAlt](remainingTrajectory: Trajectory3[A], segmentIndex: Int, thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint], accumulator: Seq[ApproachAndLanding2[A]]): Seq[ApproachAndLanding2[A]] = {
+  private def doApproachesAndLandings2[A <: HasLongLatAlt](remainingTrajectory: Trajectory[A], segmentIndex: Int, thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint], accumulator: Seq[ApproachAndLanding2[A]]): Seq[ApproachAndLanding2[A]] = {
 
     // TODO What additional test coverage?
 
@@ -58,7 +59,7 @@ object ExtractionAndEstimation {
     }
   }
 
-  private def approachAndLanding[A <: HasLongLatAlt](remainingTrajectory: Trajectory3[A], segmentIndex: Int, thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint]) = {
+  private def approachAndLanding[A <: HasLongLatAlt](remainingTrajectory: Trajectory[A], segmentIndex: Int, thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint]) = {
 
     val checkSegment = (thresholdAndReferencePoint: ThresholdAndReferencePoint) => {
       ApproachAndLanding2.createOption(remainingTrajectory, segmentIndex, thresholdAndReferencePoint)

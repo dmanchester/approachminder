@@ -2,6 +2,7 @@ package com.dmanchester.approachminder
 
 import Airports.sfoData
 import com.dmanchester.approachminder.Utils.feetToMetersConverter
+import com.dmanchester.approachminder.typeswithoutbehavior.Trajectory
 import org.specs2.matcher.Matchers.{SignificantFiguresSyntax, beCloseTo}
 import org.specs2.matcher.{Matcher, SignificantFigures}
 
@@ -92,7 +93,7 @@ object SharedResources {
     }
   }
 
-  def trajectory3FromPositions[P](positions: Seq[P]): Trajectory3[P] = {
-    Trajectory3.createOption(positions, "(icao24)", Some("(callsign)"), None).get
+  def trajectory3FromPositions[P](positions: Seq[P]): Trajectory[P] = {
+    Trajectory.createOption(positions, "(icao24)", Some("(callsign)"), None).get
   }
 }

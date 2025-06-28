@@ -1,7 +1,6 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.typeswithoutbehavior.{HasICAO24, HasPositionReportIdentifiers, HasTime, OpenSkyPositionReport, OpenSkyPositionReportAllFields}
-import com.dmanchester.approachminder.Trajectory3
+import com.dmanchester.approachminder.typeswithoutbehavior.{HasICAO24, HasPositionReportIdentifiers, HasTime, OpenSkyPositionReport, OpenSkyPositionReportAllFields, Trajectory}
 import com.typesafe.scalalogging.StrictLogging
 
 import scala.collection.immutable.ListMap
@@ -70,7 +69,7 @@ object TrajectoryExtraction extends StrictLogging {
    * @tparam R The reports' type.
    * @return The trajectories.
    */
-  private def positionReportsToTrajectories[R <: HasPositionReportIdentifiers](reports: Iterable[R], timeGapSecsForPartitioning: Int): Seq[Trajectory3[R]] = {
+  private def positionReportsToTrajectories[R <: HasPositionReportIdentifiers](reports: Iterable[R], timeGapSecsForPartitioning: Int): Seq[Trajectory[R]] = {
 
     val icao24ToReports = partitionByICAO24(reports)
 
@@ -83,7 +82,7 @@ object TrajectoryExtraction extends StrictLogging {
       partitionedReports = ReportsPartitioning.partition(cleanedReports, timeGapSecsForPartitioning)
       (callsign, reports) <- partitionedReports
     } yield {
-      Trajectory3.createOption(reports, icao24, callsign, mostCommonCategory)
+      Trajectory.createOption(reports, icao24, callsign, mostCommonCategory)
     }).flatten
   }
 
@@ -101,7 +100,7 @@ object TrajectoryExtraction extends StrictLogging {
    *         category) in the Trajectory object itself (where they have been rolled up via established procedures), as
    *         opposed to looking them up in arbitrary position reports.
    */
-  def openSkyFilesToTrajectories(dir: String, glob: String, timeGapSecsForPartitioning: Int): Seq[Trajectory3[OpenSkyPositionReport]] = {
+  def openSkyFilesToTrajectories(dir: String, glob: String, timeGapSecsForPartitioning: Int): Seq[Trajectory[OpenSkyPositionReport]] = {
 
     val files = Input.resolveGlob(dir, glob)
     logger.info(s"${files.length} files to be read...")

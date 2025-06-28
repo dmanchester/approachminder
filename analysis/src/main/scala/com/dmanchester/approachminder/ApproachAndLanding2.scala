@@ -1,6 +1,7 @@
 package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.Utils.interpolateScalar
+import com.dmanchester.approachminder.typeswithoutbehavior.Trajectory
 
 // TODO Is tempting to make this a case class; but how would we get "equal" to fire reliably, since crossingPointInterpolated is a calculated Double?
 // TODO Stop using complicated instantiation logic to enforce a variant; move to standalone function?
@@ -36,7 +37,7 @@ object ApproachAndLanding2 {
    *         subtrajectory, wrapped in a `Some`. Or, `None` if at least one of the above criteria wasn't fulfilled, or
    *         if a trajectory that continuously nears the reference point couldn't be constructed.
    */
-  def createOption[A <: HasLongLatAlt](sourceTrajectory: Trajectory3[A], segmentIndex: Int, thresholdAndReferencePoint: ThresholdAndReferencePoint): Option[(ApproachAndLanding2[A], Int)] = {
+  def createOption[A <: HasLongLatAlt](sourceTrajectory: Trajectory[A], segmentIndex: Int, thresholdAndReferencePoint: ThresholdAndReferencePoint): Option[(ApproachAndLanding2[A], Int)] = {
 
     val sourcePositions = sourceTrajectory.positions
     val positionA = sourcePositions(segmentIndex)
