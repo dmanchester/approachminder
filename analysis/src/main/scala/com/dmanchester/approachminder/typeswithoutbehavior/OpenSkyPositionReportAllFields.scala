@@ -10,24 +10,24 @@ package com.dmanchester.approachminder.typeswithoutbehavior
  *   - geoAltitude
  */
 case class OpenSkyPositionReportAllFields(
-                        icao24: String,
-                        callsign: Option[String],
-                        originCountry: String,
-                        timePosition: BigInt,
-                        lastContact: BigInt,
-                        longitude: BigDecimal,
-                        latitude: BigDecimal,
-                        baroAltitude: Option[BigDecimal],
-                        onGround: Boolean,
-                        velocity: Option[BigDecimal],
-                        trueTrack: Option[BigDecimal],
-                        verticalRate: Option[BigDecimal],
-                        geoAltitude: BigDecimal,
-                        squawk: Option[String],
-                        spi: Boolean,
-                        positionSource: PositionSource,
-                        category: AircraftCategory
-                      ) extends OpenSkyPositionReport
+  icao24: String,
+  callsign: Option[String],
+  originCountry: String,
+  timePosition: BigInt,
+  lastContact: BigInt,
+  longitude: BigDecimal,
+  latitude: BigDecimal,
+  baroAltitude: Option[BigDecimal],
+  onGround: Boolean,
+  velocity: Option[BigDecimal],
+  trueTrack: Option[BigDecimal],
+  verticalRate: Option[BigDecimal],
+  geoAltitude: BigDecimal,
+  squawk: Option[String],
+  spi: Boolean,
+  positionSource: PositionSource,
+  category: AircraftCategory
+) extends OpenSkyPositionReport
 
 object OpenSkyPositionReportAllFields {
 

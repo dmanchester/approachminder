@@ -25,7 +25,7 @@ object ReportsPartitioning {
     }
   }
 
-  private class StateInitial[R <: HasCallsignAndTime](timeGapSecs: Int) extends PartitioningState[R] {
+  private case class StateInitial[R <: HasCallsignAndTime](timeGapSecs: Int) extends PartitioningState[R] {
 
     override def processReport(report: R): PartitioningState[R] = {
       beginNewAccumulatingPartition(report, Seq.empty, timeGapSecs)
@@ -34,7 +34,7 @@ object ReportsPartitioning {
     override def partitions: Seq[(Option[String], Seq[R])] = Seq.empty
   }
 
-  private class StateAccumulatingWithoutCallsign[R <: HasCallsignAndTime](partitionInProgress: Seq[R], completedPartitions: Seq[(Option[String], Seq[R])], timeGapSecs: Int) extends PartitioningState[R] {
+  private case class StateAccumulatingWithoutCallsign[R <: HasCallsignAndTime](partitionInProgress: Seq[R], completedPartitions: Seq[(Option[String], Seq[R])], timeGapSecs: Int) extends PartitioningState[R] {
 
     override def processReport(report: R): PartitioningState[R] = {
 
@@ -53,7 +53,7 @@ object ReportsPartitioning {
     override def partitions: Seq[(Option[String], Seq[R])] = completedPartitions :+ (None, partitionInProgress)
   }
 
-  private class StateAccumulatingWithCallsign[R <: HasCallsignAndTime](partitionInProgress: Seq[R], callsign: String, completedPartitions: Seq[(Option[String], Seq[R])], timeGapSecs: Int /*TODO Is Int big enough?*/) extends PartitioningState[R] {
+  private case class StateAccumulatingWithCallsign[R <: HasCallsignAndTime](partitionInProgress: Seq[R], callsign: String, completedPartitions: Seq[(Option[String], Seq[R])], timeGapSecs: Int /*TODO Is Int big enough?*/) extends PartitioningState[R] {
 
     override def processReport(report: R): PartitioningState[R] = {
       // Check for two criteria:

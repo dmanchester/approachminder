@@ -96,7 +96,10 @@ object TrajectoryExtraction extends StrictLogging {
    * @param glob A glob that identifies the files (typically via wildcard).
    * @param timeGapSecsForPartitioning The time gap on which to partition the trajectories for a given callsign. A gap
    *                                   of at least this many seconds will lead to a new trajectory for that callsign.
-   * @return The trajectories.
+   * @return The trajectories. -- They package instances of OpenSkyPositionReport, as opposed to
+   *         OpenSkyPositionReportAllFields, to lead client code to look up fairly static values (like aircraft
+   *         category) in the Trajectory object itself (where they have been rolled up via established procedures), as
+   *         opposed to looking them up in arbitrary position reports.
    */
   def openSkyFilesToTrajectories(dir: String, glob: String, timeGapSecsForPartitioning: Int): Seq[Trajectory3[OpenSkyPositionReport]] = {
 
