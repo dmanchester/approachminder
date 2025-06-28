@@ -1,7 +1,5 @@
 package com.dmanchester.approachminder.typeswithoutbehavior
 
-import com.dmanchester.approachminder.HasPositionReportIdentifiers
-
 /**
  * An OpenSky position report with only the dynamic fields (i.e., those that one would expect to vary in a trajectory
  * from one report to the next).
