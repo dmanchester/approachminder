@@ -29,7 +29,7 @@ case class Trajectory[+P] private(positions: Seq[P], icao24: String, callsign: O
    * @param n The number of positions to drop.
    * @return The shortened trajectory, wrapped in `Some`; or `None`, if fewer than two positions remain.
    */
-  def drop(n: Int): Option[Trajectory[P]] = Trajectory.createOption(positions.drop(n), icao24, callsign, category)
+  def drop(n: Int): Option[Trajectory[P]] = Trajectory.newOption(positions.drop(n), icao24, callsign, category)
 
   /**
    * Whether a given index value in a valid lookup into the trajectory's positions: non-negative (and thus not "too
@@ -46,7 +46,7 @@ object Trajectory {
   /**
    * Create a new trajectory, provided at least two positions are passed.
    */
-  def createOption[P](positions: Seq[P], icao24: String, callsign: Option[String], category: Option[AircraftCategory]): Option[Trajectory[P]] = {
+  def newOption[P](positions: Seq[P], icao24: String, callsign: Option[String], category: Option[AircraftCategory]): Option[Trajectory[P]] = {
     Option.when(positions.length >= 2)(new Trajectory(positions, icao24, callsign, category))
   }
 }

@@ -83,7 +83,7 @@ object TrajectoryExtraction extends StrictLogging {
       partitionedReports = ReportsPartitioning.partition(cleanedReports, timeGapSecsForPartitioning)
       (callsign, reports) <- partitionedReports
     } yield {
-      Trajectory.createOption(reports, icao24, callsign, mostCommonCategory)
+      Trajectory.newOption(reports, icao24, callsign, mostCommonCategory)
     }).flatten
   }
 
