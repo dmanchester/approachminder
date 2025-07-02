@@ -1,12 +1,12 @@
 package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.Utils.interpolateScalar
-import com.dmanchester.approachminder.typeswithbehavior.Trajectory
+import com.dmanchester.approachminder.typeswithbehavior.{ContinuouslyNearingTrajectory, Trajectory}
 
 // TODO Is tempting to make this a case class; but how would we get "equal" to fire reliably, since crossingPointInterpolated is a calculated Double?
 // TODO Stop using complicated instantiation logic to enforce a variant; move to standalone function?
 
-class ApproachAndLanding2[A <: HasLongLatAlt] private(val trajectory: ContinuouslyNearingTrajectory2[A], val threshold: Airport#RunwaySurface#RunwayThreshold, val crossingPointInterpolated: HasLongLatAlt)
+class ApproachAndLanding2[A <: HasLongLatAlt] private(val trajectory: ContinuouslyNearingTrajectory[A], val threshold: Airport#RunwaySurface#RunwayThreshold, val crossingPointInterpolated: HasLongLatAlt)
 
 object ApproachAndLanding2 {
 
@@ -50,7 +50,7 @@ object ApproachAndLanding2 {
       (crossingPoint2D, percentageFromSegStartToSegEnd) <- inboundCrossingPoint
       (positionsBeforeSegment, positionsAfterSegment) = sourcePositions.splitAt(segmentIndex + 1)
       truncatedTrajectory = positionsBeforeSegment :++ positionsAfterSegment.takeWhile(threshold.runwaySurface.contains) // truncated after the specified segment to include only positions on the runway surface
-      (continuouslyNearingSegment, addlSegmentsIncluded) <- ContinuouslyNearingTrajectory2.newOption(truncatedTrajectory, segmentIndex, thresholdAndReferencePoint.referencePoint, threshold.geographicCalculator)
+      (continuouslyNearingSegment, addlSegmentsIncluded) <- ContinuouslyNearingTrajectory.newOption(truncatedTrajectory, segmentIndex, thresholdAndReferencePoint.referencePoint, threshold.geographicCalculator)
       altitudeMeters = interpolateScalar(positionA.altitudeMeters, positionB.altitudeMeters, percentageFromSegStartToSegEnd)
       crossingPoint3D = LongLatAlt(crossingPoint2D.longitude, crossingPoint2D.latitude, altitudeMeters)
     } yield {

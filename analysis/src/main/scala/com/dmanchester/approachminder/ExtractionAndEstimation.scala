@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.Utils.interpolateScalar
-import com.dmanchester.approachminder.typeswithbehavior.Trajectory
+import com.dmanchester.approachminder.typeswithbehavior.{ContinuouslyNearingTrajectory, Trajectory}
 
 import scala.annotation.tailrec
 
@@ -79,7 +79,7 @@ object ExtractionAndEstimation {
    * @param intervalLengthInMeters
    * @return
    */
-  def interpolateAtIntervals(sourceTrajectory: ContinuouslyNearingTrajectory2[HasLongLatAlt], intervalLengthInMeters: BigDecimal): Option[DistanceKeyed3DTrajectory] = {
+  def interpolateAtIntervals(sourceTrajectory: ContinuouslyNearingTrajectory[HasLongLatAlt], intervalLengthInMeters: BigDecimal): Option[DistanceKeyed3DTrajectory] = {
 
     val sourcePositions = sourceTrajectory.positions
     val referencePoint = sourceTrajectory.referencePoint

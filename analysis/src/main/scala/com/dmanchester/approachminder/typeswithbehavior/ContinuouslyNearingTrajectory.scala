@@ -1,4 +1,6 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.typeswithbehavior
+
+import com.dmanchester.approachminder.{GeographicCalculator, HasLongLat}
 
 import scala.annotation.tailrec
 
@@ -17,9 +19,9 @@ import scala.annotation.tailrec
  * @param calculator
  * @tparam L
  */
-case class ContinuouslyNearingTrajectory2[+L <: HasLongLat] private (positions: Seq[L], referencePoint: HasLongLat, calculator: GeographicCalculator)
+case class ContinuouslyNearingTrajectory[+L <: HasLongLat] private(positions: Seq[L], referencePoint: HasLongLat, calculator: GeographicCalculator)
 
-object ContinuouslyNearingTrajectory2 {
+object ContinuouslyNearingTrajectory {
 
   @tailrec
   private def accumulateSegmentsForward[L <: HasLongLat](remainingPositions: Seq[L], referencePoint: HasLongLat, calculator: GeographicCalculator, accumulator: Seq[L]): Seq[L] = {
@@ -62,7 +64,7 @@ object ContinuouslyNearingTrajectory2 {
    *         near the reference point
    */
   @throws(classOf[IndexOutOfBoundsException])
-  def newOption[L <: HasLongLat](positions: Seq[L], segmentIndex: Int, referencePoint: HasLongLat, calculator: GeographicCalculator): Option[(ContinuouslyNearingTrajectory2[L], Int)] = {
+  def newOption[L <: HasLongLat](positions: Seq[L], segmentIndex: Int, referencePoint: HasLongLat, calculator: GeographicCalculator): Option[(ContinuouslyNearingTrajectory[L], Int)] = {
 
     if (segmentIndex < 0 || segmentIndex > positions.length - 2) {
       throw new IndexOutOfBoundsException(s"segmentIndex is $segmentIndex; must be between 0 and ${positions.length - 2}, inclusive!")
@@ -78,7 +80,7 @@ object ContinuouslyNearingTrajectory2 {
       val positionsBeforeSegment = accumulateSegmentsBackward(sourcePositionsBeforeSegment, referencePoint, calculator, Seq(sourcePositionsBeforeSegment.last))
       val positionsAfterSegment = accumulateSegmentsForward(sourcePositionsAfterSegment, referencePoint, calculator, Seq(sourcePositionsAfterSegment.head))
 
-      val continuouslyNearingTrajectory = new ContinuouslyNearingTrajectory2(positionsBeforeSegment :++ positionsAfterSegment, referencePoint, calculator)
+      val continuouslyNearingTrajectory = new ContinuouslyNearingTrajectory(positionsBeforeSegment :++ positionsAfterSegment, referencePoint, calculator)
       Some(continuouslyNearingTrajectory, positionsAfterSegment.length - 1)
     }
   }

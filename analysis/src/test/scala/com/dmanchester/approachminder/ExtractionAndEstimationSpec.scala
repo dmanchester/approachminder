@@ -1,10 +1,10 @@
 package com.dmanchester.approachminder
 
-import org.specs2.mutable._
-import SharedResources._
-
+import org.specs2.mutable.*
+import SharedResources.*
 import com.dmanchester.approachminder.Airports.oak
 import com.dmanchester.approachminder.Airports.sfo
+import com.dmanchester.approachminder.typeswithbehavior.ContinuouslyNearingTrajectory
 
 class ExtractionAndEstimationSpec extends Specification {
 
@@ -68,7 +68,7 @@ class ExtractionAndEstimationSpec extends Specification {
       val pointV = LongLatAlt(-122.1, 38.5, 100) // 56.2 km; less than 70 km
       val sourcePositions = Seq(pointR, pointS, pointT, pointU, pointV)
 
-      val (sourceTrajectory, _) = ContinuouslyNearingTrajectory2.newOption(sourcePositions, 0, referencePoint, sfoCalculator).get  // TODO, Sigh, passing 0 is kind of ugly, as is receiving second param; have a friendlier variant of newOption, too?
+      val (sourceTrajectory, _) = ContinuouslyNearingTrajectory.newOption(sourcePositions, 0, referencePoint, sfoCalculator).get  // TODO, Sigh, passing 0 is kind of ugly, as is receiving second param; have a friendlier variant of newOption, too?
 
       val targetTrajectory = ExtractionAndEstimation.interpolateAtIntervals(sourceTrajectory, 70000).get
       val targetPositions = targetTrajectory.positions
