@@ -3,7 +3,9 @@ package com.dmanchester.approachminder.typeswithbehavior
 import com.dmanchester.approachminder.typeswithoutbehavior.AircraftCategory
 
 /**
- * A trajectory of an aircraft, specified via positions at which it has been observed.
+ * A trajectory of an aircraft.
+ *
+ * The trajectory is specified via positions at which the aircraft has been observed.
  *
  * Is guaranteed to contain at least two positions.
  */
@@ -44,7 +46,7 @@ case class Trajectory[+P] private(positions: Seq[P], icao24: String, callsign: O
 
 object Trajectory {
   /**
-   * Create a new trajectory, provided at least two positions are passed.
+   * Create a new trajectory, provided at least two positions are provided.
    */
   def newOption[P](positions: Seq[P], icao24: String, callsign: Option[String], category: Option[AircraftCategory]): Option[Trajectory[P]] = {
     Option.when(positions.length >= 2)(new Trajectory(positions, icao24, callsign, category))

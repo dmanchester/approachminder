@@ -13,18 +13,13 @@ import scala.annotation.tailrec
  *
  * NOTE: This class does not include the non-position identifiers found in a Trajectory (icao24, callsign, and
  * category), but if a need for them arose, it would be reasonable to add them.
- *
- * @param positions
- * @param referencePoint
- * @param calculator
- * @tparam L
  */
-case class ContinuouslyNearingTrajectory[+L <: HasLongLat] private(positions: Seq[L], referencePoint: HasLongLat, calculator: GeographicCalculator)
+case class ContinuouslyNearingTrajectory[+P <: HasLongLat] private(positions: Seq[P], referencePoint: HasLongLat, calculator: GeographicCalculator)
 
 object ContinuouslyNearingTrajectory {
 
   @tailrec
-  private def accumulateSegmentsForward[L <: HasLongLat](remainingPositions: Seq[L], referencePoint: HasLongLat, calculator: GeographicCalculator, accumulator: Seq[L]): Seq[L] = {
+  private def accumulateSegmentsForward[P <: HasLongLat](remainingPositions: Seq[P], referencePoint: HasLongLat, calculator: GeographicCalculator, accumulator: Seq[P]): Seq[P] = {
 
     if (remainingPositions.length == 1 || !calculator.continuouslyNears(remainingPositions(0), remainingPositions(1), referencePoint)) {
       accumulator
@@ -34,7 +29,7 @@ object ContinuouslyNearingTrajectory {
   }
 
   @tailrec
-  private def accumulateSegmentsBackward[L <: HasLongLat](remainingPositions: Seq[L], referencePoint: HasLongLat, calculator: GeographicCalculator, accumulator: Seq[L]): Seq[L] = {
+  private def accumulateSegmentsBackward[P <: HasLongLat](remainingPositions: Seq[P], referencePoint: HasLongLat, calculator: GeographicCalculator, accumulator: Seq[P]): Seq[P] = {
 
     val length = remainingPositions.length
 
@@ -47,7 +42,7 @@ object ContinuouslyNearingTrajectory {
   }
 
   /**
-   * From a sequence of positions representing a sequence of segments, creates a ContinuouslyNearingTrajectory2 instance
+   * From a sequence of positions representing a sequence of segments, creates a ContinuouslyNearingTrajectory instance
    * with the subsequence of segments that:
    *
    *   - includes a specified segment; and
@@ -57,14 +52,14 @@ object ContinuouslyNearingTrajectory {
    * @param segmentIndex
    * @param referencePoint
    * @param calculator
-   * @tparam L
+   * @tparam P
    * @throws java.lang.IndexOutOfBoundsException if segmentIndex < 0 or segmentIndex > (positions.length - 2)
-   * @return the ContinuouslyNearingTrajectory2, along with the count of segments after the specified segment included
+   * @return the ContinuouslyNearingTrajectory, along with the count of segments after the specified segment included
    *         within the trajectory, as a `Some`; or, `None` if the sequence's specified segment doesn't continuously
    *         near the reference point
    */
   @throws(classOf[IndexOutOfBoundsException])
-  def newOption[L <: HasLongLat](positions: Seq[L], segmentIndex: Int, referencePoint: HasLongLat, calculator: GeographicCalculator): Option[(ContinuouslyNearingTrajectory[L], Int)] = {
+  def newOption[P <: HasLongLat](positions: Seq[P], segmentIndex: Int, referencePoint: HasLongLat, calculator: GeographicCalculator): Option[(ContinuouslyNearingTrajectory[P], Int)] = {
 
     if (segmentIndex < 0 || segmentIndex > positions.length - 2) {
       throw new IndexOutOfBoundsException(s"segmentIndex is $segmentIndex; must be between 0 and ${positions.length - 2}, inclusive!")
