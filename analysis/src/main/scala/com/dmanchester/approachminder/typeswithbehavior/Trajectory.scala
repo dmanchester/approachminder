@@ -5,11 +5,13 @@ import com.dmanchester.approachminder.typeswithoutbehavior.AircraftCategory
 /**
  * A trajectory of an aircraft.
  *
- * The trajectory is specified via positions at which the aircraft has been observed.
+ * The trajectory is available via both individual positions and two-position segments.
  *
- * Is guaranteed to contain at least two positions.
+ * Is guaranteed to contain at least two positions (one segment).
  */
 case class Trajectory[+P] private(positions: Seq[P], icao24: String, callsign: Option[String], category: Option[AircraftCategory]) {
+
+  val segments: Seq[(P, P)] = positions.sliding(2).toSeq.map { segment => (segment(0), segment(1)) }
 
   /**
    * Whether trajectory's aircraft is possibly fixed-wing and powered.
@@ -26,6 +28,7 @@ case class Trajectory[+P] private(positions: Seq[P], icao24: String, callsign: O
   /**
    * Drop positions from the start of the trajectory.
    *
+   * TODO Confirm how this method is used.
    * TODO Add tests.
    *
    * @param n The number of positions to drop.
@@ -37,6 +40,7 @@ case class Trajectory[+P] private(positions: Seq[P], icao24: String, callsign: O
    * Whether a given index value in a valid lookup into the trajectory's positions: non-negative (and thus not "too
    * low"), and also not too high.
    *
+   * TODO Confirm how this method is used.
    * TODO Add tests.
    */
   def isSegmentIndexValid(index: Int): Boolean = {
