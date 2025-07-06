@@ -38,7 +38,6 @@ class TrajectoryUtilsSpec extends Specification {
   private val segmentIndexCD = 2
   private val segmentIndexDE = 3
   private val segmentIndexEF = 4
-  private val segmentIndexFG = 5
 
   private val pointX = LongLat(-116, 41)
   private val pointY = LongLat(-120, 35)
@@ -58,6 +57,14 @@ class TrajectoryUtilsSpec extends Specification {
     "handle a trajectory whose continuously nearing segments end when the trajectory does" in {
       continuouslyNearingSegmentsStartingAt(trajectory, segmentIndexDE, pointX, sfoCalculator) mustEqual 3
     }
+
+    "throw on segmentIndex too low" in {
+      continuouslyNearingSegmentsStartingAt(trajectory, -1, pointX, sfoCalculator) must throwA[IndexOutOfBoundsException]
+    }
+
+    "throw on segmentIndex too high" in {
+      continuouslyNearingSegmentsStartingAt(trajectory, trajectory.segments.length, pointX, sfoCalculator) must throwA[IndexOutOfBoundsException]
+    }
   }
 
   "continuouslyNearingSegmentsEndingAt" should {
@@ -72,6 +79,14 @@ class TrajectoryUtilsSpec extends Specification {
 
     "handle a trajectory whose continuously nearing segments start when the trajectory does" in {
       continuouslyNearingSegmentsEndingAt(trajectory, segmentIndexBC, pointY, sfoCalculator) mustEqual 2
+    }
+
+    "throw on segmentIndex too low" in {
+      continuouslyNearingSegmentsEndingAt(trajectory, -1, pointX, sfoCalculator) must throwA[IndexOutOfBoundsException]
+    }
+
+    "throw on segmentIndex too high" in {
+      continuouslyNearingSegmentsEndingAt(trajectory, trajectory.segments.length, pointX, sfoCalculator) must throwA[IndexOutOfBoundsException]
     }
   }
 }
