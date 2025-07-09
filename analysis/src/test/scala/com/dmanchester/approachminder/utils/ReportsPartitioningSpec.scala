@@ -5,7 +5,7 @@ import org.specs2.mutable.*
 
 class ReportsPartitioningSpec extends Specification {
 
-  "partition()" should {
+  "partition" should {
 
     val abcd = "abcd"
     val efgh = "efgh"
@@ -21,7 +21,7 @@ class ReportsPartitioningSpec extends Specification {
     val withoutCallsignTime40 = reportWithoutCallsign(40)
     val withCallsignEFGHTime45 = reportWithCallsign(efgh, 45)
 
-    "partition reports without callsigns on time gaps *larger than* what the partitioner was initialized with" in {
+    "partition reports without callsigns on time gaps *larger than* what the caller specified" in {
       val reports = Seq(withoutCallsignTime10, withoutCallsignTime15, withoutCallsignTime25)
 
       val partitions = ReportsPartitioning.partition(reports, 9)
@@ -32,7 +32,7 @@ class ReportsPartitioningSpec extends Specification {
       )
     }
 
-    "partition reports without callsigns on time gaps *equal to* what the partitioner was initialized with" in {
+    "partition reports without callsigns on time gaps *equal to* what the caller specified" in {
       val reports = Seq(withoutCallsignTime10, withoutCallsignTime15, withoutCallsignTime25)
 
       val partitions = ReportsPartitioning.partition(reports, 10)
@@ -43,7 +43,7 @@ class ReportsPartitioningSpec extends Specification {
       )
     }
 
-    "partition reports with callsigns on time gaps *larger than* what the partitioner was initialized with" in {
+    "partition reports with callsigns on time gaps *larger than* what the caller specified" in {
       val reports = Seq(withCallsignEFGHTime30, withCallsignEFGHTime35, withCallsignEFGHTime45)
 
       val partitions = ReportsPartitioning.partition(reports, 9)
@@ -54,7 +54,7 @@ class ReportsPartitioningSpec extends Specification {
       )
     }
 
-    "partition reports with callsigns on time gaps *equal to* what the partitioner was initialized with" in {
+    "partition reports with callsigns on time gaps *equal to* what the caller specified" in {
       val reports = Seq(withCallsignEFGHTime30, withCallsignEFGHTime35, withCallsignEFGHTime45)
 
       val partitions = ReportsPartitioning.partition(reports, 10)

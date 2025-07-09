@@ -18,9 +18,8 @@ case class OpenSkyVector(
   velocity: Option[BigDecimal],
   trueTrack: Option[BigDecimal],
   verticalRate: Option[BigDecimal],
-  // skip "sensors -- int[] -- IDs of the receivers which contributed to this
-  // state vector. Is null if no filtering for sensor was used in the
-  // request."
+  // Skip: "sensors -- int[] -- IDs of the receivers which contributed to this
+  // state vector. Is null if no filtering for sensor was used in the request."
   geoAltitude: Option[BigDecimal],
   squawk: Option[String],
   spi: Boolean,

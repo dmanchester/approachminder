@@ -38,10 +38,9 @@ class ContinuouslyNearingTrajectorySpec extends Specification {
   private val pointF = LongLatAlt(-119, 36, 0)
 
   private val positionsABCDEF = Seq(pointA, pointB, pointC, pointD, pointE, pointF)
-  private val trajectoryABCDEF = Trajectory.newOption(positionsABCDEF, "icao24", None, None).get
+  private val trajectoryABCDEF = trajectoryFromPositions(positionsABCDEF)
 
   private val positionsBCDE = Seq(pointB, pointC, pointD, pointE)
-  private val trajectoryBCDE = Trajectory.newOption(positionsBCDE, "icao24", None, None).get
 
   "newOption" should {
 
@@ -65,14 +64,14 @@ class ContinuouslyNearingTrajectorySpec extends Specification {
 
     "handle a positions sequence that continuously nears the reference point from its start before deviating away from the reference point" in {
       val positions = Seq(pointB, pointC, pointD, pointE, pointF)
-      val trajectory = Trajectory.newOption(positions, "icao24", None, None).get
+      val trajectory = trajectoryFromPositions(positions)
       val (continuouslyNearingTrajectory, segmentsAfterMiddleIncluded) = ContinuouslyNearingTrajectory.newOption(trajectory, 0, referencePoint, sfoCalculator).get
       continuouslyNearingTrajectory.positions must beEqualTo(positionsBCDE)
       segmentsAfterMiddleIncluded must beEqualTo(2)
     }
 
     "handle a positions sequence where the specified segment doesn't continuously near the reference point" in {
-      val trajectory = Trajectory.newOption(Seq(pointA, pointB, pointC), "icao24", None, None).get
+      val trajectory = trajectoryFromPositions(Seq(pointA, pointB, pointC))
       ContinuouslyNearingTrajectory.newOption(trajectory, 0, referencePoint, sfoCalculator) must beNone
     }
 

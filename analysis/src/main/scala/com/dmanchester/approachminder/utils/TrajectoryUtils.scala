@@ -22,7 +22,7 @@ object TrajectoryUtils {
    * reference point.
    *
    * This method is not a member of Trajectory because it enforces a more-restrictive type constraint (HasLongLat) than
-   * Trajectory itself.
+   * Trajectory itself, and because it requires a GeographicCalculator.
    *
    * @param trajectory The trajectory.
    * @param segmentIndex The 0-indexed segment to start at.

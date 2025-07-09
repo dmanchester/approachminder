@@ -2,7 +2,6 @@ package com.dmanchester.approachminder.utils
 
 import com.dmanchester.approachminder.LongLat
 import com.dmanchester.approachminder.SharedResources.*
-import com.dmanchester.approachminder.typeswithbehavior.Trajectory
 import com.dmanchester.approachminder.utils.TrajectoryUtils.{continuouslyNearingSegmentsEndingAt, continuouslyNearingSegmentsStartingAt}
 import org.specs2.mutable.*
 
@@ -42,7 +41,7 @@ class TrajectoryUtilsSpec extends Specification {
   private val pointX = LongLat(-116, 41)
   private val pointY = LongLat(-120, 35)
 
-  private val trajectory = Trajectory.newOption(Seq(pointA, pointB, pointC, pointD, pointE, pointF, pointG), "icao24", None, None).get
+  private val trajectory = trajectoryFromPositions(Seq(pointA, pointB, pointC, pointD, pointE, pointF, pointG))
 
   "continuouslyNearingSegmentsStartingAt" should {
 

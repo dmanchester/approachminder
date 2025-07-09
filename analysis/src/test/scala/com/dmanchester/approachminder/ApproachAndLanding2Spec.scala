@@ -66,7 +66,7 @@ class ApproachAndLanding2Spec extends Specification {
   private val pointA = LongLatAlt(pointE.longitude, pointC.latitude, 40)
   private val pointJ = LongLatAlt(pointF.longitude, pointG.latitude + 0.000001, 0)  // See discussion above of point G's latitude.
 
-  private val trajectoryCE = trajectory3FromPositions(Seq(pointC, pointE))
+  private val trajectoryCE = trajectoryFromPositions(Seq(pointC, pointE))
   private val thresholdAndRefPointG = ThresholdAndReferencePoint(sfoThreshold10L, pointG)
 
   "createOption" should {
@@ -88,31 +88,31 @@ class ApproachAndLanding2Spec extends Specification {
     }
 
     "return `None` for a two-point trajectory that crosses the threshold inbound but ends outside the runway surface" in {
-      val trajectory = trajectory3FromPositions(Seq(pointC, pointI))
+      val trajectory = trajectoryFromPositions(Seq(pointC, pointI))
       ApproachAndLanding2.createOption(trajectory, 0, thresholdAndRefPointG) must beNone
     }
 
     "return `None` for a two-point trajectory that ends inside the runway surface but does not cross the threshold" in {
-      val trajectory = trajectory3FromPositions(Seq(pointA, pointE))
+      val trajectory = trajectoryFromPositions(Seq(pointA, pointE))
       ApproachAndLanding2.createOption(trajectory, 0, thresholdAndRefPointG) must beNone
     }
 
     "apply additional segments *before* the threshold-crossing one, provided they continuously near the reference point" in {
-      val trajectory = trajectory3FromPositions(Seq(pointB, pointC, pointE))
+      val trajectory = trajectoryFromPositions(Seq(pointB, pointC, pointE))
 
       val (approachAndLanding, _) = ApproachAndLanding2.createOption(trajectory, 1, thresholdAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointB, pointC, pointE)
     }
 
     "apply additional segments *before* the threshold-crossing one, provided they continuously near the reference point; but stop when they no longer do" in {
-      val trajectory = trajectory3FromPositions(Seq(pointA, pointB, pointC, pointE))
+      val trajectory = trajectoryFromPositions(Seq(pointA, pointB, pointC, pointE))
 
       val (approachAndLanding, _) = ApproachAndLanding2.createOption(trajectory, 2, thresholdAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointB, pointC, pointE)
     }
 
     "apply additional segments *after* the threshold-crossing one, provided they continuously near the reference point and are on the runway surface" in {
-      val trajectory = trajectory3FromPositions(Seq(pointC, pointE, pointF))
+      val trajectory = trajectoryFromPositions(Seq(pointC, pointE, pointF))
 
       val (approachAndLanding, segmentsIncludedAfterSpecified) = ApproachAndLanding2.createOption(trajectory, 0, thresholdAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointC, pointE, pointF)
@@ -120,7 +120,7 @@ class ApproachAndLanding2Spec extends Specification {
     }
 
     "apply additional segments *after* the threshold-crossing one, provided they continuously near the reference point and are on the runway surface; but stop once they no longer near the reference point" in {
-      val trajectory = trajectory3FromPositions(Seq(pointC, pointE, pointF, pointH))
+      val trajectory = trajectoryFromPositions(Seq(pointC, pointE, pointF, pointH))
 
       val (approachAndLanding, segmentsIncludedAfterSpecified) = ApproachAndLanding2.createOption(trajectory, 0, thresholdAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointC, pointE, pointF)
@@ -128,7 +128,7 @@ class ApproachAndLanding2Spec extends Specification {
     }
 
     "apply additional segments *after* the threshold-crossing one, provided they continuously near the reference point and are on the runway surface; but stop once they leave the runway surface" in {
-      val trajectory = trajectory3FromPositions(Seq(pointC, pointE, pointF, pointJ))
+      val trajectory = trajectoryFromPositions(Seq(pointC, pointE, pointF, pointJ))
 
       val (approachAndLanding, segmentsIncludedAfterSpecified) = ApproachAndLanding2.createOption(trajectory, 0, thresholdAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointC, pointE, pointF)

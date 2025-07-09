@@ -22,7 +22,7 @@ case class Trajectory[+P] private(positions: Seq[P], icao24: String, callsign: O
   def isPossiblyFixedWingPowered: Boolean = {
     // `Option.forAll` returns `true` on `None`.
     category.forall { theCategory =>
-      AircraftCategory.fixedWingPowered.contains(theCategory)
+      AircraftCategory.fixedWingPowered.contains(theCategory) || AircraftCategory.blank.contains(theCategory)
     }
   }
 
@@ -58,7 +58,7 @@ case class Trajectory[+P] private(positions: Seq[P], icao24: String, callsign: O
    * @return The truncated trajectory; or, this trajectory, if no truncation was appropriate.
    */
   @throws(classOf[IndexOutOfBoundsException])
-  def truncateWhere(positionIndex: Int, predicate: (P) => Boolean): Trajectory[P] = {
+  def truncateWhere(positionIndex: Int, predicate: P => Boolean): Trajectory[P] = {
 
     if (positionIndex < 1 || positionIndex > positions.length - 1) {
       throw new IndexOutOfBoundsException(s"positionIndex is $positionIndex; must be between 1 and ${positions.length - 1}, inclusive!")
@@ -69,14 +69,14 @@ case class Trajectory[+P] private(positions: Seq[P], icao24: String, callsign: O
     if (positionToTruncateFrom == -1) {
       this
     } else {
-      new Trajectory(positions.take(positionToTruncateFrom), icao24, callsign, category)
+      this.copy(positions = positions.take(positionToTruncateFrom))
     }
   }
 }
 
 object Trajectory {
   /**
-   * Create a new trajectory, provided at least two positions are provided.
+   * Create a new `Trajectory`, provided at least two positions are supplied.
    */
   def newOption[P](positions: Seq[P], icao24: String, callsign: Option[String], category: Option[AircraftCategory]): Option[Trajectory[P]] = {
     Option.when(positions.length >= 2)(new Trajectory(positions, icao24, callsign, category))

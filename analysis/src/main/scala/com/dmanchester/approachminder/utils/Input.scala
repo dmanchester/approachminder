@@ -48,7 +48,7 @@ object Input {
       (JsPath \ 9).readNullable[BigDecimal] and
       (JsPath \ 10).readNullable[BigDecimal] and
       (JsPath \ 11).readNullable[BigDecimal] and
-      // skip "sensors"; see OpenSkyVector for more information
+      // Skip "sensors". See OpenSkyVector for more information.
       (JsPath \ 13).readNullable[BigDecimal] and
       (JsPath \ 14).readNullable[String] and
       (JsPath \ 15).read[Boolean] and

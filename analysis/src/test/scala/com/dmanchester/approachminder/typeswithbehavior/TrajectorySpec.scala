@@ -1,18 +1,18 @@
 package com.dmanchester.approachminder.typeswithbehavior
 
-import com.dmanchester.approachminder.typeswithoutbehavior.LighterThanAir
+import com.dmanchester.approachminder.SharedResources.trajectoryFromPositions
 import org.specs2.mutable.*
 
 class TrajectorySpec extends Specification {
 
-  private val trajectory = Trajectory.newOption(Seq(6, 11, 4, 12, 3, 13), "icao24", Some("callsign"), Some(LighterThanAir)).get  // Fun fact: a Trajectory can contain non-longitude/latitude data
+  private val trajectory = trajectoryFromPositions(Seq(6, 11, 4, 12, 3, 13))  // Fun fact: a Trajectory can contain non-longitude/latitude data
   private val predicateGreaterThan10: Int => Boolean = { _ > 10 }
 
   "truncateWhere" should {
 
     "truncate if a position matching the predicate is found" in {
       val truncatedTrajectory = trajectory.truncateWhere(1, predicateGreaterThan10)
-      truncatedTrajectory mustEqual Trajectory.newOption(Seq(6, 11, 4), "icao24", Some("callsign"), Some(LighterThanAir)).get
+      truncatedTrajectory mustEqual trajectoryFromPositions(Seq(6, 11, 4))
     }
 
     "do nothing if a position matching the predicate isn't found" in {

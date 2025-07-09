@@ -93,7 +93,7 @@ object SharedResources {
     }
   }
 
-  def trajectory3FromPositions[P](positions: Seq[P]): Trajectory[P] = {
+  def trajectoryFromPositions[P](positions: Seq[P]): Trajectory[P] = {
     Trajectory.newOption(positions, "(icao24)", Some("(callsign)"), None).get
   }
 }
