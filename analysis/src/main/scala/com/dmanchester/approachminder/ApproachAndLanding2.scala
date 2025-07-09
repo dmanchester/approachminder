@@ -48,8 +48,7 @@ object ApproachAndLanding2 {
 
     for {
       (crossingPoint2D, percentageFromSegStartToSegEnd) <- inboundCrossingPoint
-      (positionsBeforeSegment, positionsAfterSegment) = sourcePositions.splitAt(segmentIndex + 1)
-      truncatedTrajectory = positionsBeforeSegment :++ positionsAfterSegment.takeWhile(threshold.runwaySurface.contains) // truncated after the specified segment to include only positions on the runway surface
+      truncatedTrajectory = sourceTrajectory.truncateWhere(segmentIndex + 1, !threshold.runwaySurface.contains(_))  // truncated after the specified segment to include only positions on the runway surface
       (continuouslyNearingSegment, addlSegmentsIncluded) <- ContinuouslyNearingTrajectory.newOption(truncatedTrajectory, segmentIndex, thresholdAndReferencePoint.referencePoint, threshold.geographicCalculator)
       altitudeMeters = interpolateScalar(positionA.altitudeMeters, positionB.altitudeMeters, percentageFromSegStartToSegEnd)
       crossingPoint3D = LongLatAlt(crossingPoint2D.longitude, crossingPoint2D.latitude, altitudeMeters)

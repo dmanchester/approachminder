@@ -1,82 +1,58 @@
 package com.dmanchester.approachminder.typeswithbehavior
 
+import com.dmanchester.approachminder.utils.TrajectoryUtils
+import com.dmanchester.approachminder.utils.TrajectoryUtils.positionsToSegments
 import com.dmanchester.approachminder.{GeographicCalculator, HasLongLat}
-
-import scala.annotation.tailrec
 
 /**
  * An aircraft trajectory that continuously nears a reference point.
  *
- * The trajectory is specified via positions at which the aircraft has been observed.
+ * The trajectory is available via both individual positions and two-position segments.
  *
- * Is guaranteed to contain at least two positions.
+ * Is guaranteed to contain at least two positions (one segment).
  *
  * NOTE: This class does not include the non-position identifiers found in a Trajectory (icao24, callsign, and
  * category), but if a need for them arose, it would be reasonable to add them.
  */
-case class ContinuouslyNearingTrajectory[+P <: HasLongLat] private(positions: Seq[P], referencePoint: HasLongLat, calculator: GeographicCalculator)
+case class ContinuouslyNearingTrajectory[+P <: HasLongLat] private(positions: Seq[P], referencePoint: HasLongLat, calculator: GeographicCalculator) {
+  val segments: Seq[(P, P)] = positionsToSegments(positions)
+}
 
 object ContinuouslyNearingTrajectory {
 
-  @tailrec
-  private def accumulateSegmentsForward[P <: HasLongLat](remainingPositions: Seq[P], referencePoint: HasLongLat, calculator: GeographicCalculator, accumulator: Seq[P]): Seq[P] = {
-
-    if (remainingPositions.length == 1 || !calculator.continuouslyNears(remainingPositions(0), remainingPositions(1), referencePoint)) {
-      accumulator
-    } else {
-      accumulateSegmentsForward(remainingPositions.tail, referencePoint, calculator, accumulator :+ remainingPositions(1))
-    }
-  }
-
-  @tailrec
-  private def accumulateSegmentsBackward[P <: HasLongLat](remainingPositions: Seq[P], referencePoint: HasLongLat, calculator: GeographicCalculator, accumulator: Seq[P]): Seq[P] = {
-
-    val length = remainingPositions.length
-
-    if (length == 1 || !calculator.continuouslyNears(remainingPositions(length - 2), remainingPositions(length - 1), referencePoint)) {
-      accumulator
-    } else {
-      accumulateSegmentsBackward(remainingPositions.init, referencePoint, calculator, remainingPositions(length - 2) +: accumulator)
-      // TODO Change other dropRight(1) refs in codebase to init
-    }
-  }
-
   /**
-   * From a sequence of positions representing a sequence of segments, creates a ContinuouslyNearingTrajectory instance
-   * with the subsequence of segments that:
+   * From a "regular" trajectory, create a ContinuouslyNearingTrajectory instance with the subsequence of segments that:
    *
    *   - includes a specified segment; and
    *   - continuously nears a reference point.
    *
-   * @param positions
-   * @param segmentIndex
-   * @param referencePoint
-   * @param calculator
-   * @tparam P
-   * @throws java.lang.IndexOutOfBoundsException if segmentIndex < 0 or segmentIndex > (positions.length - 2)
-   * @return the ContinuouslyNearingTrajectory, along with the count of segments after the specified segment included
+   * @param trajectory The trajectory.
+   * @param segmentIndex The 0-indexed segment that the subsequence of segments must include.
+   * @param referencePoint The reference point.
+   * @param calculator The GeographicCalculator to use for distance calculations.
+   * @tparam P The positions' type.
+   * @throws java.lang.IndexOutOfBoundsException if segmentIndex < 0 or segmentIndex > (segments.length - 1).
+   * @return The ContinuouslyNearingTrajectory, along with the count of segments after the specified segment included
    *         within the trajectory, as a `Some`; or, `None` if the sequence's specified segment doesn't continuously
-   *         near the reference point
+   *         near the reference point.
    */
   @throws(classOf[IndexOutOfBoundsException])
-  def newOption[P <: HasLongLat](positions: Seq[P], segmentIndex: Int, referencePoint: HasLongLat, calculator: GeographicCalculator): Option[(ContinuouslyNearingTrajectory[P], Int)] = {
+  def newOption[P <: HasLongLat](trajectory: Trajectory[P], segmentIndex: Int, referencePoint: HasLongLat, calculator: GeographicCalculator): Option[(ContinuouslyNearingTrajectory[P], Int)] = {
 
-    if (segmentIndex < 0 || segmentIndex > positions.length - 2) {
-      throw new IndexOutOfBoundsException(s"segmentIndex is $segmentIndex; must be between 0 and ${positions.length - 2}, inclusive!")
-    }
+    // This method call also validates segmentIndex (and throws on an invalid value).
+    val segmentsAtAndAfterIndex = TrajectoryUtils.continuouslyNearingSegmentsStartingAt(trajectory, segmentIndex, referencePoint, calculator)
 
-    if (!calculator.continuouslyNears(positions(segmentIndex), positions(segmentIndex + 1), referencePoint)) {
+    if (segmentsAtAndAfterIndex == 0) {
       None
     } else {
 
-      val (sourcePositionsBeforeSegment, sourcePositionsAfterSegment) = positions.splitAt(segmentIndex + 1)
+      val segmentsBeforeIndex = if (segmentIndex == 0) {
+        0
+      } else {
+        TrajectoryUtils.continuouslyNearingSegmentsEndingAt(trajectory, segmentIndex - 1, referencePoint, calculator)
+      }
 
-      // Following Seqs are *inclusive* of the segment's endpoints.
-      val positionsBeforeSegment = accumulateSegmentsBackward(sourcePositionsBeforeSegment, referencePoint, calculator, Seq(sourcePositionsBeforeSegment.last))
-      val positionsAfterSegment = accumulateSegmentsForward(sourcePositionsAfterSegment, referencePoint, calculator, Seq(sourcePositionsAfterSegment.head))
-
-      val continuouslyNearingTrajectory = new ContinuouslyNearingTrajectory(positionsBeforeSegment :++ positionsAfterSegment, referencePoint, calculator)
-      Some(continuouslyNearingTrajectory, positionsAfterSegment.length - 1)
+      Some(new ContinuouslyNearingTrajectory(trajectory.positions.slice(segmentIndex - segmentsBeforeIndex, segmentIndex + segmentsAtAndAfterIndex + 1), referencePoint, calculator), segmentsAtAndAfterIndex - 1)
     }
   }
 }

@@ -7,6 +7,8 @@ import scala.annotation.tailrec
 
 object TrajectoryUtils {
 
+  def positionsToSegments[P](positions: Seq[P]): Seq[(P, P)] = positions.sliding(2).toSeq.map { segment => (segment(0), segment(1)) }
+
   @throws(classOf[IndexOutOfBoundsException])
   private def validateSegmentIndex(trajectory: Trajectory[HasLongLat], segmentIndex: Int): Unit = {
 

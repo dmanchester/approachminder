@@ -1,6 +1,7 @@
 package com.dmanchester.approachminder.typeswithbehavior
 
 import com.dmanchester.approachminder.typeswithoutbehavior.AircraftCategory
+import com.dmanchester.approachminder.utils.TrajectoryUtils.positionsToSegments
 
 /**
  * A trajectory of an aircraft.
@@ -11,7 +12,7 @@ import com.dmanchester.approachminder.typeswithoutbehavior.AircraftCategory
  */
 case class Trajectory[+P] private(positions: Seq[P], icao24: String, callsign: Option[String], category: Option[AircraftCategory]) {
 
-  val segments: Seq[(P, P)] = positions.sliding(2).toSeq.map { segment => (segment(0), segment(1)) }
+  val segments: Seq[(P, P)] = positionsToSegments(positions)
 
   /**
    * Whether trajectory's aircraft is possibly fixed-wing and powered.
@@ -45,6 +46,31 @@ case class Trajectory[+P] private(positions: Seq[P], icao24: String, callsign: O
    */
   def isSegmentIndexValid(index: Int): Boolean = {
     index >= 0 && index <= (positions.length - 2)  // n positions constitute (n - 1) segments; with zero-based indexing, last segment's index is (n - 2)
+  }
+
+  /**
+   * Truncate this trajectory *after* a certain position upon finding a subsequent position for which a predicate
+   * evaluates true.
+   *
+   * @param positionIndex Must be between 1 and positions.length - 1, inclusive.
+   * @param predicate The predicate.
+   * @throws java.lang.IndexOutOfBoundsException If positionIndex is out of range.
+   * @return The truncated trajectory; or, this trajectory, if no truncation was appropriate.
+   */
+  @throws(classOf[IndexOutOfBoundsException])
+  def truncateWhere(positionIndex: Int, predicate: (P) => Boolean): Trajectory[P] = {
+
+    if (positionIndex < 1 || positionIndex > positions.length - 1) {
+      throw new IndexOutOfBoundsException(s"positionIndex is $positionIndex; must be between 1 and ${positions.length - 1}, inclusive!")
+    }
+
+    val positionToTruncateFrom = positions.indexWhere(predicate, positionIndex + 1)
+
+    if (positionToTruncateFrom == -1) {
+      this
+    } else {
+      new Trajectory(positions.take(positionToTruncateFrom), icao24, callsign, category)
+    }
   }
 }
 

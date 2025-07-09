@@ -4,7 +4,7 @@ import org.specs2.mutable.*
 import SharedResources.*
 import com.dmanchester.approachminder.Airports.oak
 import com.dmanchester.approachminder.Airports.sfo
-import com.dmanchester.approachminder.typeswithbehavior.ContinuouslyNearingTrajectory
+import com.dmanchester.approachminder.typeswithbehavior.{ContinuouslyNearingTrajectory, Trajectory}
 
 class ExtractionAndEstimationSpec extends Specification {
 
@@ -66,7 +66,7 @@ class ExtractionAndEstimationSpec extends Specification {
       val pointT = LongLatAlt(-121.9, 40.1, 300) // 233.2 km; also between 210 and 280 km
       val pointU = LongLatAlt(-122.1, 39.2, 200) // 133.5 km; between 70 and 140 km (no points between 140 and 210 km)
       val pointV = LongLatAlt(-122.1, 38.5, 100) // 56.2 km; less than 70 km
-      val sourcePositions = Seq(pointR, pointS, pointT, pointU, pointV)
+      val sourcePositions = Trajectory.newOption(Seq(pointR, pointS, pointT, pointU, pointV), "icao24", None, None).get
 
       val (sourceTrajectory, _) = ContinuouslyNearingTrajectory.newOption(sourcePositions, 0, referencePoint, sfoCalculator).get  // TODO, Sigh, passing 0 is kind of ugly, as is receiving second param; have a friendlier variant of newOption, too?
 

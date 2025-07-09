@@ -38,46 +38,50 @@ class ContinuouslyNearingTrajectorySpec extends Specification {
   private val pointF = LongLatAlt(-119, 36, 0)
 
   private val positionsABCDEF = Seq(pointA, pointB, pointC, pointD, pointE, pointF)
+  private val trajectoryABCDEF = Trajectory.newOption(positionsABCDEF, "icao24", None, None).get
+
   private val positionsBCDE = Seq(pointB, pointC, pointD, pointE)
+  private val trajectoryBCDE = Trajectory.newOption(positionsBCDE, "icao24", None, None).get
 
   "newOption" should {
 
     "handle a positions sequence where the specified segment is at the start of a continuously nearing portion" in {
-      val (continuouslyNearingTrajectory, segmentsAfterMiddleIncluded) = ContinuouslyNearingTrajectory.newOption(positionsABCDEF, 1, referencePoint, sfoCalculator).get
+      val (continuouslyNearingTrajectory, segmentsAfterMiddleIncluded) = ContinuouslyNearingTrajectory.newOption(trajectoryABCDEF, 1, referencePoint, sfoCalculator).get
       continuouslyNearingTrajectory.positions must beEqualTo(positionsBCDE)
       segmentsAfterMiddleIncluded must beEqualTo(2)
     }
 
     "handle a positions sequence where the specified segment is in the middle of a continuously nearing portion" in {
-      val (continuouslyNearingTrajectory, segmentsAfterMiddleIncluded) = ContinuouslyNearingTrajectory.newOption(positionsABCDEF, 2, referencePoint, sfoCalculator).get
+      val (continuouslyNearingTrajectory, segmentsAfterMiddleIncluded) = ContinuouslyNearingTrajectory.newOption(trajectoryABCDEF, 2, referencePoint, sfoCalculator).get
       continuouslyNearingTrajectory.positions must beEqualTo(positionsBCDE)
       segmentsAfterMiddleIncluded must beEqualTo(1)
     }
 
     "handle a positions sequence where the specified segment is at the end of a continuously nearing portion" in {
-      val (continuouslyNearingTrajectory, segmentsAfterMiddleIncluded) = ContinuouslyNearingTrajectory.newOption(positionsABCDEF, 3, referencePoint, sfoCalculator).get
+      val (continuouslyNearingTrajectory, segmentsAfterMiddleIncluded) = ContinuouslyNearingTrajectory.newOption(trajectoryABCDEF, 3, referencePoint, sfoCalculator).get
       continuouslyNearingTrajectory.positions must beEqualTo(positionsBCDE)
       segmentsAfterMiddleIncluded must beEqualTo(0)
     }
 
     "handle a positions sequence that continuously nears the reference point from its start before deviating away from the reference point" in {
       val positions = Seq(pointB, pointC, pointD, pointE, pointF)
-      val (continuouslyNearingTrajectory, segmentsAfterMiddleIncluded) = ContinuouslyNearingTrajectory.newOption(positions, 0, referencePoint, sfoCalculator).get
+      val trajectory = Trajectory.newOption(positions, "icao24", None, None).get
+      val (continuouslyNearingTrajectory, segmentsAfterMiddleIncluded) = ContinuouslyNearingTrajectory.newOption(trajectory, 0, referencePoint, sfoCalculator).get
       continuouslyNearingTrajectory.positions must beEqualTo(positionsBCDE)
       segmentsAfterMiddleIncluded must beEqualTo(2)
     }
 
     "handle a positions sequence where the specified segment doesn't continuously near the reference point" in {
-      val positions = Seq(pointA, pointB, pointC)
-      ContinuouslyNearingTrajectory.newOption(positions, 0, referencePoint, sfoCalculator) must beNone
+      val trajectory = Trajectory.newOption(Seq(pointA, pointB, pointC), "icao24", None, None).get
+      ContinuouslyNearingTrajectory.newOption(trajectory, 0, referencePoint, sfoCalculator) must beNone
     }
 
     "throw on segmentIndex too low" in {
-      ContinuouslyNearingTrajectory.newOption(positionsABCDEF, -1, referencePoint, sfoCalculator) must throwA[IndexOutOfBoundsException]
+      ContinuouslyNearingTrajectory.newOption(trajectoryABCDEF, -1, referencePoint, sfoCalculator) must throwA[IndexOutOfBoundsException]
     }
 
     "throw on segmentIndex too high" in {
-      ContinuouslyNearingTrajectory.newOption(positionsABCDEF, 5, referencePoint, sfoCalculator) must throwA[IndexOutOfBoundsException]
+      ContinuouslyNearingTrajectory.newOption(trajectoryABCDEF, 5, referencePoint, sfoCalculator) must throwA[IndexOutOfBoundsException]
     }
   }
 }
