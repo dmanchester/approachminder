@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder.typeswithbehavior
 
 import com.dmanchester.approachminder.SharedResources.*
-import com.dmanchester.approachminder.{LongLat, LongLatAlt}
+import com.dmanchester.approachminder.typeswithoutbehavior.{LongLat, LongLatAlt}
 import org.specs2.mutable.*
 
 class ContinuouslyNearingTrajectorySpec extends Specification {

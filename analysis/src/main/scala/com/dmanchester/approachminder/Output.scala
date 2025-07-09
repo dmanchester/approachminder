@@ -1,5 +1,6 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.typeswithoutbehavior.HasLongLat
 import play.api.libs.json.*
 
 import java.time.Instant

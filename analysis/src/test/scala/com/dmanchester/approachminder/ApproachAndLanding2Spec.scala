@@ -2,6 +2,7 @@ package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.Airports.sfo
 import com.dmanchester.approachminder.SharedResources.*
+import com.dmanchester.approachminder.typeswithoutbehavior.LongLatAlt
 import org.specs2.mutable.*
 
 class ApproachAndLanding2Spec extends Specification {

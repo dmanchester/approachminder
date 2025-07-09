@@ -5,6 +5,7 @@ import SharedResources.*
 import com.dmanchester.approachminder.Airports.oak
 import com.dmanchester.approachminder.Airports.sfo
 import com.dmanchester.approachminder.typeswithbehavior.ContinuouslyNearingTrajectory
+import com.dmanchester.approachminder.typeswithoutbehavior.{LongLat, LongLatAlt}
 
 class ExtractionAndEstimationSpec extends Specification {
 

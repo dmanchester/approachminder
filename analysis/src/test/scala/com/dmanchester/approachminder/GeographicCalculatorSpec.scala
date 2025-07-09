@@ -1,9 +1,9 @@
 package com.dmanchester.approachminder
 
 import Airports.sfoData
-import SharedResources._
-
-import org.specs2.mutable._
+import SharedResources.*
+import com.dmanchester.approachminder.typeswithoutbehavior.LongLat
+import org.specs2.mutable.*
 
 class GeographicCalculatorSpec extends Specification {
 

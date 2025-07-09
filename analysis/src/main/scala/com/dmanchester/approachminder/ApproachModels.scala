@@ -1,5 +1,7 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.typeswithoutbehavior.HasLongLatAlt
+
 class ApproachModels private(models: Iterable[ApproachModel]) {
 
   def bestFit(previousPoint: HasLongLatAlt, currentPoint: HasLongLatAlt): Option[ModelFit] = {

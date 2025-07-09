@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.LongLat
 import com.dmanchester.approachminder.SharedResources.*
+import com.dmanchester.approachminder.typeswithoutbehavior.LongLat
 import com.dmanchester.approachminder.utils.TrajectoryUtils.{continuouslyNearingSegmentsEndingAt, continuouslyNearingSegmentsStartingAt}
 import org.specs2.mutable.*
 

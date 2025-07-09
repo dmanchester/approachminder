@@ -2,6 +2,7 @@ package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.Utils.interpolateScalar
 import com.dmanchester.approachminder.typeswithbehavior.{ContinuouslyNearingTrajectory, Trajectory}
+import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, HasLongLatAlt}
 
 import scala.annotation.tailrec
 

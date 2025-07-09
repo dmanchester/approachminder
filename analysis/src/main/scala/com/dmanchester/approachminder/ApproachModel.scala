@@ -1,5 +1,7 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, HasLongLatAlt}
+
 import scala.math.abs
 
 class ApproachModel private(thresholdCenter: HasLongLat, distributionsByDistanceInMeters: Map[BigDecimal, AngleAndAltitudeWithStats], calculator: GeographicCalculator) {

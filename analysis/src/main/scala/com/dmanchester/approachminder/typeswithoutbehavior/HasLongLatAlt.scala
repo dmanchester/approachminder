@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.typeswithoutbehavior
 
 trait HasLongLatAlt extends HasLongLat {
   def altitudeMeters: Double

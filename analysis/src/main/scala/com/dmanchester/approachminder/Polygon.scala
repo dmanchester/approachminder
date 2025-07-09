@@ -1,5 +1,7 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.typeswithoutbehavior.HasLongLat
+
 /**
  * A polygon.
  *

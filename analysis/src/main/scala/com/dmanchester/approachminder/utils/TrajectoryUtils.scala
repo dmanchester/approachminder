@@ -1,7 +1,8 @@
 package com.dmanchester.approachminder.utils
 
 import com.dmanchester.approachminder.typeswithbehavior.Trajectory
-import com.dmanchester.approachminder.{GeographicCalculator, HasLongLat}
+import com.dmanchester.approachminder.GeographicCalculator
+import com.dmanchester.approachminder.typeswithoutbehavior.HasLongLat
 
 import scala.annotation.tailrec
 

@@ -1,5 +1,7 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.typeswithoutbehavior.HasLongLat
+
 import scala.annotation.tailrec
 
 class Thresholds private(val theThresholds: Iterable[Airport#RunwaySurface#RunwayThreshold]) {

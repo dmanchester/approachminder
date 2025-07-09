@@ -1,6 +1,7 @@
 package com.dmanchester.approachminder.experimental
 
 import com.dmanchester.approachminder.*
+import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, LongLatAlt}
 import org.apache.commons.math3.ml.clustering.{Clusterable, DBSCANClusterer}
 import org.apache.commons.math3.ml.distance.DistanceMeasure
 

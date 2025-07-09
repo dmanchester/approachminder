@@ -2,6 +2,7 @@ package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.Utils.interpolateScalar
 import com.dmanchester.approachminder.typeswithbehavior.{ContinuouslyNearingTrajectory, Trajectory}
+import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLatAlt, LongLatAlt}
 
 // TODO Is tempting to make this a case class; but how would we get "equal" to fire reliably, since crossingPointInterpolated is a calculated Double?
 // TODO Stop using complicated instantiation logic to enforce a variant; move to standalone function?

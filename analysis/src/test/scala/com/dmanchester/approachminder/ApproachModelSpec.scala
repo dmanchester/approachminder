@@ -1,8 +1,8 @@
 package com.dmanchester.approachminder
 
 import SharedResources.{mockApproachDistributions, sfoCalculator, significantFigures}
-
-import org.specs2.mutable._
+import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, LongLat, LongLatAlt}
+import org.specs2.mutable.*
 
 class ApproachModelSpec extends Specification {
 

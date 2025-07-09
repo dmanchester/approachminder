@@ -2,7 +2,8 @@ package com.dmanchester.approachminder
 
 import Airports.sfo
 import SharedResources.{beCloseInTwoDimensionsTo, sfoPointA, sfoPointB, sfoPointD, sfoPointE, sfoPointF, sfoThresholdLeft10R, sfoThresholdLeft28L, sfoThresholdRight10R, sfoThresholdRight28L, significantFigures}
-import org.specs2.mutable._
+import com.dmanchester.approachminder.typeswithoutbehavior.LongLat
+import org.specs2.mutable.*
 
 class AirportSpec extends Specification {
 

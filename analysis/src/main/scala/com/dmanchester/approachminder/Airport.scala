@@ -1,5 +1,7 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.typeswithoutbehavior.HasLongLat
+
 // FIXME Throughout this file, do I have a lot more public fields than I intend?
 
 class Airport private(val icaoID: String, val referencePoint: HasLongLat, runwaySurfaceTemplates: Seq[RunwaySurfaceTemplate]) {
