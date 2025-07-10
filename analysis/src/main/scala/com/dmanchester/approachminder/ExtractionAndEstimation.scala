@@ -30,12 +30,12 @@ object ExtractionAndEstimation {
    * @tparam A
    * @return
    */
-  def approachesAndLandings2[A <: HasLongLatAlt](trajectory: Trajectory[A], thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint]): Seq[ApproachAndLanding2[A]] = {
+  def approachesAndLandings2[A <: HasLongLatAlt](trajectory: Trajectory[A], thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint]): Seq[ApproachAndLanding[A]] = {
     doApproachesAndLandings2(trajectory, 0, thresholdsAndReferencePoints, Seq.empty)
   }
 
   @tailrec
-  private def doApproachesAndLandings2[A <: HasLongLatAlt](remainingTrajectory: Trajectory[A], segmentIndex: Int, thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint], accumulator: Seq[ApproachAndLanding2[A]]): Seq[ApproachAndLanding2[A]] = {
+  private def doApproachesAndLandings2[A <: HasLongLatAlt](remainingTrajectory: Trajectory[A], segmentIndex: Int, thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint], accumulator: Seq[ApproachAndLanding[A]]): Seq[ApproachAndLanding[A]] = {
 
     // TODO What additional test coverage?
 
@@ -63,7 +63,7 @@ object ExtractionAndEstimation {
   private def approachAndLanding[A <: HasLongLatAlt](remainingTrajectory: Trajectory[A], segmentIndex: Int, thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint]) = {
 
     val checkSegment = (thresholdAndReferencePoint: ThresholdAndReferencePoint) => {
-      ApproachAndLanding2.createOption(remainingTrajectory, segmentIndex, thresholdAndReferencePoint)
+      ApproachAndLanding.newOption(remainingTrajectory, segmentIndex, thresholdAndReferencePoint)
     }
 
     thresholdsAndReferencePoints.collectFirst { thresholdAndReferencePoint =>
