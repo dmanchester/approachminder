@@ -1,5 +1,6 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.typeswithbehavior.Airport
 import com.dmanchester.approachminder.typeswithoutbehavior.HasLongLat
 
 class ThresholdAndReferencePoint private(val threshold: Airport#RunwaySurface#Runway, val referencePoint: HasLongLat)

@@ -1,5 +1,7 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.typeswithbehavior.Airport
+
 class ApproachSegmentWithDeviation private(val threshold: Airport#RunwaySurface#Runway, val thresholdDistanceMeters: Double, val verticalDevMeters: Double, val horizontalDevMeters: Double, val normalizedEuclideanDistance: Double)
 
 object ApproachSegmentWithDeviation {

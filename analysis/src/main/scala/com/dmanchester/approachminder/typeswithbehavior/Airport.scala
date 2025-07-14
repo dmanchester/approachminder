@@ -1,6 +1,7 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.typeswithbehavior
 
-import com.dmanchester.approachminder.typeswithoutbehavior.HasLongLat
+import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, RunwaySurfaceTemplate}
+import com.dmanchester.approachminder.{GeographicCalculator, Polygon}
 
 class Airport private(val icaoID: String, val referencePoint: HasLongLat, runwaySurfaceTemplates: Iterable[RunwaySurfaceTemplate]) {
 

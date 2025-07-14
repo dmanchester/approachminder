@@ -1,5 +1,6 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.typeswithbehavior.Airport
 import com.dmanchester.approachminder.typeswithoutbehavior.HasLongLat
 
 import scala.annotation.tailrec

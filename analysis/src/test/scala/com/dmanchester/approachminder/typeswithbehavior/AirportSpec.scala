@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.typeswithbehavior
 
 import com.dmanchester.approachminder.Airports.sfo
 import com.dmanchester.approachminder.SharedResources.*
