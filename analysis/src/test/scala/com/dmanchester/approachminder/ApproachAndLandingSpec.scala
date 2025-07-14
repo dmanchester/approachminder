@@ -53,7 +53,7 @@ class ApproachAndLandingSpec extends Specification {
   // exactly point G's latitude, point J appeared to be ever so slightly south of point G. Segment F-J then no longer
   // continuously neared point G.)
 
-  private val sfoThreshold10L = sfo.thresholdByName("10L").get
+  private val sfoThreshold10L = sfo.runwayByName("10L").get
 
   private val pointB = LongLatAlt(-122.404270, 37.633298, 40)
   private val pointC = LongLatAlt(-122.398831, 37.631019, 40)
@@ -77,7 +77,7 @@ class ApproachAndLandingSpec extends Specification {
       val (approachAndLanding, segmentsIncludedAfterSpecified) = ApproachAndLanding.newOption(trajectoryCE, 0, thresholdAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointC, pointE)
       approachAndLanding.threshold mustEqual sfoThreshold10L  // the same for all `Some` tests; we only bother to confirm it here
-      approachAndLanding.crossingPointInterpolated must beCloseInTwoDimensionsTo(sfoThreshold10L.center, significantFigures)  // Because C and E are on the runway centerline, they cross the threshold at its center point
+      approachAndLanding.crossingPointInterpolated must beCloseInTwoDimensionsTo(sfoThreshold10L.thresholdCenter, significantFigures)  // Because C and E are on the runway centerline, they cross the threshold at its center point
       approachAndLanding.crossingPointInterpolated.altitudeMeters must beCloseTo(29.999618, significantFigures)  // crossing point is 1/3 of the way from C to E; altitude is thus 1/3 of the descent from C (40 m) to E (10 m)
 
       segmentsIncludedAfterSpecified mustEqual 0

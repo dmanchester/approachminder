@@ -2,5 +2,4 @@ package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.typeswithoutbehavior.HasLongLat
 
-case class RunwaySurfaceTemplate(widthInMeters: Double, threshold0Name: String, threshold0Center: HasLongLat, threshold1Name: String, threshold1Center: HasLongLat)
-// TODO Adopt "base" and "reciprocal" naming?
+case class RunwaySurfaceTemplate(widthInMeters: Double, runway0Name: String, runway0ThresholdCenter: HasLongLat, runway1Name: String, runway1ThresholdCenter: HasLongLat)

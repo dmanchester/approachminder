@@ -4,7 +4,7 @@ import com.dmanchester.approachminder.Utils.interpolateScalar
 import com.dmanchester.approachminder.typeswithbehavior.{ContinuouslyNearingTrajectory, Trajectory}
 import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLatAlt, LongLatAlt}
 
-case class ApproachAndLanding[+P <: HasLongLatAlt] private(trajectory: ContinuouslyNearingTrajectory[P], threshold: Airport#RunwaySurface#RunwayThreshold, crossingPointInterpolated: HasLongLatAlt)
+case class ApproachAndLanding[+P <: HasLongLatAlt] private(trajectory: ContinuouslyNearingTrajectory[P], threshold: Airport#RunwaySurface#Runway, crossingPointInterpolated: HasLongLatAlt)
 
 object ApproachAndLanding {
 
@@ -42,11 +42,11 @@ object ApproachAndLanding {
     val positionB = sourcePositions(segmentIndex + 1)
     val threshold = thresholdAndReferencePoint.threshold
 
-    val inboundCrossingPoint = threshold.interpolateInboundCrossingPoint(positionA, positionB)
+    val inboundCrossingPoint = threshold.testForInboundThresholdCrossing(positionA, positionB)
 
     for {
       (crossingPoint2D, percentageFromSegStartToSegEnd) <- inboundCrossingPoint
-      truncatedTrajectory = sourceTrajectory.truncateWhere(segmentIndex + 1, !threshold.runwaySurface.contains(_))  // truncated after the specified segment to include only positions on the runway surface
+      truncatedTrajectory = sourceTrajectory.truncateWhere(segmentIndex + 1, !threshold.surface.contains(_)) // truncated after the specified segment to include only positions on the runway surface
       (continuouslyNearingSegment, addlSegmentsIncluded) <- ContinuouslyNearingTrajectory.newOption(truncatedTrajectory, segmentIndex, thresholdAndReferencePoint.referencePoint, threshold.geographicCalculator)
       altitudeMeters = interpolateScalar(positionA.altitudeMeters, positionB.altitudeMeters, percentageFromSegStartToSegEnd)
       crossingPoint3D = LongLatAlt(crossingPoint2D.longitude, crossingPoint2D.latitude, altitudeMeters)

@@ -2,174 +2,144 @@ package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.typeswithoutbehavior.HasLongLat
 
-// FIXME Throughout this file, do I have a lot more public fields than I intend?
+class Airport private(val icaoID: String, val referencePoint: HasLongLat, runwaySurfaceTemplates: Iterable[RunwaySurfaceTemplate]) {
 
-class Airport private(val icaoID: String, val referencePoint: HasLongLat, runwaySurfaceTemplates: Seq[RunwaySurfaceTemplate]) {
+  // TODO Enforce uniqueness of runway names in `runwaySurfaceTemplates`.
 
-  val geographicCalculator = GeographicCalculator(referencePoint)
-
-  // TODO Enforce uniqueness of runway names
+  val geographicCalculator: GeographicCalculator = GeographicCalculator(referencePoint)
 
   /**
-   * The ordering of `runwaySurfaces` matches that of the `RunwaySurfaceTemplate`s provided at
+   * The ordering of `runwaySurfaces` and `runways` matches that of the `RunwaySurfaceTemplate`s provided at
    * construction.
    */
-  val runwaySurfaces = runwaySurfaceTemplates.map(RunwaySurface(_))  // construct runway surfaces and thresholds via the RunwaySurface pseudo-constructor
+  val runwaySurfaces: Seq[RunwaySurface] = runwaySurfaceTemplates.map(RunwaySurface(_)).toSeq
+  val runways: Seq[RunwaySurface#Runway] = runwaySurfaces.flatMap { runwaySurface => Seq(runwaySurface.runway0, runwaySurface.runway1) }
 
   /**
-   * Each group of two contiguous thresholds maps to a runway surface, with the surfaces having the
-   * same order as the `RunwaySurfaceTemplate`s provided at construction.
+   * Get a runway by name.
    *
-   * Within a group of two thresholds, the first one maps to the first one specified in
-   * `RunwaySurfaceTemplate`.
+   * TODO Remove the Option wrapper and have this throw on name not found?
+   *
+   * @param name The name.
+   * @return The Runway, wrapped in Some; or None if the runway wasn't found.
    */
-  val thresholds = runwaySurfaces.flatMap(_.thresholdsAsSeq)
-
-  // TODO Figure out if I'm doing this inner class stuff "right"; I guess this is path-dependent types; it's true that we don't want to let someone instantiate, say, a runway surface without an airport. Is that the right construct, or are we creating tons of unnecessary class objects? See also https://moi.vonos.net/java/scala/#nested-inner-classes-and-path-dependent-types
-  // TODO Also see:
-  // https://docs.scala-lang.org/tour/inner-classes.html
-  // https://www.john-cd.com/cheatsheets/Scala/Scala_Language/#path-dependent-classes
-  // https://alvinalexander.com/scala/how-to-create-inner-classes-in-scala-differences-java/
-  // https://stackoverflow.com/questions/2183954/referring-to-the-type-of-an-inner-class-in-scala
-  // https://users.scala-lang.org/t/question-regarding-pound-sign/1628
-
-  def thresholdByName(name: String) = {
-    thresholds.find(_.name == name)
+  def runwayByName(name: String): Option[RunwaySurface#Runway] = {
+    runways.find(_.name == name)
   }
 
-  class RunwaySurface private(val widthInMeters: Double, threshold0Name: String, threshold0Left: HasLongLat, threshold0Center: HasLongLat, threshold0Right: HasLongLat, threshold1Name: String, threshold1Left: HasLongLat, threshold1Center: HasLongLat, threshold1Right: HasLongLat) {
+  override def toString: String = s"${this.getClass.getSimpleName}($icaoID,$referencePoint,$runwaySurfaces)"
 
-    // TODO Offer naming of runway surfaces (not just thresholds)?
+  class RunwaySurface private(val widthInMeters: Double, runway0Name: String, runway0ThresholdLeft: HasLongLat, runway0ThresholdCenter: HasLongLat, runway0ThresholdRight: HasLongLat, runway1Name: String, runway1ThresholdLeft: HasLongLat, runway1ThresholdCenter: HasLongLat, runway1ThresholdRight: HasLongLat) {
 
-    val threshold0 = RunwayThreshold(threshold0Name, threshold0Left, threshold0Center, threshold0Right)
-    val threshold1 = RunwayThreshold(threshold1Name, threshold1Left, threshold1Center, threshold1Right)
-    val thresholdsAsSeq = Seq(threshold0, threshold1)
-    val rectangle = Polygon(Seq(threshold0Left, threshold0Right, threshold1Left, threshold1Right))
+    // Obtain references to the outer class and any needed members first.
+    val airport: Airport = Airport.this
+    val geographicCalculator: GeographicCalculator = airport.geographicCalculator
 
-    def airport = Airport.this
+    val runway0: Runway = Runway(runway0Name, runway0ThresholdLeft, runway0ThresholdCenter, runway0ThresholdRight)
+    val runway1: Runway = Runway(runway1Name, runway1ThresholdLeft, runway1ThresholdCenter, runway1ThresholdRight)
 
-    def geographicCalculator = airport.geographicCalculator  // FIXME Can I delete?
+    private val rectangle = Polygon(Seq(runway0ThresholdLeft, runway0ThresholdRight, runway1ThresholdLeft, runway1ThresholdRight))
 
+    /**
+     * Test whether the runway surface contains a point.
+     *
+     * @param point The point.
+     * @return The test result.
+     */
     def contains(point: HasLongLat): Boolean = geographicCalculator.contains(rectangle, point)
 
-    private def oppositeThreshold(threshold: RunwaySurface#RunwayThreshold): RunwayThreshold = {  // TODO Confirm prefixing with "RunwaySurface#" is "right" way to solve spec's compilation issue
-      threshold match {
-        case `threshold0` => threshold1
-        case `threshold1` => threshold0
-        case _ => throw new IllegalArgumentException("Unrecognized threshold!")
+    private def oppositeRunway(runway: RunwaySurface#Runway): Runway = {
+      runway match {
+        case `runway0` => runway1
+        case `runway1` => runway0
+        case _ => throw new IllegalArgumentException("Unrecognized runway!")
       }
     }
 
-    override def toString = s"${this.getClass.getSimpleName}($threshold0Left,$threshold0Right,$threshold1Left,$threshold1Right)"
+    override def toString: String = s"${this.getClass.getSimpleName}($widthInMeters,$runway0,$runway1)"
 
-    class RunwayThreshold private(val name: String, val left: HasLongLat, val center: HasLongLat, val right: HasLongLat) {
+    class Runway private(val name: String, val thresholdLeft: HasLongLat, val thresholdCenter: HasLongLat, val thresholdRight: HasLongLat) {
 
-      val thresholdSegment = (left, right)
+      // Obtain references to the outer classes and any needed members first.
+      val airport: Airport = Airport.this
+      val surface: RunwaySurface = RunwaySurface.this
+      val geographicCalculator: GeographicCalculator = surface.geographicCalculator
 
-      def runwaySurface = RunwaySurface.this
+      lazy val opposite: surface.Runway = surface.oppositeRunway(this)  // Why "lazy val"? When first runway is instantiated, its opposite doesn't yet exist.
 
-      def airport = Airport.this
-
-      def geographicCalculator = runwaySurface.geographicCalculator  // FIXME Can I delete?
+      private val thresholdSegment = (thresholdLeft, thresholdRight)
 
       /**
-       * Determine whether:
+       * Test whether:
        *
-       *   * a flight segment crosses this threshold in the inbound direction; and
+       *   * a flight segment crosses the runway's threshold in the inbound direction; and
        *   * the segment's second point lies within the rectangle of the runway surface.
        *
-       * If those criteria are met, interpolate the crossing point.
-       *
-       * @param flightSegment
-       * @return
+       * @param flightSegment The flight segment.
+       * @return If the flight segment meets the above criteria: the interpolated crossing point, as well as where the
+       *         crossing point lies along the segment, expressed as a percentage from the segment's first point;
+       *         wrapped in Some. -- Or, None, if the flight segment does not meet the above criteria.
        */
-      def interpolateInboundCrossingPoint(flightSegment: (HasLongLat, HasLongLat)): Option[(HasLongLat, Double)] = {
-        // TODO After making possible low-level performance improvements, investigate which of these operations is quicker to reject a non-match; order first.
-        if (runwaySurface.contains(flightSegment._2)) {
+      def testForInboundThresholdCrossing(flightSegment: (HasLongLat, HasLongLat)): Option[(HasLongLat, Double)] = {
+        Option.when(surface.contains(flightSegment._2)) {
           geographicCalculator.intersection(flightSegment, thresholdSegment)
-        } else {
-          None
-        }
-      }
-
-      // TODO Need a test for "angle"
-
-      /**
-       * Calculate the angle from the center of the threshold to a point.
-       *
-       * @param point
-       * @return
-       */
-      def angle(point: HasLongLat): PolarAngle = {
-        geographicCalculator.angle(center, point)
+        }.flatten
       }
 
       /**
-       * Calculate the distance in meters from the center of the threshold to a point.
+       * Calculate the distance from an arbitrary point to the center point of the runway's threshold.
        *
-       * TODO It seems odd I didn't have cause to add this method until June 2024...although only previous (non-test)
-       * use of geographicCalculator.distanceInMeters was in ExtractionAndEstimation.interpolate, which "speaks" at a
-       * lower level than thresholds etc.?
+       * TODO Add tests.
        *
-       * TODO Add test coverage? (Do I have any for "angle" method?)
-       *
-       * @param point
-       * @return
+       * @param point The arbitrary point.
+       * @return The distance, in meters.
        */
-      def distanceInMeters(point: HasLongLat): Double = {
-        geographicCalculator.distanceInMeters(center, point)
+      def distanceInMetersToThresholdCenter(point: HasLongLat): Double = {
+        geographicCalculator.distanceInMeters(thresholdCenter, point)
       }
 
       /**
-       * Calculate a point on the runway centerline.
+       * Calculate a point on the runway's centerline.
        *
-       * @param relativePosition The position of the point relative to this threshold. 0.0 = on this threshold; 1.0 = on
-       *                         the opposite threshold. A value would typically be between 0.0 and 1.0, but it need
-       *                         not be.
-       * @return
+       * @param relativePosition The position of the point relative to the runway's threshold. 0.0 = on the threshold;
+       *                         1.0 = on the opposite runway's threshold. A value would typically be between 0.0 and
+       *                         1.0, but it need not be.
+       * @return The point.
        */
-      def pointOnRunwayCenterline(relativePosition: Double): HasLongLat = {  // TODO Here and (many) other places, return class instead of trait?
-        geographicCalculator.pointOnSegment((center, oppositeThreshold.center), relativePosition)
+      def pointOnRunwayCenterline(relativePosition: Double): HasLongLat = {
+        geographicCalculator.pointOnSegment((thresholdCenter, opposite.thresholdCenter), relativePosition)
       }
 
-      def oppositeThreshold = runwaySurface.oppositeThreshold(this)
-
-      override def toString = s"${this.getClass.getSimpleName}($name,$left,$center,$right)"
+      override def toString: String = s"${this.getClass.getSimpleName}($name,$thresholdLeft,$thresholdCenter,$thresholdRight)"
     }
 
-    object RunwayThreshold {
-      def apply(name: String, left: HasLongLat, center: HasLongLat, right: HasLongLat): RunwayThreshold = new RunwayThreshold(name, left, center, right)
+    object Runway {
+      def apply(name: String, thresholdLeft: HasLongLat, thresholdCenter: HasLongLat, thresholdRight: HasLongLat): Runway = new Runway(name, thresholdLeft, thresholdCenter, thresholdRight)
     }
   }
 
   object RunwaySurface {
 
     def apply(template: RunwaySurfaceTemplate): RunwaySurface = {
-
-      val (threshold0Left, threshold0Right) = thresholdLeftAndRight(template.widthInMeters, template.threshold0Center, template.threshold1Center)
-      val (threshold1Left, threshold1Right) = thresholdLeftAndRight(template.widthInMeters, template.threshold1Center, template.threshold0Center)
-      new RunwaySurface(template.widthInMeters, template.threshold0Name, threshold0Left, template.threshold0Center, threshold0Right, template.threshold1Name, threshold1Left, template.threshold1Center, threshold1Right)
+      val (runway0ThresholdLeft, runway0ThresholdRight) = thresholdLeftAndRight(template.widthInMeters, template.runway0ThresholdCenter, template.runway1ThresholdCenter)
+      val (runway1ThresholdLeft, runway1ThresholdRight) = thresholdLeftAndRight(template.widthInMeters, template.runway1ThresholdCenter, template.runway0ThresholdCenter)
+      new RunwaySurface(template.widthInMeters, template.runway0Name, runway0ThresholdLeft, template.runway0ThresholdCenter, runway0ThresholdRight, template.runway1Name, runway1ThresholdLeft, template.runway1ThresholdCenter, runway1ThresholdRight)
     }
 
     /**
-     * Given the width of a runway, the center point of a runway threshold, and
-     * the center point of the opposite threshold, determine the left and right
-     * points of the threshold.
+     * Determine the left and right points of a runway threshold.
      *
-     * TODO Is this the "best" object for this method?
-     *
-     * @param widthInMeters
-     * @param center
-     * @param oppositeCenter
-     * @return left and right points of the threshold ("left" and "right" as seen
-     *         from a landing aircraft)
+     * @param widthInMeters The width of the runway, in meters.
+     * @param thresholdCenter The center point of the threshold.
+     * @param oppositeThresholdCenter The center point of the opposite runway's threshold.
+     * @return The left and right points of the threshold ("left" and "right" as seen from a landing aircraft).
      */
-    private def thresholdLeftAndRight(widthInMeters: Double, center: HasLongLat, oppositeCenter: HasLongLat): (HasLongLat, HasLongLat) = {
+    private def thresholdLeftAndRight(widthInMeters: Double, thresholdCenter: HasLongLat, oppositeThresholdCenter: HasLongLat): (HasLongLat, HasLongLat) = {
 
       val halfWidthInMeters = widthInMeters / 2
 
-      val left = geographicCalculator.rotateAboutArbitraryOriginAndScaleToDistance(oppositeCenter, center, 90.0, halfWidthInMeters)
-      val right = geographicCalculator.rotateAboutArbitraryOriginAndScaleToDistance(oppositeCenter, center, -90.0, halfWidthInMeters)
+      val left = geographicCalculator.rotateAboutArbitraryOriginAndScaleToDistance(oppositeThresholdCenter, thresholdCenter, 90.0, halfWidthInMeters)
+      val right = geographicCalculator.rotateAboutArbitraryOriginAndScaleToDistance(oppositeThresholdCenter, thresholdCenter, -90.0, halfWidthInMeters)
 
       (left, right)
     }

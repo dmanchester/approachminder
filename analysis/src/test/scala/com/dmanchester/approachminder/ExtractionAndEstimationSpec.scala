@@ -35,8 +35,8 @@ class ExtractionAndEstimationSpec extends Specification {
     val pointP = LongLatAlt(-122.2443625, 37.7216562, 50.0)
     val pointQ = LongLatAlt(-122.2303292, 37.7121848, 15.0)
 
-    val thresholdsAndReferencePoints = (sfo.thresholds :++ oak.thresholds).map { threshold =>
-      ThresholdAndReferencePoint(threshold, threshold.oppositeThreshold.center)
+    val thresholdsAndReferencePoints = (sfo.runways :++ oak.runways).map { threshold =>
+      ThresholdAndReferencePoint(threshold, threshold.opposite.thresholdCenter)
     }
 
     "determine a trajectory's approaches and landings, allocating the correct positions to each; correctly associate thresholds; and correctly interpolate crossing points" in {
@@ -48,11 +48,11 @@ class ExtractionAndEstimationSpec extends Specification {
       approachesAndLandings.length must beEqualTo(2)
 
       approachesAndLandings(0).trajectory.positions must beEqualTo(Seq(pointL, pointM, pointN))
-      approachesAndLandings(0).threshold must beEqualTo(sfo.thresholdByName("10L").get)
+      approachesAndLandings(0).threshold must beEqualTo(sfo.runwayByName("10L").get)
       approachesAndLandings(0).crossingPointInterpolated must beCloseInThreeDimensionsTo(LongLatAlt(-122.393345, 37.628809, 23.035889), significantFigures) // confirmed correctness visually
 
       approachesAndLandings(1).trajectory.positions must beEqualTo(Seq(pointO, pointP, pointQ))
-      approachesAndLandings(1).threshold must beEqualTo(oak.thresholdByName("12").get)
+      approachesAndLandings(1).threshold must beEqualTo(oak.runwayByName("12").get)
       approachesAndLandings(1).crossingPointInterpolated must beCloseInThreeDimensionsTo(LongLatAlt(-122.242067, 37.720108, 44.276624), significantFigures) // confirmed correctness visually
     }
   }
