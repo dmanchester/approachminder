@@ -2,7 +2,7 @@ package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.Utils.interpolateScalar
 import com.dmanchester.approachminder.typeswithbehavior.{ContinuouslyNearingTrajectory, Trajectory}
-import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, HasLongLatAlt}
+import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, HasLongLatAlt, RunwayAndReferencePoint}
 
 import scala.annotation.tailrec
 
@@ -26,20 +26,20 @@ object ExtractionAndEstimation {
    *
    * @param aircraftProfile
    * @param trajectory
-   * @param thresholdsAndReferencePoints
+   * @param runwaysAndReferencePoints
    * @tparam A
    * @return
    */
-  def approachesAndLandings2[A <: HasLongLatAlt](trajectory: Trajectory[A], thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint]): Seq[ApproachAndLanding[A]] = {
-    doApproachesAndLandings2(trajectory, 0, thresholdsAndReferencePoints, Seq.empty)
+  def approachesAndLandings2[A <: HasLongLatAlt](trajectory: Trajectory[A], runwaysAndReferencePoints: Seq[RunwayAndReferencePoint]): Seq[ApproachAndLanding[A]] = {
+    doApproachesAndLandings2(trajectory, 0, runwaysAndReferencePoints, Seq.empty)
   }
 
   @tailrec
-  private def doApproachesAndLandings2[A <: HasLongLatAlt](remainingTrajectory: Trajectory[A], segmentIndex: Int, thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint], accumulator: Seq[ApproachAndLanding[A]]): Seq[ApproachAndLanding[A]] = {
+  private def doApproachesAndLandings2[A <: HasLongLatAlt](remainingTrajectory: Trajectory[A], segmentIndex: Int, runwaysAndReferencePoints: Seq[RunwayAndReferencePoint], accumulator: Seq[ApproachAndLanding[A]]): Seq[ApproachAndLanding[A]] = {
 
     // TODO What additional test coverage?
 
-    val approachAndLandingOption = approachAndLanding(remainingTrajectory, segmentIndex, thresholdsAndReferencePoints)
+    val approachAndLandingOption = approachAndLanding(remainingTrajectory, segmentIndex, runwaysAndReferencePoints)
 
     val updatedAccumulator = accumulator :++ approachAndLandingOption.map(_._1)
 
@@ -56,19 +56,19 @@ object ExtractionAndEstimation {
     } else {
       val updatedRemainingTrajectory = updatedRemainingTrajectoryAndSegmentIndexOption.get._1
       val updatedSegmentIndex = updatedRemainingTrajectoryAndSegmentIndexOption.get._2
-      doApproachesAndLandings2(updatedRemainingTrajectory, updatedSegmentIndex, thresholdsAndReferencePoints, updatedAccumulator)
+      doApproachesAndLandings2(updatedRemainingTrajectory, updatedSegmentIndex, runwaysAndReferencePoints, updatedAccumulator)
     }
   }
 
-  private def approachAndLanding[A <: HasLongLatAlt](remainingTrajectory: Trajectory[A], segmentIndex: Int, thresholdsAndReferencePoints: Seq[ThresholdAndReferencePoint]) = {
+  private def approachAndLanding[A <: HasLongLatAlt](remainingTrajectory: Trajectory[A], segmentIndex: Int, runwaysAndReferencePoints: Seq[RunwayAndReferencePoint]) = {
 
-    val checkSegment = (thresholdAndReferencePoint: ThresholdAndReferencePoint) => {
-      ApproachAndLanding.newOption(remainingTrajectory, segmentIndex, thresholdAndReferencePoint)
+    val checkSegment = (runwayAndReferencePoint: RunwayAndReferencePoint) => {
+      ApproachAndLanding.newOption(remainingTrajectory, segmentIndex, runwayAndReferencePoint)
     }
 
-    thresholdsAndReferencePoints.collectFirst { thresholdAndReferencePoint =>
+    runwaysAndReferencePoints.collectFirst { runwayAndReferencePoint =>
 
-      checkSegment(thresholdAndReferencePoint) match {
+      checkSegment(runwayAndReferencePoint) match {
         case Some(approachAndLanding) => approachAndLanding
       }
     }

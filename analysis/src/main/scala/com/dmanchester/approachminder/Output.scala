@@ -36,8 +36,8 @@ object Output {
 
   private def approachSegmentWithDeviationToJsObject(approachSegmentWithDeviation: ApproachSegmentWithDeviation) = {
     Json.obj(
-      "airport" -> approachSegmentWithDeviation.threshold.airport.icaoID,
-      "threshold" -> approachSegmentWithDeviation.threshold.name,
+      "airport" -> approachSegmentWithDeviation.runway.airport.icaoID,
+      "threshold" -> approachSegmentWithDeviation.runway.name,
       "thresholdDistanceMeters" -> setScale(approachSegmentWithDeviation.thresholdDistanceMeters, 0),
       "verticalDevMeters" -> setScale(approachSegmentWithDeviation.verticalDevMeters, 0),
       "horizontalDevMeters" -> setScale(approachSegmentWithDeviation.horizontalDevMeters, 0),

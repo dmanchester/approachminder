@@ -5,7 +5,7 @@ import SharedResources.*
 import com.dmanchester.approachminder.Airports.oak
 import com.dmanchester.approachminder.Airports.sfo
 import com.dmanchester.approachminder.typeswithbehavior.ContinuouslyNearingTrajectory
-import com.dmanchester.approachminder.typeswithoutbehavior.{LongLat, LongLatAlt}
+import com.dmanchester.approachminder.typeswithoutbehavior.{LongLat, LongLatAlt, RunwayAndReferencePoint}
 
 class ExtractionAndEstimationSpec extends Specification {
 
@@ -35,24 +35,24 @@ class ExtractionAndEstimationSpec extends Specification {
     val pointP = LongLatAlt(-122.2443625, 37.7216562, 50.0)
     val pointQ = LongLatAlt(-122.2303292, 37.7121848, 15.0)
 
-    val thresholdsAndReferencePoints = (sfo.runways :++ oak.runways).map { threshold =>
-      ThresholdAndReferencePoint(threshold, threshold.opposite.thresholdCenter)
+    val runwaysAndReferencePoints = (sfo.runways :++ oak.runways).map { runway =>
+      RunwayAndReferencePoint(runway, runway.opposite.thresholdCenter)
     }
 
-    "determine a trajectory's approaches and landings, allocating the correct positions to each; correctly associate thresholds; and correctly interpolate crossing points" in {
+    "determine a trajectory's approaches and landings, allocating the correct positions to each; correctly associate runways; and correctly interpolate crossing points" in {
 
       val trajectory = trajectoryFromPositions(Seq(pointK, pointL, pointM, pointN, pointO, pointP, pointQ))
 
-      val approachesAndLandings = ExtractionAndEstimation.approachesAndLandings2(trajectory, thresholdsAndReferencePoints)
+      val approachesAndLandings = ExtractionAndEstimation.approachesAndLandings2(trajectory, runwaysAndReferencePoints)
 
       approachesAndLandings.length must beEqualTo(2)
 
       approachesAndLandings(0).trajectory.positions must beEqualTo(Seq(pointL, pointM, pointN))
-      approachesAndLandings(0).threshold must beEqualTo(sfo.runwayByName("10L").get)
+      approachesAndLandings(0).runway must beEqualTo(sfo.runwayByName("10L").get)
       approachesAndLandings(0).crossingPointInterpolated must beCloseInThreeDimensionsTo(LongLatAlt(-122.393345, 37.628809, 23.035889), significantFigures) // confirmed correctness visually
 
       approachesAndLandings(1).trajectory.positions must beEqualTo(Seq(pointO, pointP, pointQ))
-      approachesAndLandings(1).threshold must beEqualTo(oak.runwayByName("12").get)
+      approachesAndLandings(1).runway must beEqualTo(oak.runwayByName("12").get)
       approachesAndLandings(1).crossingPointInterpolated must beCloseInThreeDimensionsTo(LongLatAlt(-122.242067, 37.720108, 44.276624), significantFigures) // confirmed correctness visually
     }
   }
