@@ -49,7 +49,7 @@ class Airport private(val icaoID: String, val referencePoint: HasLongLat, runway
      */
     def contains(point: HasLongLat): Boolean = geographicCalculator.contains(rectangle, point)
 
-    private def oppositeRunway(runway: RunwaySurface#Runway): Runway = {
+    private def oppositeRunway(runway: this.Runway): Runway = {
       runway match {
         case `runway0` => runway1
         case `runway1` => runway0
@@ -66,7 +66,7 @@ class Airport private(val icaoID: String, val referencePoint: HasLongLat, runway
       val surface: RunwaySurface = RunwaySurface.this
       val geographicCalculator: GeographicCalculator = surface.geographicCalculator
 
-      lazy val opposite: surface.Runway = surface.oppositeRunway(this)  // Why "lazy val"? When first runway is instantiated, its opposite doesn't yet exist.
+      lazy val opposite: Runway = oppositeRunway(this)  // Why "lazy val"? When first runway is instantiated, its opposite doesn't yet exist.
 
       private val thresholdSegment = (thresholdLeft, thresholdRight)
 
