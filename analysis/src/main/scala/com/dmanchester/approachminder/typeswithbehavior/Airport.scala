@@ -3,6 +3,13 @@ package com.dmanchester.approachminder.typeswithbehavior
 import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, RunwaySurfaceTemplate}
 import com.dmanchester.approachminder.{GeographicCalculator, Polygon}
 
+/**
+ * An airport, along with--as inner classes--its runway surfaces and the runways themselves. (Each runway surface is
+ * considered two runways, depending on the direction from which it's approached.)
+ *
+ * Airport, RunwaySurface, and Runway are *not* case classes because the constructor parameters for Airport and
+ * RunwaySurface different significantly from the desired class fields.
+ */
 class Airport private(val icaoID: String, val referencePoint: HasLongLat, runwaySurfaceTemplates: Iterable[RunwaySurfaceTemplate]) {
 
   // TODO Enforce uniqueness of runway names in `runwaySurfaceTemplates`.
