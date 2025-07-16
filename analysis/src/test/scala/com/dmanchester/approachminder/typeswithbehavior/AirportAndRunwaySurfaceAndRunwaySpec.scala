@@ -2,16 +2,16 @@ package com.dmanchester.approachminder.typeswithbehavior
 
 import com.dmanchester.approachminder.Airports.sfo
 import com.dmanchester.approachminder.SharedResources.*
-import com.dmanchester.approachminder.typeswithoutbehavior.LongLat
+import com.dmanchester.approachminder.typeswithoutbehavior.{LongLat, RunwaySurfaceTemplate}
 import org.specs2.mutable.*
 
-class AirportSpec extends Specification {
+class AirportAndRunwaySurfaceAndRunwaySpec extends Specification {
 
   private val sfoRunway28L = sfo.getRunwayByName("28L")
 
   "constructors/'apply' pseudo-constructors of Airport/RunwaySurface/Runway" should {
-    "process the RunwaySurfaceTemplates in order and correctly assign runway thresholds' left and right points" in {
 
+    "process the RunwaySurfaceTemplates in order and correctly assign runway thresholds' left and right points" in {
       sfo.runways(6).name mustEqual "10R"
       sfo.runways(6).thresholdLeft must beCloseInTwoDimensionsTo(sfoThresholdLeft10R, significantFigures)
       sfo.runways(6).thresholdRight must beCloseInTwoDimensionsTo(sfoThresholdRight10R, significantFigures)
@@ -19,6 +19,19 @@ class AirportSpec extends Specification {
       sfo.runways(7).name mustEqual "28L"
       sfo.runways(7).thresholdLeft must beCloseInTwoDimensionsTo(sfoThresholdLeft28L, significantFigures)
       sfo.runways(7).thresholdRight must beCloseInTwoDimensionsTo(sfoThresholdRight28L, significantFigures)
+    }
+
+    "throw on non-unique runway names (same RunwaySurfaceTemplate)" in {
+      Airport("KBAD", LongLat(0.0, 0.0), Seq(
+        RunwaySurfaceTemplate(50, "01L", LongLat(1.0, 0.0), "01L", LongLat(2.0, 0.0))
+      )) must throwA[IllegalArgumentException]
+    }
+
+    "throw on non-unique runway names (different RunwaySurfaceTemplate)" in {
+      Airport("KBAD", LongLat(0.0, 0.0), Seq(
+        RunwaySurfaceTemplate(50, "01L", LongLat(1.0, 0.0), "19R", LongLat(2.0, 0.0)),
+        RunwaySurfaceTemplate(50, "20R", LongLat(3.0, 0.0), "01L", LongLat(4.0, 0.0))
+      )) must throwA[IllegalArgumentException]
     }
   }
 

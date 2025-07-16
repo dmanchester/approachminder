@@ -12,8 +12,6 @@ import com.dmanchester.approachminder.{GeographicCalculator, Polygon}
  */
 class Airport private(val icaoID: String, val referencePoint: HasLongLat, runwaySurfaceTemplates: Iterable[RunwaySurfaceTemplate]) {
 
-  // TODO Enforce uniqueness of runway names in `runwaySurfaceTemplates`.
-
   val geographicCalculator: GeographicCalculator = GeographicCalculator(referencePoint)
 
   /**
@@ -22,6 +20,15 @@ class Airport private(val icaoID: String, val referencePoint: HasLongLat, runway
    */
   val runwaySurfaces: Seq[RunwaySurface] = runwaySurfaceTemplates.map(RunwaySurface(_)).toSeq
   val runways: Seq[RunwaySurface#Runway] = runwaySurfaces.flatMap { runwaySurface => Seq(runwaySurface.runway0, runwaySurface.runway1) }
+
+  private val namesToRunways: Map[String, RunwaySurface#Runway] = runways.foldLeft(Map.empty[String, RunwaySurface#Runway]) { case (theMap, runway) =>
+
+      if (theMap.contains(runway.name)) {
+        throw new IllegalArgumentException(s"Duplicate runway name found: '${runway.name}'!")
+      }
+
+      theMap.updated(runway.name, runway)
+  }
 
   /**
    * Get a runway by name.
@@ -32,7 +39,7 @@ class Airport private(val icaoID: String, val referencePoint: HasLongLat, runway
    */
   @throws(classOf[NoSuchElementException])
   def getRunwayByName(name: String): RunwaySurface#Runway = {
-    runways.find(_.name == name).get
+    namesToRunways(name)
   }
 
   override def toString: String = s"${this.getClass.getSimpleName}($icaoID,$referencePoint,$runwaySurfaces)"
