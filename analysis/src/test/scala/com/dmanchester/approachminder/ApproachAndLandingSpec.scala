@@ -53,7 +53,7 @@ class ApproachAndLandingSpec extends Specification {
   // exactly point G's latitude, point J appeared to be ever so slightly south of point G. Segment F-J then no longer
   // continuously neared point G.)
 
-  private val sfoRunway10L = sfo.runwayByName("10L").get
+  private val sfoRunway10L = sfo.getRunwayByName("10L")
 
   private val pointB = LongLatAlt(-122.404270, 37.633298, 40)
   private val pointC = LongLatAlt(-122.398831, 37.631019, 40)

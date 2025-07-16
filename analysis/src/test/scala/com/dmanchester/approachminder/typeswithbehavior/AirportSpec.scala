@@ -7,7 +7,7 @@ import org.specs2.mutable.*
 
 class AirportSpec extends Specification {
 
-  private val sfoRunway28L = sfo.runwayByName("28L").get
+  private val sfoRunway28L = sfo.getRunwayByName("28L")
 
   "constructors/'apply' pseudo-constructors of Airport/RunwaySurface/Runway" should {
     "process the RunwaySurfaceTemplates in order and correctly assign runway thresholds' left and right points" in {
@@ -22,13 +22,13 @@ class AirportSpec extends Specification {
     }
   }
 
-  "Airport.runwayByName" should {
+  "Airport.getRunwayByName" should {
     "find a runway that exists" in {
-      sfo.runwayByName("10R") must beSome
+      sfo.getRunwayByName("10R") must not(throwAn[Exception])
     }
 
     "handle a runway that doesn't exist" in {
-      sfo.runwayByName("999") must beNone
+      sfo.getRunwayByName("999") must throwA[NoSuchElementException]
     }
   }
 

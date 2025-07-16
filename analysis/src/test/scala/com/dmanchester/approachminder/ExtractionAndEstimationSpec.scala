@@ -48,11 +48,11 @@ class ExtractionAndEstimationSpec extends Specification {
       approachesAndLandings.length must beEqualTo(2)
 
       approachesAndLandings(0).trajectory.positions must beEqualTo(Seq(pointL, pointM, pointN))
-      approachesAndLandings(0).runway must beEqualTo(sfo.runwayByName("10L").get)
+      approachesAndLandings(0).runway must beEqualTo(sfo.getRunwayByName("10L"))
       approachesAndLandings(0).crossingPointInterpolated must beCloseInThreeDimensionsTo(LongLatAlt(-122.393345, 37.628809, 23.035889), significantFigures) // confirmed correctness visually
 
       approachesAndLandings(1).trajectory.positions must beEqualTo(Seq(pointO, pointP, pointQ))
-      approachesAndLandings(1).runway must beEqualTo(oak.runwayByName("12").get)
+      approachesAndLandings(1).runway must beEqualTo(oak.getRunwayByName("12"))
       approachesAndLandings(1).crossingPointInterpolated must beCloseInThreeDimensionsTo(LongLatAlt(-122.242067, 37.720108, 44.276624), significantFigures) // confirmed correctness visually
     }
   }

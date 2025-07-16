@@ -8,7 +8,7 @@ import com.dmanchester.approachminder.{GeographicCalculator, Polygon}
  * considered two runways, depending on the direction from which it's approached.)
  *
  * Airport, RunwaySurface, and Runway are *not* case classes because the constructor parameters for Airport and
- * RunwaySurface different significantly from the desired class fields.
+ * RunwaySurface differ significantly from the desired class fields.
  */
 class Airport private(val icaoID: String, val referencePoint: HasLongLat, runwaySurfaceTemplates: Iterable[RunwaySurfaceTemplate]) {
 
@@ -26,13 +26,13 @@ class Airport private(val icaoID: String, val referencePoint: HasLongLat, runway
   /**
    * Get a runway by name.
    *
-   * TODO Remove the Option wrapper and have this throw on name not found?
-   *
    * @param name The name.
-   * @return The Runway, wrapped in Some; or None if the runway wasn't found.
+   * @throws java.util.NoSuchElementException If a runway by that name does not exist.
+   * @return The runway.
    */
-  def runwayByName(name: String): Option[RunwaySurface#Runway] = {
-    runways.find(_.name == name)
+  @throws(classOf[NoSuchElementException])
+  def getRunwayByName(name: String): RunwaySurface#Runway = {
+    runways.find(_.name == name).get
   }
 
   override def toString: String = s"${this.getClass.getSimpleName}($icaoID,$referencePoint,$runwaySurfaces)"
@@ -155,5 +155,5 @@ class Airport private(val icaoID: String, val referencePoint: HasLongLat, runway
 }
 
 object Airport {
-  def apply(icaoID: String, referencePoint: HasLongLat, runwaySurfaceTemplates: Seq[RunwaySurfaceTemplate]): Airport = new Airport(icaoID, referencePoint, runwaySurfaceTemplates)
+  def apply(icaoID: String, referencePoint: HasLongLat, runwaySurfaceTemplates: Iterable[RunwaySurfaceTemplate]): Airport = new Airport(icaoID, referencePoint, runwaySurfaceTemplates)
 }
