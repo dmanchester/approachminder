@@ -7,6 +7,8 @@ import com.dmanchester.approachminder.{GeographicCalculator, Polygon}
  * An airport, along with--as inner classes--its runway surfaces and the runways themselves. (Each runway surface is
  * considered two runways, depending on the direction from which it's approached.)
  *
+ * Each runway is identified by a name that is unique (at that airport).
+ *
  * Airport, RunwaySurface, and Runway are *not* case classes because the constructor parameters for Airport and
  * RunwaySurface differ significantly from the desired class fields.
  */
@@ -38,9 +40,7 @@ class Airport private(val icaoID: String, val referencePoint: HasLongLat, runway
    * @return The runway.
    */
   @throws(classOf[NoSuchElementException])
-  def getRunwayByName(name: String): RunwaySurface#Runway = {
-    namesToRunways(name)
-  }
+  def getRunwayByName(name: String): RunwaySurface#Runway = namesToRunways(name)
 
   override def toString: String = s"${this.getClass.getSimpleName}($icaoID,$referencePoint,$runwaySurfaces)"
 
@@ -162,5 +162,19 @@ class Airport private(val icaoID: String, val referencePoint: HasLongLat, runway
 }
 
 object Airport {
+
+  /**
+   * Create an airport, its runway surfaces, and the runways themselves.
+   *
+   * @param icaoID The airport's ICAO ID (e.g., "KSFO").
+   * @param referencePoint A reference point at the airport. Used to initialize the GeographicCalculator used for
+   *                       airport-related calculations. -- Only needs to be approximate: actual distance calculations
+   *                       rely on runway geometry.
+   * @param runwaySurfaceTemplates Templates for construction of the runway surfaces and runways. Runway names within
+   *                               the templates must be unique (at a given airport).
+   * @throws java.lang.IllegalArgumentException If a runway name is duplicated within the runway surface templates.
+   * @return The airport, with the runway surfaces and runways as inner classes.
+   */
+  @throws(classOf[IllegalArgumentException])
   def apply(icaoID: String, referencePoint: HasLongLat, runwaySurfaceTemplates: Iterable[RunwaySurfaceTemplate]): Airport = new Airport(icaoID, referencePoint, runwaySurfaceTemplates)
 }
