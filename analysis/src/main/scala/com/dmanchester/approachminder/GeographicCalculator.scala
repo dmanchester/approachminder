@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, LongLat}
+import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, LongLat, Polygon}
 import org.geotools.geometry.jts.{JTS, JTSFactoryFinder}
 import org.geotools.measure.Units
 import org.geotools.referencing.CRS
