@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.Utils.interpolateScalar
-import com.dmanchester.approachminder.typeswithbehavior.{ContinuouslyNearingTrajectory, Trajectory}
+import com.dmanchester.approachminder.typeswithbehavior.{ApproachAndLanding, ContinuouslyNearingTrajectory, Trajectory}
 import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, HasLongLatAlt, RunwayAndReferencePoint}
 
 import scala.annotation.tailrec

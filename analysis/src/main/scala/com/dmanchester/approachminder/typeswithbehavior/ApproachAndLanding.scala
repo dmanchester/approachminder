@@ -1,7 +1,6 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.typeswithbehavior
 
 import com.dmanchester.approachminder.Utils.interpolateScalar
-import com.dmanchester.approachminder.typeswithbehavior.{Airport, ContinuouslyNearingTrajectory, Trajectory}
 import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLatAlt, LongLatAlt, RunwayAndReferencePoint}
 
 case class ApproachAndLanding[+P <: HasLongLatAlt] private(trajectory: ContinuouslyNearingTrajectory[P], runway: Airport#RunwaySurface#Runway, crossingPointInterpolated: HasLongLatAlt)
