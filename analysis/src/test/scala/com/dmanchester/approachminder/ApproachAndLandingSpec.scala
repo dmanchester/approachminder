@@ -70,7 +70,7 @@ class ApproachAndLandingSpec extends Specification {
   private val trajectoryCE = trajectoryFromPositions(Seq(pointC, pointE))
   private val runwayAndRefPointG = RunwayAndReferencePoint(sfoRunway10L, pointG)
 
-  "createOption" should {
+  "newOption" should {
 
     "handle the simplest possible `Some` case, which involves a two-point threshold-crossing trajectory (trajectory C-E) continuously nearing a reference point" in {
 

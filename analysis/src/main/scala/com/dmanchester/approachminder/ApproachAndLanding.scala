@@ -21,37 +21,39 @@ object ApproachAndLanding {
    * The ApproachAndLanding also includes the interpolated point (with altitude information) where the specified
    * segment crossed the threshold.
    *
-   * While the above process for producing an ApproachAndLanding is generally expected to be reliable, it would
-   * consider an approach culminating in a go-around *over the runway surface* (i.e., without lateral deviation) to be
-   * an approach and landing.
+   * While the above process for producing an ApproachAndLanding is generally expected to be reliable, it may create an
+   * ApproachAndLanding in the following other cases:
    *
-   * It would similarly consider a high-altitude crossing of a threshold to be an approach and landing.
+   *   - An aircraft crosses a runway's threshold at the start of its takeoff roll.
+   *   - An aircraft executes a go-around over a runway's surface.
+   *   - An aircraft overflies a runway at altitude.
    *
-   * @param sourceTrajectory
-   * @param segmentIndex
-   * @param runwayAndReferencePoint
-   * @tparam A
+   * Such cases should be identified and filtered out separately.
+   *
+   * @param fullTrajectory The full trajectory.
+   * @param segmentIndex The segment of fullTrajectory to test.
+   * @param runwayAndReferencePoint The runway to test against, and the reference point for continuously-nearing
+   *                                calculations.
+   * @tparam P The type of fullTrajectory's positions. (Will also be the type of the ContinuouslyNearingTrajectory.)
    * @return The ApproachAndLanding, along with the count of segments after the specified segment included in the
    *         subtrajectory, wrapped in a `Some`. Or, `None` if at least one of the above criteria wasn't fulfilled, or
    *         if a trajectory that continuously nears the reference point couldn't be constructed.
    */
-  def newOption[A <: HasLongLatAlt](sourceTrajectory: Trajectory[A], segmentIndex: Int, runwayAndReferencePoint: RunwayAndReferencePoint): Option[(ApproachAndLanding[A], Int)] = {
+  def newOption[P <: HasLongLatAlt](fullTrajectory: Trajectory[P], segmentIndex: Int, runwayAndReferencePoint: RunwayAndReferencePoint): Option[(ApproachAndLanding[P], Int)] = {
 
-    val sourcePositions = sourceTrajectory.positions
-    val positionA = sourcePositions(segmentIndex)
-    val positionB = sourcePositions(segmentIndex + 1)
+    val segment = fullTrajectory.segments(segmentIndex)
     val runway = runwayAndReferencePoint.runway
 
-    val inboundCrossingPoint = runway.testForInboundThresholdCrossing(positionA, positionB)
+    val inboundCrossingPoint = runway.testForInboundThresholdCrossing(segment)
 
     for {
       (crossingPoint2D, percentageFromSegStartToSegEnd) <- inboundCrossingPoint
-      truncatedTrajectory = sourceTrajectory.truncateWhere(segmentIndex + 1, !runway.surface.contains(_)) // truncated after the specified segment to include only positions on the runway surface
-      (continuouslyNearingSegment, addlSegmentsIncluded) <- ContinuouslyNearingTrajectory.newOption(truncatedTrajectory, segmentIndex, runwayAndReferencePoint.referencePoint, runway.geographicCalculator)
-      altitudeMeters = interpolateScalar(positionA.altitudeMeters, positionB.altitudeMeters, percentageFromSegStartToSegEnd)
+      truncatedTrajectory = fullTrajectory.truncateWhere(segmentIndex + 1, !runway.surface.contains(_)) // truncated after the specified segment to include only positions on the runway surface
+      (continuouslyNearingSubtrajectory, addlSegmentsIncluded) <- ContinuouslyNearingTrajectory.newOption(truncatedTrajectory, segmentIndex, runwayAndReferencePoint.referencePoint, runway.geographicCalculator)
+      altitudeMeters = interpolateScalar(segment._1.altitudeMeters, segment._2.altitudeMeters, percentageFromSegStartToSegEnd)
       crossingPoint3D = LongLatAlt(crossingPoint2D.longitude, crossingPoint2D.latitude, altitudeMeters)
     } yield {
-      (new ApproachAndLanding(continuouslyNearingSegment, runway, crossingPoint3D), addlSegmentsIncluded)
+      (new ApproachAndLanding(continuouslyNearingSubtrajectory, runway, crossingPoint3D), addlSegmentsIncluded)
     }
   }
 }

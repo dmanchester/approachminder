@@ -31,7 +31,7 @@ object ContinuouslyNearingTrajectory {
    * @param segmentIndex The 0-indexed segment that the subsequence of segments must include.
    * @param referencePoint The reference point.
    * @param calculator The GeographicCalculator to use for distance calculations.
-   * @tparam P The positions' type.
+   * @tparam P The type of the trajectory's positions.
    * @throws java.lang.IndexOutOfBoundsException if segmentIndex < 0 or segmentIndex > (segments.length - 1).
    * @return The ContinuouslyNearingTrajectory, along with the count of segments after the specified segment included
    *         within the trajectory, as a `Some`; or, `None` if the sequence's specified segment doesn't continuously
