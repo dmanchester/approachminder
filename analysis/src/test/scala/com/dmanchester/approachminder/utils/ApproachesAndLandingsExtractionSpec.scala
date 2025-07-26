@@ -41,7 +41,7 @@ class ApproachesAndLandingsExtractionSpec extends Specification {
 
       val trajectory = trajectoryFromPositions(Seq(pointK, pointL, pointM, pointN, pointO, pointP, pointQ))
 
-      val approachesAndLandings = ApproachesAndLandingsExtraction.approachesAndLandings2(trajectory, runwaysAndReferencePoints)
+      val approachesAndLandings = ApproachesAndLandingsExtraction.extract(trajectory, runwaysAndReferencePoints)
 
       approachesAndLandings.length must beEqualTo(2)
 

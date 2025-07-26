@@ -30,7 +30,7 @@ object ApproachAndLanding {
    * Such cases should be identified and filtered out separately.
    *
    * @param fullTrajectory The full trajectory.
-   * @param segmentIndex The segment of fullTrajectory to test.
+   * @param segmentIndex The 0-indexed segment of fullTrajectory to test.
    * @param runwayAndReferencePoint The runway to test against, and the reference point for continuously-nearing
    *                                calculations.
    * @tparam P The type of fullTrajectory's positions. (Will also be the type of the ContinuouslyNearingTrajectory.)
