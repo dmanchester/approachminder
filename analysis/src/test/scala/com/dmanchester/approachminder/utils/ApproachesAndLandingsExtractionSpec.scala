@@ -7,7 +7,7 @@ import org.specs2.mutable.Specification
 
 class ApproachesAndLandingsExtractionSpec extends Specification {
 
-  "approachesAndLandings2" should {
+  "extract" should {
 
     // Points K - L are laid out as follows; the runway at lower-left is SFO's 10L/28R; the one at upper-right is OAK's 12/30:
     //
@@ -37,7 +37,7 @@ class ApproachesAndLandingsExtractionSpec extends Specification {
       RunwayAndReferencePoint(runway, runway.opposite.thresholdCenter)
     }
 
-    "determine a trajectory's approaches and landings, allocating the correct positions to each; correctly associate runways; and correctly interpolate crossing points" in {
+    "extract instances of ApproachAndLanding from a trajectory, correctly allocating positions to each ApproachAndLanding, associating runways, and interpolating crossing points" in {
 
       val trajectory = trajectoryFromPositions(Seq(pointK, pointL, pointM, pointN, pointO, pointP, pointQ))
 

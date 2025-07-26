@@ -38,17 +38,6 @@ case class Trajectory[+P] private(positions: Seq[P], icao24: String, callsign: O
   def drop(n: Int): Option[Trajectory[P]] = Trajectory.newOption(positions.drop(n), icao24, callsign, category)
 
   /**
-   * Whether a given index value in a valid lookup into the trajectory's positions: non-negative (and thus not "too
-   * low"), and also not too high.
-   *
-   * TODO Confirm how this method is used.
-   * TODO Add tests.
-   */
-  def isSegmentIndexValid(index: Int): Boolean = {
-    index >= 0 && index <= (positions.length - 2)  // n positions constitute (n - 1) segments; with zero-based indexing, last segment's index is (n - 2)
-  }
-
-  /**
    * Truncate this trajectory *after* a certain position upon finding a subsequent position for which a predicate
    * evaluates true.
    *
