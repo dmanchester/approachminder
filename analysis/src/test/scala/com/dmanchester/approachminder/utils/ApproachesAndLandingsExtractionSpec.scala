@@ -37,7 +37,9 @@ class ApproachesAndLandingsExtractionSpec extends Specification {
       RunwayAndReferencePoint(runway, runway.opposite.thresholdCenter)
     }
 
-    "extract instances of ApproachAndLanding from a trajectory, correctly allocating positions to each ApproachAndLanding, associating runways, and interpolating crossing points" in {
+    val approachAndLandingPositionsSFO10L = Seq(pointL, pointM, pointN)
+
+    "produce multiple instances of ApproachAndLanding where appropriate, and not share positions between them; and correctly allocate positions to each instance, associate runways, and interpolate crossing points" in {
 
       val trajectory = trajectoryFromPositions(Seq(pointK, pointL, pointM, pointN, pointO, pointP, pointQ))
 
@@ -45,13 +47,43 @@ class ApproachesAndLandingsExtractionSpec extends Specification {
 
       approachesAndLandings.length must beEqualTo(2)
 
-      approachesAndLandings(0).trajectory.positions must beEqualTo(Seq(pointL, pointM, pointN))
+      approachesAndLandings(0).trajectory.positions must beEqualTo(approachAndLandingPositionsSFO10L)
       approachesAndLandings(0).runway must beEqualTo(sfo.getRunwayByName("10L"))
       approachesAndLandings(0).crossingPointInterpolated must beCloseInThreeDimensionsTo(LongLatAlt(-122.393345, 37.628809, 23.035889), significantFigures) // confirmed correctness visually
 
+      // Regarding not sharing positions, positions N-O-P-Q would be a reasonable ApproachAndLanding for OAK's
+      // Runway 12. But, position N is already allocated to the SFO ApproachAndLanding. So, we confirm that position
+      // *isn't* part of the OAK one.
       approachesAndLandings(1).trajectory.positions must beEqualTo(Seq(pointO, pointP, pointQ))
       approachesAndLandings(1).runway must beEqualTo(oak.getRunwayByName("12"))
       approachesAndLandings(1).crossingPointInterpolated must beCloseInThreeDimensionsTo(LongLatAlt(-122.242067, 37.720108, 44.276624), significantFigures) // confirmed correctness visually
+    }
+
+    "handle the case that no points of a trajectory remain after an ApproachAndLanding is extracted" in {
+
+      val trajectory = trajectoryFromPositions(Seq(pointK, pointL, pointM, pointN))
+      val approachesAndLandings = ApproachesAndLandingsExtraction.extract(trajectory, runwaysAndReferencePoints)
+
+      approachesAndLandings.length must beEqualTo(1)
+      approachesAndLandings(0).trajectory.positions must beEqualTo(approachAndLandingPositionsSFO10L)
+    }
+
+    "handle the case that only a single point of a trajectory remains after an ApproachAndLanding is extracted" in {
+
+      val trajectory = trajectoryFromPositions(Seq(pointK, pointL, pointM, pointN, pointO))
+      val approachesAndLandings = ApproachesAndLandingsExtraction.extract(trajectory, runwaysAndReferencePoints)
+
+      approachesAndLandings.length must beEqualTo(1)
+      approachesAndLandings(0).trajectory.positions must beEqualTo(approachAndLandingPositionsSFO10L)
+    }
+
+    "handle the case that multiple points of a trajectory remain after an ApproachAndLanding is extracted, but no further instances of ApproachAndLanding can be extracted" in {
+
+      val trajectory = trajectoryFromPositions(Seq(pointK, pointL, pointM, pointN, pointO, pointP))
+      val approachesAndLandings = ApproachesAndLandingsExtraction.extract(trajectory, runwaysAndReferencePoints)
+
+      approachesAndLandings.length must beEqualTo(1)
+      approachesAndLandings(0).trajectory.positions must beEqualTo(approachAndLandingPositionsSFO10L)
     }
   }
 }
