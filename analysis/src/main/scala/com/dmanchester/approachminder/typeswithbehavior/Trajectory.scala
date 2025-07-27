@@ -27,6 +27,15 @@ case class Trajectory[+P] private(positions: Seq[P], icao24: String, callsign: O
   }
 
   /**
+   * Map this Trajectory's positions to an alternate type and produce a new Trajectory.
+   *
+   * @param f The mapping function.
+   * @tparam A The alternate type.
+   * @return The new Trajectory.
+   */
+  def mapPositions[A](f: P => A): Trajectory[A] = new Trajectory(positions.map(f), icao24, callsign, category)
+
+  /**
    * Drop positions from the start of the trajectory.
    *
    * TODO Confirm how this method is used.

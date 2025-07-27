@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder.utils
 
 import com.dmanchester.approachminder.typeswithbehavior.Trajectory
-import com.dmanchester.approachminder.typeswithoutbehavior.{HasICAO24, HasPositionReportIdentifiers, HasTime, OpenSkyPositionReport, OpenSkyPositionReportAllFields}
+import com.dmanchester.approachminder.typeswithoutbehavior.*
 import com.typesafe.scalalogging.StrictLogging
 
 import scala.collection.immutable.ListMap
@@ -111,7 +111,8 @@ object TrajectoryExtraction extends StrictLogging {
 
     val positionReportsAllFields = filesResult.vectors.flatMap(OpenSkyPositionReportAllFields.fromVector)
     logger.info(s"${filesResult.vectors.length} vectors distilled to ${positionReportsAllFields.length} position reports")
-    val trajectories = positionReportsToTrajectories(positionReportsAllFields, timeGapSecsForPartitioning)
+    val trajectoriesWithPositionReportsAllFields = positionReportsToTrajectories(positionReportsAllFields, timeGapSecsForPartitioning)
+    val trajectories = trajectoriesWithPositionReportsAllFields.map(_.mapPositions(OpenSkyPositionReport.fromPositionReportAllFields))
 
     logger.info(s"${trajectories.length} trajectories created")
     trajectories

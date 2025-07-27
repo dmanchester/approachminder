@@ -27,7 +27,7 @@ case class OpenSkyPositionReportAllFields(
   spi: Boolean,
   positionSource: PositionSource,
   category: AircraftCategory
-) extends OpenSkyPositionReport
+) extends HasPositionReportIdentifiers
 
 object OpenSkyPositionReportAllFields {
 
