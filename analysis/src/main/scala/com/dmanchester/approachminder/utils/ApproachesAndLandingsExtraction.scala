@@ -51,21 +51,21 @@ object ApproachesAndLandingsExtraction {
     @tailrec
     def doExtract(remainingTrajectoryOption: Option[Trajectory[P]], segmentIndex: Int, accumulator: Seq[ApproachAndLanding[P]]): Seq[ApproachAndLanding[P]] = {
 
-      if (remainingTrajectoryOption.isEmpty || segmentIndex >= remainingTrajectoryOption.get.segments.length) {
-        accumulator
-      } else {
-
-        val remainingTrajectory = remainingTrajectoryOption.get
-
-        val extractOneForSegmentResult: Option[(ApproachAndLanding[P], Int)] = extractOneForSegment(remainingTrajectory, segmentIndex, runwaysAndReferencePoints)
-
-        val (updatedRemainingTrajectoryOption, updatedSegmentIndex, updatedAccumulator) = extractOneForSegmentResult.map { case (approachAndLanding, segmentsIncludedAfterIndex) =>
+      val paramsForNextInvocation = for {
+        remainingTrajectory <- remainingTrajectoryOption
+        if segmentIndex < remainingTrajectory.segments.length
+        extractOneForSegmentResult = extractOneForSegment(remainingTrajectory, segmentIndex, runwaysAndReferencePoints)
+      } yield {
+        extractOneForSegmentResult.map { case (approachAndLanding, segmentsIncludedAfterIndex) =>
           (remainingTrajectory.drop(segmentIndex + segmentsIncludedAfterIndex + 2), 0, accumulator :+ approachAndLanding)
         } getOrElse {
           (remainingTrajectoryOption, segmentIndex + 1, accumulator)
         }
+      }
 
-        doExtract(updatedRemainingTrajectoryOption, updatedSegmentIndex, updatedAccumulator)
+      paramsForNextInvocation match {
+        case None => accumulator  // end the recursion
+        case Some((updatedRemainingTrajectoryOption, updatedSegmentIndex, updatedAccumulator)) => doExtract(updatedRemainingTrajectoryOption, updatedSegmentIndex, updatedAccumulator)
       }
     }
 
