@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder.typeswithbehavior
 
-import com.dmanchester.approachminder.Utils.interpolateScalar
 import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLatAlt, LongLatAlt, RunwayAndReferencePoint}
+import com.dmanchester.approachminder.utils.MathUtils
 
 case class ApproachAndLanding[+P <: HasLongLatAlt] private(trajectory: ContinuouslyNearingTrajectory[P], runway: Airport#RunwaySurface#Runway, crossingPointInterpolated: HasLongLatAlt)
 
@@ -49,7 +49,7 @@ object ApproachAndLanding {
       (crossingPoint2D, percentageFromSegStartToSegEnd) <- inboundCrossingPoint
       truncatedTrajectory = fullTrajectory.truncateWhere(segmentIndex + 1, !runway.surface.contains(_)) // truncated after the specified segment to include only positions on the runway surface
       (continuouslyNearingSubtrajectory, addlSegmentsIncluded) <- ContinuouslyNearingTrajectory.newOption(truncatedTrajectory, segmentIndex, runwayAndReferencePoint.referencePoint, runway.geographicCalculator)
-      altitudeMeters = interpolateScalar(segment._1.altitudeMeters, segment._2.altitudeMeters, percentageFromSegStartToSegEnd)
+      altitudeMeters = MathUtils.interpolateScalar(segment._1.altitudeMeters, segment._2.altitudeMeters, percentageFromSegStartToSegEnd)
       crossingPoint3D = LongLatAlt(crossingPoint2D.longitude, crossingPoint2D.latitude, altitudeMeters)
     } yield {
       (new ApproachAndLanding(continuouslyNearingSubtrajectory, runway, crossingPoint3D), addlSegmentsIncluded)

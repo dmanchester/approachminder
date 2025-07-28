@@ -1,6 +1,7 @@
 package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, HasLongLatAlt}
+import com.dmanchester.approachminder.utils.MathUtils
 
 import scala.math.abs
 
@@ -44,7 +45,7 @@ class ApproachModel private(thresholdCenter: HasLongLat, distributionsByDistance
             abs(point.relativePosition - 1.0)
           }
 
-          val altitudeToTest = Utils.interpolateScalar(previousPoint.altitudeMeters, currentPoint.altitudeMeters, pointToTest.relativePosition)
+          val altitudeToTest = MathUtils.interpolateScalar(previousPoint.altitudeMeters, currentPoint.altitudeMeters, pointToTest.relativePosition)
           val pointToTestWithAltitude = AngleAndAltitude(pointToTest.angle, altitudeToTest)
 
           calcWithinRange(pointToTestWithAltitude, distanceToTestAt)
@@ -55,7 +56,7 @@ class ApproachModel private(thresholdCenter: HasLongLat, distributionsByDistance
           val distanceToTestAt = minDistanceInMeters
           val pointToTest = calculator.pointOnHalflineAtDistance(previousPoint, currentPoint, thresholdCenter, distanceToTestAt.toDouble).get
 
-          val altitudeToTest = Utils.interpolateScalar(previousPoint.altitudeMeters, currentPoint.altitudeMeters, pointToTest.relativePosition)
+          val altitudeToTest = MathUtils.interpolateScalar(previousPoint.altitudeMeters, currentPoint.altitudeMeters, pointToTest.relativePosition)
           val pointToTestWithAltitude = AngleAndAltitude(pointToTest.angle, altitudeToTest)
 
           calcWithinRange(pointToTestWithAltitude, distanceToTestAt)

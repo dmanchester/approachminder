@@ -3,7 +3,7 @@ package com.dmanchester.approachminder.utils
 import com.dmanchester.approachminder.Utils
 import com.dmanchester.approachminder.typeswithoutbehavior.AircraftCategory
 
-object AircraftCategories {
+object CollectionUtils {
 
   /**
    * In a collection of aircraft categories, determine the most-common one that is "non-blank" (i.e., not `NoInfoAtAll`
@@ -11,8 +11,6 @@ object AircraftCategories {
    *
    * If multiple categories are equally common, pick the one that is alphabetically first by class name. (This is just
    * to ensure deterministic behavior regardless of the categories' ordering.)
-   *
-   * TODO Move to another "utils" object? Or back to AircraftCategory?
    *
    * @param categories The categories.
    * @throws java.lang.UnsupportedOperationException If collection is empty.

@@ -1,8 +1,8 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.Utils.interpolateScalar
 import com.dmanchester.approachminder.typeswithbehavior.ContinuouslyNearingTrajectory
 import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, HasLongLatAlt}
+import com.dmanchester.approachminder.utils.MathUtils
 
 import scala.annotation.tailrec
 
@@ -45,7 +45,7 @@ object ExtractionAndEstimation {
         // Successfully interpolated a position at `distanceInMeters` along the segment from remainingSourcePositions(0)
         // to remainingSourcePositions(1).
         val angle = interpolatedPosition.angle
-        val altitudeMeters = interpolateScalar(remainingSourcePositions(0).altitudeMeters, remainingSourcePositions(1).altitudeMeters, interpolatedPosition.relativePosition)
+        val altitudeMeters = MathUtils.interpolateScalar(remainingSourcePositions(0).altitudeMeters, remainingSourcePositions(1).altitudeMeters, interpolatedPosition.relativePosition)
         (accumulator + (distanceInMeters -> AngleAndAltitude(angle, altitudeMeters)), distancesInMetersToInterpolateAt.next, remainingSourcePositions)
       } getOrElse {
         // Was not able to interpolate a point at `distanceInMeters` along the segment. Discard

@@ -79,7 +79,7 @@ object TrajectoryExtraction extends StrictLogging {
       sortedReports = reportsThisICAO24.sortBy(_.timePosition)
       cleanedReports = resolveTimeConflicts(sortedReports)
       categories = cleanedReports.map(_.category)
-      mostCommonCategory = AircraftCategories.mostCommonNonBlankCategoryInNonEmptyCollection(categories)
+      mostCommonCategory = CollectionUtils.mostCommonNonBlankCategoryInNonEmptyCollection(categories)
       partitionedReports = ReportsPartitioning.partition(cleanedReports, timeGapSecsForPartitioning)
       (callsign, reports) <- partitionedReports
     } yield {
