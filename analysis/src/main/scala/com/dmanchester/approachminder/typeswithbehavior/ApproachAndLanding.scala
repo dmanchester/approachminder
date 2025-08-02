@@ -3,14 +3,17 @@ package com.dmanchester.approachminder.typeswithbehavior
 import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLatAlt, LongLatAlt, RunwayAndReferencePoint}
 import com.dmanchester.approachminder.utils.MathUtils
 
-case class ApproachAndLanding[+P <: HasLongLatAlt] private(trajectory: ContinuouslyNearingTrajectory[P], runway: Airport#RunwaySurface#Runway, crossingPointInterpolated: HasLongLatAlt)
+case class ApproachAndLanding[+P <: HasLongLatAlt] private(trajectory: ContinuouslyNearingTrajectory[P], runway: Airport#RunwaySurface#Runway, crossingPointInterpolated: HasLongLatAlt, crossingSegmentIndex: Int, crossingPointSegmentPct: Double) {
+  val segmentsAfterCrossingSegment = trajectory.segments.length - crossingSegmentIndex - 1
+}
 
 object ApproachAndLanding {
 
   /**
    * Tests whether:
    *
-   *   - the specified segment of the full trajectory crosses the threshold of the runway in the inbound direction; and
+   *   - the specified segment of the source trajectory crosses the threshold of the runway in the inbound direction;
+   *     and
    *   - the segment's endpoint is on the runway surface.
    *
    * If both of those criteria are met, seeks to construct an ApproachAndLanding. The ApproachAndLanding contains the
@@ -29,30 +32,30 @@ object ApproachAndLanding {
    *
    * Such cases should be identified and filtered out separately.
    *
-   * @param fullTrajectory The full trajectory.
-   * @param segmentIndex The 0-indexed segment of fullTrajectory to test.
+   * @param sourceTrajectory The source trajectory.
+   * @param segmentIndexSourceTrajectory The segment in sourceTrajectory to test.
    * @param runwayAndReferencePoint The runway to test against, and the reference point for continuously-nearing
    *                                calculations.
-   * @tparam P The type of fullTrajectory's positions. (Will also be the type of the ContinuouslyNearingTrajectory.)
-   * @return The ApproachAndLanding, along with the count of segments after the specified segment included in the
-   *         subtrajectory, wrapped in a `Some`. Or, `None` if at least one of the above criteria wasn't fulfilled, or
-   *         if a trajectory that continuously nears the reference point couldn't be constructed.
+   * @tparam P The type of sourceTrajectory's positions. (Will also be the type of the ContinuouslyNearingTrajectory.)
+   * @return The ApproachAndLanding, wrapped in a Some. Or, None if at least one of the above criteria wasn't fulfilled,
+   *         or if a trajectory that continuously nears the reference point couldn't be constructed.
    */
-  def newOption[P <: HasLongLatAlt](fullTrajectory: Trajectory[P], segmentIndex: Int, runwayAndReferencePoint: RunwayAndReferencePoint): Option[(ApproachAndLanding[P], Int)] = {
+  def newOption[P <: HasLongLatAlt](sourceTrajectory: Trajectory[P], segmentIndexSourceTrajectory: Int, runwayAndReferencePoint: RunwayAndReferencePoint): Option[ApproachAndLanding[P]] = {
 
-    val segment = fullTrajectory.segments(segmentIndex)
+    val segment = sourceTrajectory.segments(segmentIndexSourceTrajectory)
     val runway = runwayAndReferencePoint.runway
 
     val inboundCrossingPoint = runway.testForInboundThresholdCrossing(segment)
 
     for {
-      (crossingPoint2D, percentageFromSegStartToSegEnd) <- inboundCrossingPoint
-      truncatedTrajectory = fullTrajectory.truncateWhere(segmentIndex + 1, !runway.surface.contains(_)) // truncated after the specified segment to include only positions on the runway surface
-      (continuouslyNearingSubtrajectory, addlSegmentsIncluded) <- ContinuouslyNearingTrajectory.newOption(truncatedTrajectory, segmentIndex, runwayAndReferencePoint.referencePoint, runway.geographicCalculator)
-      altitudeMeters = MathUtils.interpolateScalar(segment._1.altitudeMeters, segment._2.altitudeMeters, percentageFromSegStartToSegEnd)
+      (crossingPoint2D, crossingPointSegmentPct) <- inboundCrossingPoint
+      truncatedTrajectory = sourceTrajectory.truncateWhere(segmentIndexSourceTrajectory + 1, !runway.surface.contains(_)) // truncated after the specified segment to include only positions on the runway surface
+      (continuouslyNearingTrajectory, segmentIndexContinuouslyNearingTrajectory) <- ContinuouslyNearingTrajectory.newOption(truncatedTrajectory, segmentIndexSourceTrajectory, runwayAndReferencePoint.referencePoint, runway.geographicCalculator)
+
+      altitudeMeters = MathUtils.interpolateScalar(segment._1.altitudeMeters, segment._2.altitudeMeters, crossingPointSegmentPct)
       crossingPoint3D = LongLatAlt(crossingPoint2D.longitude, crossingPoint2D.latitude, altitudeMeters)
     } yield {
-      (new ApproachAndLanding(continuouslyNearingSubtrajectory, runway, crossingPoint3D), addlSegmentsIncluded)
+      new ApproachAndLanding(continuouslyNearingTrajectory, runway, crossingPoint3D, segmentIndexContinuouslyNearingTrajectory, crossingPointSegmentPct)
     }
   }
 }

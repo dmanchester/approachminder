@@ -19,11 +19,10 @@ object ApproachesAndLandingsExtraction {
    * @param segmentIndex The 0-indexed segment to test.
    * @param runwaysAndReferencePoints The runways and reference points.
    * @tparam P The type of remainingTrajectory's positions.
-   * @return The ApproachAndLanding for the first runway where the criteria are fulfilled, along with the count of
-   *         segments after the specified segment included in the ApproachAndLanding's subtrajectory, wrapped in a Some.
-   *         Or, None, if the criteria couldn't be fulfilled against any of the runways.
+   * @return The ApproachAndLanding for the first runway where the criteria are fulfilled, wrapped in a Some. Or, None,
+   *         if the criteria couldn't be fulfilled against any of the runways.
    */
-  private def extractOneForSegment[P <: HasLongLatAlt](remainingTrajectory: Trajectory[P], segmentIndex: Int, runwaysAndReferencePoints: Iterable[RunwayAndReferencePoint]): Option[(ApproachAndLanding[P], Int)] = {
+  private def extractOneForSegment[P <: HasLongLatAlt](remainingTrajectory: Trajectory[P], segmentIndex: Int, runwaysAndReferencePoints: Iterable[RunwayAndReferencePoint]): Option[ApproachAndLanding[P]] = {
 
     runwaysAndReferencePoints.collectFirst { runwayAndReferencePoint =>
       ApproachAndLanding.newOption(remainingTrajectory, segmentIndex, runwayAndReferencePoint) match {
@@ -54,10 +53,10 @@ object ApproachesAndLandingsExtraction {
       val paramsForNextInvocation = for {
         remainingTrajectory <- remainingTrajectoryOption
         if segmentIndex < remainingTrajectory.segments.length
-        extractOneForSegmentResult = extractOneForSegment(remainingTrajectory, segmentIndex, runwaysAndReferencePoints)
+        approachAndLanding = extractOneForSegment(remainingTrajectory, segmentIndex, runwaysAndReferencePoints)
       } yield {
-        extractOneForSegmentResult.map { case (approachAndLanding, segmentsIncludedAfterIndex) =>
-          (remainingTrajectory.drop(segmentIndex + segmentsIncludedAfterIndex + 2), 0, accumulator :+ approachAndLanding)
+        approachAndLanding.map { theApproachAndLanding =>
+          (remainingTrajectory.drop(segmentIndex + theApproachAndLanding.segmentsAfterCrossingSegment + 2), 0, accumulator :+ theApproachAndLanding)
         } getOrElse {
           (remainingTrajectoryOption, segmentIndex + 1, accumulator)
         }

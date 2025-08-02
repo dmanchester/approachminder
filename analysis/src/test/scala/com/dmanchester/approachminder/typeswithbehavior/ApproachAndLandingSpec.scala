@@ -74,13 +74,15 @@ class ApproachAndLandingSpec extends Specification {
 
     "handle the simplest possible `Some` case, which involves a two-point threshold-crossing trajectory (trajectory C-E) continuously nearing a reference point" in {
 
-      val (approachAndLanding, segmentsIncludedAfterSpecified) = ApproachAndLanding.newOption(trajectoryCE, 0, runwayAndRefPointG).get
+      val approachAndLanding = ApproachAndLanding.newOption(trajectoryCE, 0, runwayAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointC, pointE)
-      approachAndLanding.runway mustEqual sfoRunway10L  // the same for all `Some` tests; we only bother to confirm it here
-      approachAndLanding.crossingPointInterpolated must beCloseInTwoDimensionsTo(sfoRunway10L.thresholdCenter, significantFigures)  // Because C and E are on the runway centerline, they cross the threshold at its center point
-      approachAndLanding.crossingPointInterpolated.altitudeMeters must beCloseTo(29.999618, significantFigures)  // crossing point is 1/3 of the way from C to E; altitude is thus 1/3 of the descent from C (40 m) to E (10 m)
+      approachAndLanding.crossingSegmentIndex mustEqual 0
+      approachAndLanding.segmentsAfterCrossingSegment mustEqual 0
 
-      segmentsIncludedAfterSpecified mustEqual 0
+      // The following three values are the same for all `Some` tests. We only bother to check them here.
+      approachAndLanding.runway mustEqual sfoRunway10L
+      approachAndLanding.crossingPointInterpolated must beCloseInTwoDimensionsTo(sfoRunway10L.thresholdCenter, significantFigures)  // Because C and E are on the runway centerline, they cross the threshold at its center point
+      approachAndLanding.crossingPointSegmentPct must beCloseTo(0.333346 within significantFigures)
     }
 
     "return `None` for trajectory C-E if that trajectory passes the reference point (and thus does not continuously near it)" in {
@@ -101,39 +103,46 @@ class ApproachAndLandingSpec extends Specification {
     "apply additional segments *before* the threshold-crossing one, provided they continuously near the reference point" in {
       val trajectory = trajectoryFromPositions(Seq(pointB, pointC, pointE))
 
-      val (approachAndLanding, _) = ApproachAndLanding.newOption(trajectory, 1, runwayAndRefPointG).get
+      val approachAndLanding = ApproachAndLanding.newOption(trajectory, 1, runwayAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointB, pointC, pointE)
+      approachAndLanding.crossingSegmentIndex mustEqual 1
+      approachAndLanding.segmentsAfterCrossingSegment mustEqual 0
     }
 
     "apply additional segments *before* the threshold-crossing one, provided they continuously near the reference point; but stop when they no longer do" in {
       val trajectory = trajectoryFromPositions(Seq(pointA, pointB, pointC, pointE))
 
-      val (approachAndLanding, _) = ApproachAndLanding.newOption(trajectory, 2, runwayAndRefPointG).get
+      val approachAndLanding = ApproachAndLanding.newOption(trajectory, 2, runwayAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointB, pointC, pointE)
+      approachAndLanding.crossingSegmentIndex mustEqual 1
+      approachAndLanding.segmentsAfterCrossingSegment mustEqual 0
     }
 
     "apply additional segments *after* the threshold-crossing one, provided they continuously near the reference point and are on the runway surface" in {
       val trajectory = trajectoryFromPositions(Seq(pointC, pointE, pointF))
 
-      val (approachAndLanding, segmentsIncludedAfterSpecified) = ApproachAndLanding.newOption(trajectory, 0, runwayAndRefPointG).get
+      val approachAndLanding = ApproachAndLanding.newOption(trajectory, 0, runwayAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointC, pointE, pointF)
-      segmentsIncludedAfterSpecified mustEqual 1
+      approachAndLanding.crossingSegmentIndex mustEqual 0
+      approachAndLanding.segmentsAfterCrossingSegment mustEqual 1
     }
 
     "apply additional segments *after* the threshold-crossing one, provided they continuously near the reference point and are on the runway surface; but stop once they no longer near the reference point" in {
       val trajectory = trajectoryFromPositions(Seq(pointC, pointE, pointF, pointH))
 
-      val (approachAndLanding, segmentsIncludedAfterSpecified) = ApproachAndLanding.newOption(trajectory, 0, runwayAndRefPointG).get
+      val approachAndLanding = ApproachAndLanding.newOption(trajectory, 0, runwayAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointC, pointE, pointF)
-      segmentsIncludedAfterSpecified mustEqual 1
+      approachAndLanding.crossingSegmentIndex mustEqual 0
+      approachAndLanding.segmentsAfterCrossingSegment mustEqual 1
     }
 
     "apply additional segments *after* the threshold-crossing one, provided they continuously near the reference point and are on the runway surface; but stop once they leave the runway surface" in {
       val trajectory = trajectoryFromPositions(Seq(pointC, pointE, pointF, pointJ))
 
-      val (approachAndLanding, segmentsIncludedAfterSpecified) = ApproachAndLanding.newOption(trajectory, 0, runwayAndRefPointG).get
+      val approachAndLanding = ApproachAndLanding.newOption(trajectory, 0, runwayAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointC, pointE, pointF)
-      segmentsIncludedAfterSpecified mustEqual 1
+      approachAndLanding.crossingSegmentIndex mustEqual 0
+      approachAndLanding.segmentsAfterCrossingSegment mustEqual 1
     }
   }
 }

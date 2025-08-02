@@ -22,38 +22,44 @@ case class ContinuouslyNearingTrajectory[+P <: HasLongLat] private(positions: Se
 object ContinuouslyNearingTrajectory {
 
   /**
-   * From a "regular" trajectory, create a ContinuouslyNearingTrajectory instance with the subsequence of segments that:
+   * From a source Trajectory, create a ContinuouslyNearingTrajectory with the subsequence of source-trajectory segments
+   * that:
    *
    *   - includes a specified segment; and
    *   - continuously nears a reference point.
    *
-   * @param trajectory The trajectory.
-   * @param segmentIndex The 0-indexed segment that the subsequence of segments must include.
+   * @param sourceTrajectory The source trajectory.
+   * @param segmentIndexSourceTrajectory The segment in sourceTrajectory that the ContinuouslyNearingTrajectory must
+   *                                     include.
    * @param referencePoint The reference point.
    * @param calculator The GeographicCalculator to use for distance calculations.
-   * @tparam P The type of the trajectory's positions.
-   * @throws java.lang.IndexOutOfBoundsException if segmentIndex < 0 or segmentIndex > (segments.length - 1).
-   * @return The ContinuouslyNearingTrajectory, along with the count of segments after the specified segment included
-   *         within the trajectory, as a `Some`; or, `None` if the sequence's specified segment doesn't continuously
-   *         near the reference point.
+   * @tparam P The type of sourceTrajectory's positions.
+   * @throws java.lang.IndexOutOfBoundsException If segmentIndexSourceTrajectory < 0 or
+   *                                             segmentIndexSourceTrajectory > (sourceTrajectory.segments.length - 1).
+   * @return The ContinuouslyNearingTrajectory and the index of the specified segment within the
+   *         ContinuouslyNearingTrajectory, wrapped in Some; or, None if the sourceTrajectory's specified segment
+   *         doesn't continuously near the reference point. -- The returned index is a counterpart of the
+   *         segmentIndexSourceTrajectory passed to this method. Both values refer to the same segment;
+   *         segmentIndexSourceTrajectory does so in the context of sourceTrajectory, the returned index does so in the
+   *         context of the ContinuouslyNearingTrajectory.
    */
   @throws(classOf[IndexOutOfBoundsException])
-  def newOption[P <: HasLongLat](trajectory: Trajectory[P], segmentIndex: Int, referencePoint: HasLongLat, calculator: GeographicCalculator): Option[(ContinuouslyNearingTrajectory[P], Int)] = {
+  def newOption[P <: HasLongLat](sourceTrajectory: Trajectory[P], segmentIndexSourceTrajectory: Int, referencePoint: HasLongLat, calculator: GeographicCalculator): Option[(ContinuouslyNearingTrajectory[P], Int)] = {
 
-    // This method call also validates segmentIndex (and throws on an invalid value).
-    val segmentsAtAndAfterIndex = TrajectoryUtils.continuouslyNearingSegmentsStartingAt(trajectory, segmentIndex, referencePoint, calculator)
+    // This method call also validates segmentIndexSourceTrajectory (and throws on an invalid value).
+    val segmentsAtAndAfterIndex = TrajectoryUtils.continuouslyNearingSegmentsStartingAt(sourceTrajectory, segmentIndexSourceTrajectory, referencePoint, calculator)
 
     if (segmentsAtAndAfterIndex == 0) {
       None
     } else {
 
-      val segmentsBeforeIndex = if (segmentIndex == 0) {
+      val segmentsBeforeIndex = if (segmentIndexSourceTrajectory == 0) {
         0
       } else {
-        TrajectoryUtils.continuouslyNearingSegmentsEndingAt(trajectory, segmentIndex - 1, referencePoint, calculator)
+        TrajectoryUtils.continuouslyNearingSegmentsEndingAt(sourceTrajectory, segmentIndexSourceTrajectory - 1, referencePoint, calculator)
       }
 
-      Some(new ContinuouslyNearingTrajectory(trajectory.positions.slice(segmentIndex - segmentsBeforeIndex, segmentIndex + segmentsAtAndAfterIndex + 1), referencePoint, calculator), segmentsAtAndAfterIndex - 1)
+      Some(new ContinuouslyNearingTrajectory(sourceTrajectory.positions.slice(segmentIndexSourceTrajectory - segmentsBeforeIndex, segmentIndexSourceTrajectory + segmentsAtAndAfterIndex + 1), referencePoint, calculator), segmentsBeforeIndex)
     }
   }
 }
