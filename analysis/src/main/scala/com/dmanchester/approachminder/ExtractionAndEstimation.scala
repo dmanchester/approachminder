@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.typeswithbehavior.ContinuouslyNearingTrajectory
+import com.dmanchester.approachminder.typeswithbehavior.{BoundedCountdown, ContinuouslyNearingTrajectory}
 import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, HasLongLatAlt}
 import com.dmanchester.approachminder.utils.MathUtils
 

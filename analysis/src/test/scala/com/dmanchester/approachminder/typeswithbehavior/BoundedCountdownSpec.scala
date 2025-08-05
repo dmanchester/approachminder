@@ -1,6 +1,6 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.typeswithbehavior
 
-import org.specs2.mutable._
+import org.specs2.mutable.*
 
 class BoundedCountdownSpec extends Specification {
 
