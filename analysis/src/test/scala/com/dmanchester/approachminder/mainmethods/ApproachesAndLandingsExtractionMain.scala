@@ -29,6 +29,9 @@ object ApproachesAndLandingsExtractionMain extends StrictLogging {
     val approachesAndLandingsByRunway = approachesAndLandings.groupBy(_.runway)
     approachesAndLandingsByRunway.foreach { case (runway, approachesAndLandingsThisRunway) =>
       logger.info(s"  ${approachesAndLandingsThisRunway.length} for ${runway.airport.icaoID}'s Runway ${runway.name}")
+      approachesAndLandingsThisRunway.foreach { approachAndLanding =>
+        logger.info(s"    ${approachAndLanding.segmentsBeforeCrossingSegment} seg. before, ${approachAndLanding.segmentsAfterCrossingSegment} seg. after")
+      }
     }
   }
 }

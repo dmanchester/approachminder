@@ -4,6 +4,7 @@ import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLatAlt, LongL
 import com.dmanchester.approachminder.utils.MathUtils
 
 case class ApproachAndLanding[+P <: HasLongLatAlt] private(trajectory: ContinuouslyNearingTrajectory[P], runway: Airport#RunwaySurface#Runway, crossingPointInterpolated: HasLongLatAlt, crossingSegmentIndex: Int, crossingPointSegmentPct: Double) {
+  val segmentsBeforeCrossingSegment = crossingSegmentIndex
   val segmentsAfterCrossingSegment = trajectory.segments.length - crossingSegmentIndex - 1
 }
 

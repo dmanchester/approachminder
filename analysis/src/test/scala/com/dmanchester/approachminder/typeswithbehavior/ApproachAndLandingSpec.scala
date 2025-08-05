@@ -78,6 +78,7 @@ class ApproachAndLandingSpec extends Specification {
       val approachAndLanding = ApproachAndLanding.newOption(trajectoryCE, 0, runwayAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointC, pointE)
       approachAndLanding.crossingSegmentIndex mustEqual 0
+      approachAndLanding.segmentsBeforeCrossingSegment mustEqual 0
       approachAndLanding.segmentsAfterCrossingSegment mustEqual 0
 
       // The following three values are the same for all `Some` tests. We only bother to check them here.
@@ -107,6 +108,7 @@ class ApproachAndLandingSpec extends Specification {
       val approachAndLanding = ApproachAndLanding.newOption(trajectory, 1, runwayAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointB, pointC, pointE)
       approachAndLanding.crossingSegmentIndex mustEqual 1
+      approachAndLanding.segmentsBeforeCrossingSegment mustEqual 1
       approachAndLanding.segmentsAfterCrossingSegment mustEqual 0
     }
 
@@ -116,6 +118,7 @@ class ApproachAndLandingSpec extends Specification {
       val approachAndLanding = ApproachAndLanding.newOption(trajectory, 2, runwayAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointB, pointC, pointE)
       approachAndLanding.crossingSegmentIndex mustEqual 1
+      approachAndLanding.segmentsBeforeCrossingSegment mustEqual 1
       approachAndLanding.segmentsAfterCrossingSegment mustEqual 0
     }
 
@@ -125,6 +128,7 @@ class ApproachAndLandingSpec extends Specification {
       val approachAndLanding = ApproachAndLanding.newOption(trajectory, 0, runwayAndRefPointH).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointC, pointE, pointF, pointG)
       approachAndLanding.crossingSegmentIndex mustEqual 0
+      approachAndLanding.segmentsBeforeCrossingSegment mustEqual 0
       approachAndLanding.segmentsAfterCrossingSegment mustEqual 2
     }
 
@@ -134,6 +138,7 @@ class ApproachAndLandingSpec extends Specification {
       val approachAndLanding = ApproachAndLanding.newOption(trajectory, 0, runwayAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointC, pointE, pointF)
       approachAndLanding.crossingSegmentIndex mustEqual 0
+      approachAndLanding.segmentsBeforeCrossingSegment mustEqual 0
       approachAndLanding.segmentsAfterCrossingSegment mustEqual 1
     }
 
@@ -143,6 +148,7 @@ class ApproachAndLandingSpec extends Specification {
       val approachAndLanding = ApproachAndLanding.newOption(trajectory, 0, runwayAndRefPointG).get
       approachAndLanding.trajectory.positions mustEqual Seq(pointC, pointE, pointF)
       approachAndLanding.crossingSegmentIndex mustEqual 0
+      approachAndLanding.segmentsBeforeCrossingSegment mustEqual 0
       approachAndLanding.segmentsAfterCrossingSegment mustEqual 1
     }
   }
