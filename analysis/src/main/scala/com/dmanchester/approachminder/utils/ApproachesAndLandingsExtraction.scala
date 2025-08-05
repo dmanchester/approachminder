@@ -40,6 +40,9 @@ object ApproachesAndLandingsExtraction {
    * This method does not reuse positions across instances of ApproachAndLanding. Once this method has allocated a
    * segment to an instance, it does not consider that segment's positions for inclusion in other instances.
    *
+   * The caution in ApproachAndLanding's own documentation about potentially needing to filter out some instances
+   * applies to instances created by this method, too.
+   *
    * @param trajectory The trajectory.
    * @param runwaysAndReferencePoints The runways and reference points.
    * @tparam P The type of remainingTrajectory's positions.

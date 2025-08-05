@@ -23,8 +23,8 @@ object ApproachAndLanding {
    * The ApproachAndLanding also includes the interpolated point (with altitude information) where the specified
    * segment crossed the threshold.
    *
-   * While the above process for producing an ApproachAndLanding is generally expected to be reliable, it may create an
-   * ApproachAndLanding in the following other cases:
+   * CAUTION: While the above process for producing an ApproachAndLanding is generally expected to be reliable, it may
+   * create an ApproachAndLanding in the following other cases:
    *
    *   - An aircraft crosses a runway's threshold at the start of its takeoff roll.
    *   - An aircraft executes a go-around over a runway's surface.
