@@ -1,8 +1,8 @@
 package com.dmanchester.approachminder
 
 import SharedResources.significantFigures
-
-import org.specs2.mutable._
+import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
+import org.specs2.mutable.*
 
 class PolarAnglesSpec extends Specification {
 
@@ -16,14 +16,14 @@ class PolarAnglesSpec extends Specification {
 
   "circularMean" should {
     "calculate the correct value" in {
-      PolarAngles.circularMean(angles).toCompassDegrees must beCloseTo(circularMeanExpected within significantFigures)
+      PolarAngles.circularMean(angles).asCompassDegrees must beCloseTo(circularMeanExpected within significantFigures)
     }
   }
 
   "circularMean" should {
     "calculate the correct values" in {
       val actual = PolarAngles.circularMeanAndStdDevDegrees(angles)
-      actual._1.toCompassDegrees must beCloseTo(circularMeanExpected within significantFigures)
+      actual._1.asCompassDegrees must beCloseTo(circularMeanExpected within significantFigures)
       actual._2 must beCloseTo(stdDevDegreesExpected within significantFigures)
     }
   }

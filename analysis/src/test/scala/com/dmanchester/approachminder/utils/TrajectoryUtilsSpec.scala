@@ -109,16 +109,16 @@ class TrajectoryUtilsSpec extends Specification {
 
       targetPositions.size mustEqual 4
 
-      targetPositions(70000).angle.toCompassDegrees must beCloseTo(352.235400 within significantFigures) // ~(-122.100010, 38.625875)
+      targetPositions(70000).angle.asCompassDegrees must beCloseTo(352.235400 within significantFigures) // ~(-122.100010, 38.625875)
       targetPositions(70000).altitudeMeters must beCloseTo(117.981271 within significantFigures)
 
-      targetPositions(140000).angle.toCompassDegrees must beCloseTo(356.305703 within significantFigures) // ~(-122.086899, 39.259719)
+      targetPositions(140000).angle.asCompassDegrees must beCloseTo(356.305703 within significantFigures) // ~(-122.086899, 39.259719)
       targetPositions(140000).altitudeMeters must beCloseTo(206.633631 within significantFigures)
 
-      targetPositions(210000).angle.toCompassDegrees must beCloseTo(0.613227 within significantFigures) // ~(-121.946771, 39.891761)
+      targetPositions(210000).angle.asCompassDegrees must beCloseTo(0.613227 within significantFigures) // ~(-121.946771, 39.891761)
       targetPositions(210000).altitudeMeters must beCloseTo(276.85694 within significantFigures)
 
-      targetPositions(280000).angle.toCompassDegrees must beCloseTo(0.138516 within significantFigures) // ~(-121.955503, 40.522587)
+      targetPositions(280000).angle.asCompassDegrees must beCloseTo(0.138516 within significantFigures) // ~(-121.955503, 40.522587)
       targetPositions(280000).altitudeMeters must beCloseTo(455.643761 within significantFigures)
     }
   }

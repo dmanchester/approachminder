@@ -1,5 +1,7 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
+
 class PolarAngleAndRelativePosition private(val angle: PolarAngle, val relativePosition: Double)
 
 // TODO Further renaming here? Of fields?

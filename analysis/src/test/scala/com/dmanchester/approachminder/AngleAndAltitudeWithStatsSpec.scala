@@ -1,7 +1,8 @@
 package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.SharedResources.significantFigures
-import org.specs2.mutable._
+import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
+import org.specs2.mutable.*
 
 class AngleAndAltitudeWithStatsSpec extends Specification {
 
@@ -20,7 +21,7 @@ class AngleAndAltitudeWithStatsSpec extends Specification {
 
       val angleAndAltitudeWithStats = AngleAndAltitudeWithStats.fromDataOption(threePositions).get
 
-      angleAndAltitudeWithStats.angle.toCompassDegrees must beCloseTo(3.533899 within significantFigures)
+      angleAndAltitudeWithStats.angle.asCompassDegrees must beCloseTo(3.533899 within significantFigures)
       angleAndAltitudeWithStats.angleStdDevDegrees must beCloseTo(4.140451 within significantFigures)
       angleAndAltitudeWithStats.altitudeMeters must beCloseTo(18.2 within significantFigures)
       angleAndAltitudeWithStats.altitudeStdDevMeters must beCloseTo(5.386093 within significantFigures)

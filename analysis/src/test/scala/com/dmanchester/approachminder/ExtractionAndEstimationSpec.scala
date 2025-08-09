@@ -1,6 +1,7 @@
 package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.SharedResources.*
+import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
 import org.specs2.mutable.*
 
 class ExtractionAndEstimationSpec extends Specification {
@@ -37,13 +38,13 @@ class ExtractionAndEstimationSpec extends Specification {
 
       meanTrajectory.size mustEqual 2
 
-      meanTrajectory(bd_1_5).angle.toCompassDegrees must beCloseTo(2.5 within significantFigures)
+      meanTrajectory(bd_1_5).angle.asCompassDegrees must beCloseTo(2.5 within significantFigures)
       meanTrajectory(bd_1_5).angleStdDevDegrees must beCloseTo(0.707107 within significantFigures)
       meanTrajectory(bd_1_5).altitudeMeters must beCloseTo(12.0 within significantFigures)
       meanTrajectory(bd_1_5).altitudeStdDevMeters must beCloseTo(0.0 within significantFigures)
       meanTrajectory(bd_1_5).sourceCount mustEqual 2
 
-      meanTrajectory(bd_2_0).angle.toCompassDegrees must beCloseTo(6.0 within significantFigures)
+      meanTrajectory(bd_2_0).angle.asCompassDegrees must beCloseTo(6.0 within significantFigures)
       meanTrajectory(bd_2_0).angleStdDevDegrees must beCloseTo(3.0 within significantFigures)
       meanTrajectory(bd_2_0).altitudeMeters must beCloseTo(18.0 within significantFigures)
       meanTrajectory(bd_2_0).altitudeStdDevMeters must beCloseTo(5.291503 within significantFigures)

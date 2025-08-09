@@ -46,12 +46,12 @@ class GeographicCalculatorSpec extends Specification {
   "angle" should {
     "calculate angles between 0 and 270 deg." in {  // one formula covers this range of outputs
       val angle = sfoCalculator.angle(referencePoint, LongLat(-121, 39))
-      angle.toCompassDegrees must beCloseTo(37.226482 within significantFigures)
+      angle.asCompassDegrees must beCloseTo(37.226482 within significantFigures)
     }
 
     "calculate angles between 270 and 360 deg." in { // another formula covers this range of outputs
       val angle = sfoCalculator.angle(referencePoint, LongLat(-123, 39))
-      angle.toCompassDegrees must beCloseTo(321.528328 within significantFigures)
+      angle.asCompassDegrees must beCloseTo(321.528328 within significantFigures)
     }
   }
 
@@ -126,7 +126,7 @@ class GeographicCalculatorSpec extends Specification {
       val point = sfoCalculator.pointOnContinuouslyNearingSegmentAtDistance(pointG, pointI, referencePoint, 60000)
 
       point must beSome
-      point.get.angle.toCompassDegrees must beCloseTo(342.795570 within significantFigures)
+      point.get.angle.asCompassDegrees must beCloseTo(342.795570 within significantFigures)
       point.get.relativePosition must beCloseTo(0.981956 within significantFigures)
 
       // Calculated via sfoCalculator.pointAtAngleAndDistance() that the point at compass heading

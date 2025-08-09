@@ -1,5 +1,6 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
 import org.apache.commons.math3.stat.StatUtils
 
 import scala.math.sqrt

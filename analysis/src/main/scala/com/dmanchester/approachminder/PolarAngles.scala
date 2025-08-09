@@ -1,5 +1,6 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
 import org.apache.commons.math3.stat.StatUtils
 
 import scala.math.{atan2, cos, pow, sin, sqrt}
@@ -12,7 +13,7 @@ object PolarAngles {
 
     // See https://en.wikipedia.org/wiki/Circular_mean for more information.
 
-    val anglesRadians = angles.map(_.toRadians)
+    val anglesRadians = angles.map(_.asRadians)
     val sineTerm = anglesRadians.map(sin).sum
     val cosineTerm = anglesRadians.map(cos).sum
 

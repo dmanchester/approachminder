@@ -1,6 +1,7 @@
 package com.dmanchester.approachminder
 
 import SharedResources.{mockApproachDistributions, sfoCalculator, significantFigures}
+import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
 import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, LongLat, LongLatAlt}
 import org.specs2.mutable.*
 

@@ -2,7 +2,7 @@ package com.dmanchester.approachminder
 
 import Airports.sfoData
 import com.dmanchester.approachminder.Utils.feetToMetersConverter
-import com.dmanchester.approachminder.typeswithbehavior.Trajectory
+import com.dmanchester.approachminder.typeswithbehavior.{PolarAngle, Trajectory}
 import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, HasLongLatAlt, LongLat, Polygon}
 import org.specs2.matcher.Matchers.{SignificantFiguresSyntax, beCloseTo}
 import org.specs2.matcher.{Matcher, SignificantFigures}

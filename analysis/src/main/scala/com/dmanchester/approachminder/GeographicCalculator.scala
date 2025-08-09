@@ -1,5 +1,6 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
 import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, LongLat, Polygon}
 import org.geotools.geometry.jts.{JTS, JTSFactoryFinder}
 import org.geotools.measure.Units
@@ -52,7 +53,7 @@ class GeographicCalculator private(val referencePoint: HasLongLat, private val t
     val originUTM = toUTMCoordinate(origin)
     val originVectorUTM = Vector2D.create(originUTM)
 
-    val thePointVectorUTM = Vector2D.create(distanceMeters, 0).rotate(angle.toRadians).add(originVectorUTM)
+    val thePointVectorUTM = Vector2D.create(distanceMeters, 0).rotate(angle.asRadians).add(originVectorUTM)
 
     toLongLat(thePointVectorUTM.toCoordinate)
   }
