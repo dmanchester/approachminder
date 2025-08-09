@@ -1,32 +1,25 @@
 package com.dmanchester.approachminder.typeswithbehavior
 
 /**
- * Counts down through values between a start bound and an end bound.
+ * Facilitates counting down through values until a bound is reached/exceeded.
  *
- * The values, wrapped in Some, occur at fixed steps between the bounds.
+ * A BoundedCountdown instance has a currentValue. When the next value is desired, client code calls next().
  *
- * The first value is the largest number evenly divisible by the step size that is less than or equal to the start
- * bound.
+ * If currentValue minus stepSize is still greater than endBound, or is equal to it, next() returns a new
+ * BoundedCountdown with that as the currentValue, wrapping it in Some.
  *
- * The last value is the smallest number evenly divisible by the step size that is greater than or equal to the end
- * bound.
+ * Conversely, if that subtraction produces a value less than endBound, next() returns() None.
  *
- * Once counting has progressed past the end bound, the current value becomes None.
+ * Not a case class. (This allows class's API to consist only of currentValue and next().)
  */
-class BoundedCountdown private(private val currentValue: BigDecimal, private val endBound: BigDecimal, private val stepSize: BigDecimal) {
+class BoundedCountdown private(val currentValue: BigDecimal, private val endBound: BigDecimal, private val stepSize: BigDecimal) {
 
-  val currentValueOption: Option[BigDecimal] = Option.when(currentValue >= endBound)(currentValue)
-
-  def next: BoundedCountdown = new BoundedCountdown(currentValue - stepSize, endBound, stepSize)
+  def next: Option[BoundedCountdown] = BoundedCountdown.newOption(currentValue - stepSize, endBound, stepSize)
 }
 
 object BoundedCountdown {
 
-  def apply(startBound: BigDecimal, endBound: BigDecimal, stepSize: BigDecimal): BoundedCountdown = {
-
-    val (divisionIntegralValue, _) = startBound /% stepSize
-    val currentValue = stepSize * divisionIntegralValue
-
-    new BoundedCountdown(currentValue, endBound, stepSize)
+  def newOption(currentValue: BigDecimal, endBound: BigDecimal, stepSize: BigDecimal): Option[BoundedCountdown] = {
+    Option.when(currentValue >= endBound)(new BoundedCountdown(currentValue, endBound, stepSize))
   }
 }
