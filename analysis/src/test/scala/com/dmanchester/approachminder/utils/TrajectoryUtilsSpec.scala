@@ -102,9 +102,9 @@ class TrajectoryUtilsSpec extends Specification {
       val pointV = LongLatAlt(-122.1, 38.5, 100) // 56.2 km; less than 70 km
       val sourcePositions = trajectoryFromPositions(Seq(pointR, pointS, pointT, pointU, pointV))
 
-      val (sourceTrajectory, _) = ContinuouslyNearingTrajectory.newOption(sourcePositions, 0, referencePoint, sfoCalculator).get  // TODO, Sigh, passing 0 is kind of ugly, as is receiving second param; have a friendlier variant of newOption, too?
+      val (sourceTrajectory, _) = ContinuouslyNearingTrajectory.newOption(sourcePositions, 0, referencePoint, sfoCalculator).get
 
-      val targetTrajectory = TrajectoryUtils.interpolateAtIntervals(sourceTrajectory, 70000).get
+      val targetTrajectory = TrajectoryUtils.interpolateAtIntervals(sourceTrajectory, 70000)
       val targetPositions = targetTrajectory.positions
 
       targetPositions.size mustEqual 4

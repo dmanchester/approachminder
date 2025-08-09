@@ -1,8 +1,8 @@
 package com.dmanchester.approachminder.utils
 
 import com.dmanchester.approachminder.typeswithbehavior.{BoundedCountdown, ContinuouslyNearingTrajectory, Trajectory}
-import com.dmanchester.approachminder.{AngleAndAltitude, DistanceKeyed3DTrajectory, GeographicCalculator}
-import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, HasLongLatAlt}
+import com.dmanchester.approachminder.{AngleAndAltitude, GeographicCalculator}
+import com.dmanchester.approachminder.typeswithoutbehavior.{DistanceKeyedTrajectory, HasLongLat, HasLongLatAlt}
 
 import scala.annotation.tailrec
 
@@ -102,7 +102,7 @@ object TrajectoryUtils {
    * @param intervalLengthInMeters The length of the intervals, in meters.
    * @return The interpolated positions as a DistanceKeyedTrajectory.
    */
-  def interpolateAtIntervals(trajectory: ContinuouslyNearingTrajectory[HasLongLatAlt], intervalLengthInMeters: BigDecimal): Option[DistanceKeyed3DTrajectory] = {
+  def interpolateAtIntervals(trajectory: ContinuouslyNearingTrajectory[HasLongLatAlt], intervalLengthInMeters: BigDecimal): DistanceKeyedTrajectory = {
 
     val referencePoint = trajectory.referencePoint
     val calculator = trajectory.calculator
@@ -138,6 +138,7 @@ object TrajectoryUtils {
     val distancesInMetersToInterpolateAt = BoundedCountdown.newOption(farthestDistanceInMetersToInterpolateAt, nearestDistanceInMeters, intervalLengthInMeters)
 
     val targetTrajectory = doInterpolateAtIntervals(trajectory.segments, distancesInMetersToInterpolateAt, Map.empty[BigDecimal, AngleAndAltitude])
-    DistanceKeyed3DTrajectory.newOption(targetTrajectory)
+
+    DistanceKeyedTrajectory(targetTrajectory)
   }
 }
