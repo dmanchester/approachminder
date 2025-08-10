@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder.experimental
 
 import com.dmanchester.approachminder.*
-import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, LongLatAlt}
+import com.dmanchester.approachminder.typeswithoutbehavior.{AngleAndAltitude, HasLongLat, LongLatAlt}
 import org.apache.commons.math3.ml.clustering.{Clusterable, DBSCANClusterer}
 import org.apache.commons.math3.ml.distance.DistanceMeasure
 
@@ -13,7 +13,7 @@ object Clustering {
 
     val positions = anglesAndAltitudes.map { angleAndAltitude =>
       val position2D = geographicCalculator.pointAtAngleAndDistance(origin, angleAndAltitude.angle, distanceInMeters)
-      LongLatAlt(position2D.longitude, position2D.latitude, angleAndAltitude.altitudeMeters)
+      LongLatAlt(position2D.longitude, position2D.latitude, angleAndAltitude.altitudeInMeters)
     }
 
     val distanceMeasure = LongLatAltDistanceMeasure(positions, geographicCalculator)

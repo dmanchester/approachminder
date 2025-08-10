@@ -1,7 +1,5 @@
 package com.dmanchester.approachminder.typeswithoutbehavior
 
-import com.dmanchester.approachminder.AngleAndAltitude
-
 /**
  * A trajectory whose positions are keyed by distance.
  *

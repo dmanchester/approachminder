@@ -1,6 +1,7 @@
 package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
+import com.dmanchester.approachminder.typeswithoutbehavior.AngleAndAltitude
 import org.apache.commons.math3.stat.StatUtils
 
 import scala.math.sqrt
@@ -12,7 +13,7 @@ class AngleAndAltitudeWithStats private(val angle: PolarAngle, val angleStdDevDe
 
     val angleDevDegrees = position.angle.minusAsDegrees(angle)
     val angleStdDevs = angleDevDegrees / angleStdDevDegrees
-    val altitudeDevMeters = position.altitudeMeters - altitudeMeters
+    val altitudeDevMeters = position.altitudeInMeters - altitudeMeters
     val altitudeStdDevs = altitudeDevMeters / altitudeStdDevMeters
 
     AngleAndAltitudeDeviation(angleDevDegrees, angleStdDevs, altitudeDevMeters, altitudeStdDevs)
@@ -27,7 +28,7 @@ object AngleAndAltitudeWithStats {
       val angles = positions.map(_.angle)
       val (angleMean, angleStdDevDegrees) = PolarAngles.circularMeanAndStdDevDegrees(angles)
 
-      val altitudesMetersAsArray = positions.map(_.altitudeMeters).toArray
+      val altitudesMetersAsArray = positions.map(_.altitudeInMeters).toArray
       val altitudeMeanMeters = StatUtils.mean(altitudesMetersAsArray)
       val altitudeStdDevMeters = sqrt(StatUtils.variance(altitudesMetersAsArray, altitudeMeanMeters))
 

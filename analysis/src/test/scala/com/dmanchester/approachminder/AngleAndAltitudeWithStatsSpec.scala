@@ -2,6 +2,7 @@ package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.SharedResources.significantFigures
 import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
+import com.dmanchester.approachminder.typeswithoutbehavior.AngleAndAltitude
 import org.specs2.mutable.*
 
 class AngleAndAltitudeWithStatsSpec extends Specification {

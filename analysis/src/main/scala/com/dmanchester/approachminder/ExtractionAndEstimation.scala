@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.typeswithbehavior.{BoundedCountdown, ContinuouslyNearingTrajectory}
-import com.dmanchester.approachminder.typeswithoutbehavior.HasLongLatAlt
+import com.dmanchester.approachminder.typeswithoutbehavior.{AngleAndAltitude, HasLongLatAlt}
 import com.dmanchester.approachminder.utils.MathUtils
 
 import scala.annotation.tailrec

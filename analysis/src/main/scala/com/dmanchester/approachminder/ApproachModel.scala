@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, HasLongLatAlt}
+import com.dmanchester.approachminder.typeswithoutbehavior.{AngleAndAltitude, HasLongLat, HasLongLatAlt}
 import com.dmanchester.approachminder.utils.MathUtils
 
 import scala.math.abs
