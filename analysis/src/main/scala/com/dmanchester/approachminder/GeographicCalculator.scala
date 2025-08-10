@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
-import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, LongLat, Polygon}
+import com.dmanchester.approachminder.typeswithoutbehavior.{AngleAndRelativePosition, HasLongLat, LongLat, Polygon}
 import org.geotools.geometry.jts.{JTS, JTSFactoryFinder}
 import org.geotools.measure.Units
 import org.geotools.referencing.CRS
@@ -185,7 +185,7 @@ class GeographicCalculator private(val referencePoint: HasLongLat, private val t
    * @param distanceInMeters
    * @return
    */
-  def pointOnHalflineAtDistance(pointA: HasLongLat, pointB: HasLongLat, referencePoint: HasLongLat, distanceInMeters: Double): Option[PolarAngleAndRelativePosition] = {
+  def pointOnHalflineAtDistance(pointA: HasLongLat, pointB: HasLongLat, referencePoint: HasLongLat, distanceInMeters: Double): Option[AngleAndRelativePosition] = {
 
     val pointAUTM = toUTMCoordinate(pointA)
     val pointBUTM = toUTMCoordinate(pointB)
@@ -211,14 +211,14 @@ class GeographicCalculator private(val referencePoint: HasLongLat, private val t
       val angleOfTargetPoint = PolarAngle.fromRadians(angleOfTargetPointRadians)
       val vectorToPointBPrimeUTM = Vector2D.create(pointBUTM).subtract(vectorToReferencePointUTM).rotate(-directedLineSegmentAngleRadians)
       val percentageFromAToBOfTargetPoint = (xOfTargetPointPrimeUTM - vectorToPointAPrimeUTM.getX) / (vectorToPointBPrimeUTM.getX - vectorToPointAPrimeUTM.getX)
-      PolarAngleAndRelativePosition(angleOfTargetPoint, percentageFromAToBOfTargetPoint)
+      AngleAndRelativePosition(angleOfTargetPoint, percentageFromAToBOfTargetPoint)
     }
 
     targetPointOption
   }
 
   // TODO Document!
-  def pointOnContinuouslyNearingSegmentAtDistance(pointA: HasLongLat, pointB: HasLongLat, referencePoint: HasLongLat, distanceInMeters: Double): Option[PolarAngleAndRelativePosition] = {
+  def pointOnContinuouslyNearingSegmentAtDistance(pointA: HasLongLat, pointB: HasLongLat, referencePoint: HasLongLat, distanceInMeters: Double): Option[AngleAndRelativePosition] = {
 
     val targetPointOption = pointOnHalflineAtDistance(pointA, pointB, referencePoint, distanceInMeters)
 
