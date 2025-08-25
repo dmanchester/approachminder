@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder
 
-import SharedResources.{mockApproachDistributions, sfoCalculator, significantFigures}
+import com.dmanchester.approachminder.SharedResources.{mockApproachDistributions, sfoCalculator, significantFigures}
 import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
 import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, LongLat, LongLatAlt}
 import org.specs2.mutable.*
@@ -52,8 +52,8 @@ class ApproachModelSpec extends Specification {
       testResult must beLike {
         case WithinRange(deviation, appliedDistributionInMeters) => {
           appliedDistributionInMeters must beEqualTo(BigDecimal("3000.0"))
-          deviation.angleDevDegrees must beCloseTo(-14.242848 within significantFigures)
-          deviation.altitudeDevMeters must beCloseTo(-59.0111355 within significantFigures)
+          deviation.angleDevInDegrees must beCloseTo(-14.242848 within significantFigures)
+          deviation.altitudeDevInMeters must beCloseTo(-59.0111355 within significantFigures)
         }
       }
     }
@@ -63,8 +63,8 @@ class ApproachModelSpec extends Specification {
       testResult must beLike {
         case WithinRange(deviation, appliedDistributionInMeters) => {
           appliedDistributionInMeters must beEqualTo(BigDecimal("2000.0"))
-          deviation.angleDevDegrees must beCloseTo(-6.636623 within significantFigures)
-          deviation.altitudeDevMeters must beCloseTo(-117.650434 within significantFigures)
+          deviation.angleDevInDegrees must beCloseTo(-6.636623 within significantFigures)
+          deviation.altitudeDevInMeters must beCloseTo(-117.650434 within significantFigures)
         }
       }
     }
@@ -74,8 +74,8 @@ class ApproachModelSpec extends Specification {
       testResult must beLike {
         case WithinRange(deviation, appliedDistributionInMeters) => {
           appliedDistributionInMeters must beEqualTo(BigDecimal("1000.0"))
-          deviation.angleDevDegrees must beCloseTo(1.298083 within significantFigures)
-          deviation.altitudeDevMeters must beCloseTo(90.977375 within significantFigures)
+          deviation.angleDevInDegrees must beCloseTo(1.298083 within significantFigures)
+          deviation.altitudeDevInMeters must beCloseTo(90.977375 within significantFigures)
         }
       }
     }

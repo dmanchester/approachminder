@@ -1,11 +1,12 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.typeswithbehavior.{DeviationFromMean, MeanAngleAndAltitude}
 import com.dmanchester.approachminder.typeswithoutbehavior.{AngleAndAltitude, HasLongLat, HasLongLatAlt}
 import com.dmanchester.approachminder.utils.MathUtils
 
 import scala.math.abs
 
-class ApproachModel private(thresholdCenter: HasLongLat, distributionsByDistanceInMeters: Map[BigDecimal, AngleAndAltitudeWithStats], calculator: GeographicCalculator) {
+class ApproachModel private(thresholdCenter: HasLongLat, distributionsByDistanceInMeters: Map[BigDecimal, MeanAngleAndAltitude], calculator: GeographicCalculator) {
 
   private val distributionDistancesInMeters = Intervals.fromPointsSet(distributionsByDistanceInMeters.keySet)  // TODO Does "private val" enforce same (lack of) visibility as constructor params?
   val minDistanceInMeters = distributionDistancesInMeters.min
@@ -14,7 +15,7 @@ class ApproachModel private(thresholdCenter: HasLongLat, distributionsByDistance
   private def calcWithinRange(pointToTestWithAltitude: AngleAndAltitude, distanceToTestAt: BigDecimal): WithinRange = {
 
     val distribution = distributionsByDistanceInMeters(distanceToTestAt)
-    val deviation = distribution.deviation(pointToTestWithAltitude)
+    val deviation = distribution.calculateDeviation(pointToTestWithAltitude)
 
     WithinRange(deviation, distanceToTestAt)
   }
@@ -81,7 +82,7 @@ class ApproachModel private(thresholdCenter: HasLongLat, distributionsByDistance
 
 object ApproachModel {
 
-  def newOption(thresholdCenter: HasLongLat, distributionsByDistanceInMeters: Map[BigDecimal, AngleAndAltitudeWithStats], calculator: GeographicCalculator): Option[ApproachModel] = {
+  def newOption(thresholdCenter: HasLongLat, distributionsByDistanceInMeters: Map[BigDecimal, MeanAngleAndAltitude], calculator: GeographicCalculator): Option[ApproachModel] = {
     // TODO Is this Option-returning constructor tedious when we're just creating isolated objects (as opposed to
     //  mapping over Seqs etc.)? -- Get rid of, but throw exception on empty input?
     Option.when(!distributionsByDistanceInMeters.isEmpty) {
@@ -96,4 +97,4 @@ case object NotContinuouslyNearing extends ApproachModelTestResult
 
 case object ContinuouslyNearingButOutOfRange extends ApproachModelTestResult
 
-case class WithinRange(val deviation: AngleAndAltitudeDeviation, val appliedDistributionInMeters: BigDecimal) extends ApproachModelTestResult
+case class WithinRange(deviation: DeviationFromMean, appliedDistributionInMeters: BigDecimal) extends ApproachModelTestResult

@@ -1,9 +1,10 @@
 package com.dmanchester.approachminder
 
-import Airports.sfoData
+import com.dmanchester.approachminder.Airports.sfoData
 import com.dmanchester.approachminder.Utils.feetToMetersConverter
-import com.dmanchester.approachminder.typeswithbehavior.{PolarAngle, Trajectory}
-import com.dmanchester.approachminder.typeswithoutbehavior.{AngleAndAltitude, HasLongLat, HasLongLatAlt, LongLat, Polygon}
+import com.dmanchester.approachminder.typeswithbehavior.{MeanAngleAndAltitude, PolarAngle, Trajectory}
+import com.dmanchester.approachminder.typeswithoutbehavior.*
+import com.dmanchester.approachminder.utils.MathUtils
 import org.specs2.matcher.Matchers.{SignificantFiguresSyntax, beCloseTo}
 import org.specs2.matcher.{Matcher, SignificantFigures}
 
@@ -81,14 +82,14 @@ object SharedResources {
    * @param simpleApproachModel
    * @return
    */
-  def mockApproachDistributions(simpleApproachModel /* maps distance to angle and altitude */ : Map[BigDecimal, (Double, Double)]): Map[BigDecimal, AngleAndAltitudeWithStats] = {
+  def mockApproachDistributions(simpleApproachModel /* maps distance to angle and altitude */ : Map[BigDecimal, (Double, Double)]): Map[BigDecimal, MeanAngleAndAltitude] = {
 
     simpleApproachModel.map { case (distanceInMeters, (polarAngleCompassDegrees, altitudeMeters)) =>
 
-      val distribution = AngleAndAltitudeWithStats.fromDataOption(Seq(
+      val distribution = MathUtils.calculateMeanAngleAndAltitude(Seq(
         AngleAndAltitude(PolarAngle.fromCompassDegrees(polarAngleCompassDegrees - 1.0), altitudeMeters - 10.0),
         AngleAndAltitude(PolarAngle.fromCompassDegrees(polarAngleCompassDegrees + 1.0), altitudeMeters + 10.0)
-      )).get
+      ))
 
       (distanceInMeters, distribution)
     }

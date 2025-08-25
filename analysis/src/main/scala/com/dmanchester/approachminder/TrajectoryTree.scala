@@ -1,5 +1,7 @@
 package com.dmanchester.approachminder
 
+import com.dmanchester.approachminder.typeswithbehavior.MeanAngleAndAltitude
+
 /**
  * As a tree-like structure, models a set of trajectories that approach a reference point. For example:
  *
@@ -39,6 +41,6 @@ package com.dmanchester.approachminder
  * The example's "gap" at 1000 m--two segments at that distance, but three at 1100 m and 900 m--suggests a nuance in the
  * clustering output.
  */
-class TrajectoryTree private(val segments: Map[BigDecimal, Seq[AngleAndAltitudeWithStats]]) {
+class TrajectoryTree private(val segments: Map[BigDecimal, Seq[MeanAngleAndAltitude]]) {
 
 }

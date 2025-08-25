@@ -1,7 +1,5 @@
 package com.dmanchester.approachminder
 
-class ModelFit private(val model: ApproachModel, val deviation: AngleAndAltitudeDeviation, val appliedDistributionInMeters: BigDecimal)
+import com.dmanchester.approachminder.typeswithbehavior.DeviationFromMean
 
-object ModelFit {
-  def apply(model: ApproachModel, deviation: AngleAndAltitudeDeviation, appliedDistributionInMeters: BigDecimal): ModelFit = new ModelFit(model, deviation, appliedDistributionInMeters)
-}
+case class ModelFit(model: ApproachModel, deviation: DeviationFromMean, appliedDistributionInMeters: BigDecimal)
