@@ -107,11 +107,11 @@ object TrajectoryUtils {
     val referencePoint = trajectory.referencePoint
     val calculator = trajectory.calculator
 
-    @tailrec def doInterpolateAtIntervals(segments: Seq[(HasLongLatAlt, HasLongLatAlt)], distancesInMetersToInterpolateAt: Option[BoundedCountdown], accumulator: Map[BigDecimal, AngleAndAltitude]): Map[BigDecimal, AngleAndAltitude] = {
+    @tailrec def doInterpolateAtIntervals(segments: Seq[(HasLongLatAlt, HasLongLatAlt)], distancesInMetersToInterpolateAt: Option[BoundedCountdown], accumulator: Seq[(BigDecimal, AngleAndAltitude)]): Map[BigDecimal, AngleAndAltitude] = {
 
       distancesInMetersToInterpolateAt match {
 
-        case None => accumulator
+        case None => accumulator.toMap
 
         case Some(theDistancesInMeters) =>
           val currentSegment = segments.head
@@ -121,7 +121,7 @@ object TrajectoryUtils {
             // Successfully interpolated a position along currentSegment at the distance.
             val angle = theInterpolatedPosition.angle
             val altitudeInMeters = MathUtils.interpolateScalar(currentSegment._1.altitudeMeters, currentSegment._2.altitudeMeters, theInterpolatedPosition.relativePosition)
-            (segments, theDistancesInMeters.next, accumulator.updated(theDistancesInMeters.currentValue, AngleAndAltitude(angle, altitudeInMeters)))
+            (segments, theDistancesInMeters.next, accumulator :+ (theDistancesInMeters.currentValue -> AngleAndAltitude(angle, altitudeInMeters)))
           } getOrElse {
             // Was not able to interpolate a position along currentSegment. Move on to the next segment.
             (segments.tail, Some(theDistancesInMeters), accumulator)
@@ -137,7 +137,7 @@ object TrajectoryUtils {
 
     val distancesInMetersToInterpolateAt = BoundedCountdown.newOption(farthestDistanceInMetersToInterpolateAt, nearestDistanceInMeters, intervalLengthInMeters)
 
-    val targetTrajectory = doInterpolateAtIntervals(trajectory.segments, distancesInMetersToInterpolateAt, Map.empty[BigDecimal, AngleAndAltitude])
+    val targetTrajectory = doInterpolateAtIntervals(trajectory.segments, distancesInMetersToInterpolateAt, Seq.empty[(BigDecimal, AngleAndAltitude)])
 
     DistanceKeyedTrajectory(targetTrajectory)
   }
