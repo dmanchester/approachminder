@@ -36,27 +36,25 @@ object MathUtils {
   }
 
   /**
-   * From a series of positions, calculate the mean angle and altitude values. Includes standard deviation for each
-   * value.
+   * From a series of two or more positions, calculate the mean angle and altitude values. Includes standard deviation
+   * for each value.
    *
    * @param positions The positions.
-   * @throws java.lang.IllegalArgumentException If less than 2 positions were passed.
-   * @return The means and standard deviations, as well as the count of positions included in the calculations.
+   * @return The means and standard deviations, as well as the count of positions included in the calculations, packaged
+   *         in Some. -- Or, None if less than two positions were provided.
    */
-  @throws(classOf[IllegalArgumentException])
-  def calculateMeanAngleAndAltitude(positions: Iterable[AngleAndAltitude]): MeanAngleAndAltitude = {
+  def calculateMeanAngleAndAltitude(positions: Iterable[AngleAndAltitude]): Option[MeanAngleAndAltitude] = {
 
-    if (positions.size < 2) {
-      throw new IllegalArgumentException(s"At least 2 positions required; received ${positions.size}!")
+    Option.when(positions.size >= 2) {
+
+      val angles = positions.map(_.angle)
+      val (meanAngle, angleStdDevInDegrees) = PolarAngles.circularMeanAndStdDevDegrees(angles)
+
+      val altitudesMetersAsArray = positions.map(_.altitudeInMeters).toArray
+      val meanAltitudeInMeters = StatUtils.mean(altitudesMetersAsArray)
+      val altitudeStdDevInMeters = sqrt(StatUtils.variance(altitudesMetersAsArray, meanAltitudeInMeters))
+
+      MeanAngleAndAltitude(meanAngle, angleStdDevInDegrees, meanAltitudeInMeters, altitudeStdDevInMeters, positions.size)
     }
-
-    val angles = positions.map(_.angle)
-    val (meanAngle, angleStdDevInDegrees) = PolarAngles.circularMeanAndStdDevDegrees(angles)
-
-    val altitudesMetersAsArray = positions.map(_.altitudeInMeters).toArray
-    val meanAltitudeInMeters = StatUtils.mean(altitudesMetersAsArray)
-    val altitudeStdDevInMeters = sqrt(StatUtils.variance(altitudesMetersAsArray, meanAltitudeInMeters))
-
-    MeanAngleAndAltitude(meanAngle, angleStdDevInDegrees, meanAltitudeInMeters, altitudeStdDevInMeters, positions.size)
   }
 }

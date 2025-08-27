@@ -40,7 +40,7 @@ class MathUtilsSpec extends Specification {
 
     "handle a typical case" in {
 
-      val meanAngleAndAltitude = MathUtils.calculateMeanAngleAndAltitude(threePositions)
+      val meanAngleAndAltitude = MathUtils.calculateMeanAngleAndAltitude(threePositions).get
 
       meanAngleAndAltitude.angle.asCompassDegrees must beCloseTo(3.533899 within significantFigures)
       meanAngleAndAltitude.angleStdDevInDegrees must beCloseTo(4.140451 within significantFigures)
@@ -50,7 +50,7 @@ class MathUtilsSpec extends Specification {
     }
 
     "throw on insufficient positions" in {
-      MathUtils.calculateMeanAngleAndAltitude(onePosition) must throwAn[IllegalArgumentException]
+      MathUtils.calculateMeanAngleAndAltitude(onePosition) must beNone
     }
   }
 }

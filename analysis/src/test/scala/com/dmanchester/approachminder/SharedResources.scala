@@ -89,7 +89,7 @@ object SharedResources {
       val distribution = MathUtils.calculateMeanAngleAndAltitude(Seq(
         AngleAndAltitude(PolarAngle.fromCompassDegrees(polarAngleCompassDegrees - 1.0), altitudeMeters - 10.0),
         AngleAndAltitude(PolarAngle.fromCompassDegrees(polarAngleCompassDegrees + 1.0), altitudeMeters + 10.0)
-      ))
+      )).get
 
       (distanceInMeters, distribution)
     }

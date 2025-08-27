@@ -9,16 +9,11 @@ object ExtractionAndEstimation {
   def meanTrajectory(trajectories: Iterable[Map[BigDecimal, AngleAndAltitude]]): Map[BigDecimal, MeanAngleAndAltitude] = {
 
     // Collect the set of distances for which at least one trajectory has a position.
-    val distancesInMeters = trajectories.map(_.keys).toSet.flatten
+    val distancesInMeters = trajectories.flatMap(_.keys).toSet
 
     distancesInMeters.flatMap { thisDistance =>
-
       val positionsAtThisDistance = trajectories.flatMap(_.get(thisDistance))
-
-      Option.when(positionsAtThisDistance.size >= 2) {
-        val meanAngleAndAltitude = MathUtils.calculateMeanAngleAndAltitude(positionsAtThisDistance)
-        (thisDistance -> meanAngleAndAltitude)
-      }
+      MathUtils.calculateMeanAngleAndAltitude(positionsAtThisDistance).map(thisDistance -> _)
     }.toMap
   }
 }

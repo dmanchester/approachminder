@@ -20,7 +20,7 @@ class MeanAngleAndAltitudeSpec extends Specification {
       val meanAngleAndAltitude = MathUtils.calculateMeanAngleAndAltitude(positionsForMean)
 
       val position = AngleAndAltitude(PolarAngle.fromCompassDegrees(7.0), 20.0)
-      val deviation = meanAngleAndAltitude.calculateDeviation(position)
+      val deviation = meanAngleAndAltitude.get.calculateDeviation(position)
 
       deviation.angleDevInDegrees must beCloseTo(3.466101 within significantFigures)
       deviation.angleStdDevs must beCloseTo(0.837131 within significantFigures)
