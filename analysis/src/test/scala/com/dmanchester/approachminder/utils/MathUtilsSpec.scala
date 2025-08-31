@@ -3,7 +3,7 @@ package com.dmanchester.approachminder.utils
 import com.dmanchester.approachminder.SharedResources.significantFigures
 import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
 import com.dmanchester.approachminder.typeswithoutbehavior.AngleAndAltitude
-import com.dmanchester.approachminder.utils.MathUtils.{interpolateScalar, roundDownToNearestMultiple}
+import com.dmanchester.approachminder.utils.MathUtils.{divideWithAlt0_0Handling, interpolateScalar, roundDownToNearestMultiple}
 import org.specs2.mutable.*
 
 class MathUtilsSpec extends Specification {
@@ -24,6 +24,17 @@ class MathUtilsSpec extends Specification {
 
     "handle the case that the value is a multiple of the step size" in {
       roundDownToNearestMultiple(BigDecimal("4.4"), BigDecimal("1.1")) mustEqual BigDecimal("4.4")
+    }
+  }
+
+  "divideWithAlt0_0Handling" should {
+
+    "perform standard division for most cases" in {
+      divideWithAlt0_0Handling(6.0, 3.0) mustEqual 2.0
+    }
+
+    "return 0.0 for 0.0 / 0.0" in {
+      divideWithAlt0_0Handling(0.0, 0.0) mustEqual 0.0
     }
   }
 

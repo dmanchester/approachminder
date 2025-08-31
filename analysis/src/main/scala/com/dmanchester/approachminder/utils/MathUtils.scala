@@ -36,6 +36,20 @@ object MathUtils {
   }
 
   /**
+   * Divide two Doubles. Provides alternate handling of the 0.0 / 0.0 case, returning 0.0 (instead of NaN).
+   *
+   * @param numerator The numerator.
+   * @param denominator The denominator.
+   * @return The quotient.
+   */
+  def divideWithAlt0_0Handling(numerator: Double, denominator: Double): Double = {
+    numerator match {
+      case 0.0 => 0.0
+      case _ => numerator / denominator
+    }
+  }
+
+  /**
    * From a series of two or more positions, calculate the mean angle and altitude values. Includes standard deviation
    * for each value.
    *
