@@ -11,7 +11,7 @@ class MeanAngleAndAltitudeSpec extends Specification {
 
     "handle the typical case: mean's standard deviations are non-zero" in {
 
-      val meanAngleAndAltitude = ApproachModeling.calculateMeanAngleAndAltitude(Seq(
+      val meanAngleAndAltitude = ApproachModeling.meanAngleAndAltitude(Seq(
         AngleAndAltitude(PolarAngle.fromCompassDegrees(359.1), 14.1),
         AngleAndAltitude(PolarAngle.fromCompassDegrees(4.2), 16.2),
         AngleAndAltitude(PolarAngle.fromCompassDegrees(7.3), 24.3)
@@ -26,7 +26,7 @@ class MeanAngleAndAltitudeSpec extends Specification {
       deviation.altitudeStdDevs must beCloseTo(0.334194 within significantFigures)
     }
 
-    val meanAngleAndAltitude_standardDeviationsZero = ApproachModeling.calculateMeanAngleAndAltitude(Seq(
+    val meanAngleAndAltitude_standardDeviationsZero = ApproachModeling.meanAngleAndAltitude(Seq(
       AngleAndAltitude(PolarAngle.fromCompassDegrees(359.1), 14.1),
       AngleAndAltitude(PolarAngle.fromCompassDegrees(359.1), 14.1)
     )).get

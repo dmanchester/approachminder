@@ -17,7 +17,7 @@ object ApproachModeling {
    * @return The means and standard deviations, as well as the count of positions included in the calculations, packaged
    *         in Some. -- Or, None if less than two positions were provided.
    */
-  def calculateMeanAngleAndAltitude(positions: Iterable[AngleAndAltitude]): Option[MeanAngleAndAltitude] = {
+  def meanAngleAndAltitude(positions: Iterable[AngleAndAltitude]): Option[MeanAngleAndAltitude] = {
 
     Option.when(positions.size >= 2) {
 
@@ -49,7 +49,7 @@ object ApproachModeling {
 
     distancesInMeters.flatMap { thisDistance =>
       val positionsAtThisDistance = trajectories.flatMap(_.get(thisDistance))
-      calculateMeanAngleAndAltitude(positionsAtThisDistance).map(thisDistance -> _)
+      meanAngleAndAltitude(positionsAtThisDistance).map(thisDistance -> _)
     }.toMap
   }
 }

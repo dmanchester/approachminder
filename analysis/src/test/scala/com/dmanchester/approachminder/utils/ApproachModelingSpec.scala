@@ -7,7 +7,7 @@ import org.specs2.mutable.*
 
 class ApproachModelingSpec extends Specification {
 
-  "calculateMeanAngleAndAltitude" should {
+  "meanAngleAndAltitude" should {
 
     val onePosition = Seq(
       AngleAndAltitude(PolarAngle.fromCompassDegrees(359.1), 14.1)
@@ -20,7 +20,7 @@ class ApproachModelingSpec extends Specification {
 
     "handle a typical case" in {
 
-      val meanAngleAndAltitude = ApproachModeling.calculateMeanAngleAndAltitude(threePositions).get
+      val meanAngleAndAltitude = ApproachModeling.meanAngleAndAltitude(threePositions).get
 
       meanAngleAndAltitude.angle.asCompassDegrees must beCloseTo(3.533899 within significantFigures)
       meanAngleAndAltitude.angleStdDevInDegrees must beCloseTo(4.140451 within significantFigures)
@@ -30,7 +30,7 @@ class ApproachModelingSpec extends Specification {
     }
 
     "return None on insufficient positions" in {
-      ApproachModeling.calculateMeanAngleAndAltitude(onePosition) must beNone
+      ApproachModeling.meanAngleAndAltitude(onePosition) must beNone
     }
   }
 

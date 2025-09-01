@@ -86,7 +86,7 @@ object SharedResources {
 
     simpleApproachModel.map { case (distanceInMeters, (polarAngleCompassDegrees, altitudeMeters)) =>
 
-      val distribution = ApproachModeling.calculateMeanAngleAndAltitude(Seq(
+      val distribution = ApproachModeling.meanAngleAndAltitude(Seq(
         AngleAndAltitude(PolarAngle.fromCompassDegrees(polarAngleCompassDegrees - 1.0), altitudeMeters - 10.0),
         AngleAndAltitude(PolarAngle.fromCompassDegrees(polarAngleCompassDegrees + 1.0), altitudeMeters + 10.0)
       )).get
