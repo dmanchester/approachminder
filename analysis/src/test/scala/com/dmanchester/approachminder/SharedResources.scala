@@ -4,7 +4,7 @@ import com.dmanchester.approachminder.Airports.sfoData
 import com.dmanchester.approachminder.Utils.feetToMetersConverter
 import com.dmanchester.approachminder.typeswithbehavior.{MeanAngleAndAltitude, PolarAngle, Trajectory}
 import com.dmanchester.approachminder.typeswithoutbehavior.*
-import com.dmanchester.approachminder.utils.MathUtils
+import com.dmanchester.approachminder.utils.{ApproachModeling, MathUtils}
 import org.specs2.matcher.Matchers.{SignificantFiguresSyntax, beCloseTo}
 import org.specs2.matcher.{Matcher, SignificantFigures}
 
@@ -86,7 +86,7 @@ object SharedResources {
 
     simpleApproachModel.map { case (distanceInMeters, (polarAngleCompassDegrees, altitudeMeters)) =>
 
-      val distribution = MathUtils.calculateMeanAngleAndAltitude(Seq(
+      val distribution = ApproachModeling.calculateMeanAngleAndAltitude(Seq(
         AngleAndAltitude(PolarAngle.fromCompassDegrees(polarAngleCompassDegrees - 1.0), altitudeMeters - 10.0),
         AngleAndAltitude(PolarAngle.fromCompassDegrees(polarAngleCompassDegrees + 1.0), altitudeMeters + 10.0)
       )).get

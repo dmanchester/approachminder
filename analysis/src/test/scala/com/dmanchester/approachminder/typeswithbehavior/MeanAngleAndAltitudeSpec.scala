@@ -2,7 +2,7 @@ package com.dmanchester.approachminder.typeswithbehavior
 
 import com.dmanchester.approachminder.SharedResources.significantFigures
 import com.dmanchester.approachminder.typeswithoutbehavior.AngleAndAltitude
-import com.dmanchester.approachminder.utils.MathUtils
+import com.dmanchester.approachminder.utils.{ApproachModeling, MathUtils}
 import org.specs2.mutable.*
 
 class MeanAngleAndAltitudeSpec extends Specification {
@@ -11,7 +11,7 @@ class MeanAngleAndAltitudeSpec extends Specification {
 
     "handle the typical case: mean's standard deviations are non-zero" in {
 
-      val meanAngleAndAltitude = MathUtils.calculateMeanAngleAndAltitude(Seq(
+      val meanAngleAndAltitude = ApproachModeling.calculateMeanAngleAndAltitude(Seq(
         AngleAndAltitude(PolarAngle.fromCompassDegrees(359.1), 14.1),
         AngleAndAltitude(PolarAngle.fromCompassDegrees(4.2), 16.2),
         AngleAndAltitude(PolarAngle.fromCompassDegrees(7.3), 24.3)
@@ -26,7 +26,7 @@ class MeanAngleAndAltitudeSpec extends Specification {
       deviation.altitudeStdDevs must beCloseTo(0.334194 within significantFigures)
     }
 
-    val meanAngleAndAltitude_standardDeviationsZero = MathUtils.calculateMeanAngleAndAltitude(Seq(
+    val meanAngleAndAltitude_standardDeviationsZero = ApproachModeling.calculateMeanAngleAndAltitude(Seq(
       AngleAndAltitude(PolarAngle.fromCompassDegrees(359.1), 14.1),
       AngleAndAltitude(PolarAngle.fromCompassDegrees(359.1), 14.1)
     )).get

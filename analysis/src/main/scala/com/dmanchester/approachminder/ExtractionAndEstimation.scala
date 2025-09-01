@@ -2,7 +2,7 @@ package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.typeswithbehavior.MeanAngleAndAltitude
 import com.dmanchester.approachminder.typeswithoutbehavior.AngleAndAltitude
-import com.dmanchester.approachminder.utils.MathUtils
+import com.dmanchester.approachminder.utils.{ApproachModeling, MathUtils}
 
 object ExtractionAndEstimation {
 
@@ -13,7 +13,7 @@ object ExtractionAndEstimation {
 
     distancesInMeters.flatMap { thisDistance =>
       val positionsAtThisDistance = trajectories.flatMap(_.get(thisDistance))
-      MathUtils.calculateMeanAngleAndAltitude(positionsAtThisDistance).map(thisDistance -> _)
+      ApproachModeling.calculateMeanAngleAndAltitude(positionsAtThisDistance).map(thisDistance -> _)
     }.toMap
   }
 }
