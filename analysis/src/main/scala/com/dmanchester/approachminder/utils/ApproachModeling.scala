@@ -32,6 +32,16 @@ object ApproachModeling {
     }
   }
 
+  /**
+   * Calculate the mean trajectory from a collection of trajectories.
+   *
+   * @param trajectories The trajectories. Each one is a map of AngleAndAltitude values keyed by distance to a reference
+   *                     point. -- Across trajectories, the distance values should rely on the same interval length
+   *                     (e.g., 100 m), but the actual distance values can vary from one trajectory to another. Also,
+   *                     the distance values within a single trajectory can be somewhat sparse (e.g., 800 m, 600 m,
+   *                     500 m, 300 m).
+   * @return The mean trajectory, also keyed by distance.
+   */
   def meanTrajectory(trajectories: Iterable[Map[BigDecimal, AngleAndAltitude]]): Map[BigDecimal, MeanAngleAndAltitude] = {
 
     // Collect the set of distances for which at least one trajectory has a position.
@@ -39,7 +49,7 @@ object ApproachModeling {
 
     distancesInMeters.flatMap { thisDistance =>
       val positionsAtThisDistance = trajectories.flatMap(_.get(thisDistance))
-      ApproachModeling.calculateMeanAngleAndAltitude(positionsAtThisDistance).map(thisDistance -> _)
+      calculateMeanAngleAndAltitude(positionsAtThisDistance).map(thisDistance -> _)
     }.toMap
   }
 }

@@ -54,8 +54,6 @@ class ApproachModelingSpec extends Specification {
       val bd_2_0 = BigDecimal("2.0")
       val bd_2_5 = BigDecimal("2.5")
 
-      // FIXME Put in real altitude values; and check them at bottom
-
       val trajectories = Seq(
         Map(bd_1_0 -> AngleAndAltitude(PolarAngle.fromCompassDegrees(1.0), 10.0), bd_1_5 -> AngleAndAltitude(PolarAngle.fromCompassDegrees(2.0), 12.0), bd_2_0 -> AngleAndAltitude(PolarAngle.fromCompassDegrees(3.0), 14.0)),
         Map(bd_1_5 -> AngleAndAltitude(PolarAngle.fromCompassDegrees(3.0), 12.0), bd_2_0 -> AngleAndAltitude(PolarAngle.fromCompassDegrees(6.0), 16.0), bd_2_5 -> AngleAndAltitude(PolarAngle.fromCompassDegrees(9.0), 20.0)),
