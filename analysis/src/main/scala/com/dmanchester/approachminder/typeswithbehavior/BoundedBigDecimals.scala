@@ -12,7 +12,7 @@ import scala.collection.Searching.{Found, InsertionPoint}
  *   - valueLessThan() on 4.7 produces 2.0.
  *
  * This data structure implements the notion of bounds. A call to valueLessThan() with a parameter greater than or equal
- * to the upper bound receives back GreaterThanOrEqualToUpperBound. Similarly, a call to that function with a parameter
+ * to the upper bound receives back GreaterThanOrEqualToUpperBound. Similarly, a call to that method with a parameter
  * less than or equal to the lower bound receives back LessThanOrEqualToLowerBound.
  *
  * Not a case class. (This allows the class to keep its values storage--an implementation detail--out of its API.)
@@ -20,16 +20,16 @@ import scala.collection.Searching.{Found, InsertionPoint}
 class BoundedBigDecimals private(private val theValues: IndexedSeq[BigDecimal], val upperBound: BigDecimal) {
   val lowerBound: BigDecimal = theValues.min
 
-  def valueLessThan(value: BigDecimal): ValueLessThanResult = {
+  def valueLessThan(lookupValue: BigDecimal): ValueLessThanResult = {
 
-    value match {
+    lookupValue match {
 
-      case theValue if theValue <= lowerBound => LessThanOrEqualToLowerBound
+      case theLookupValue if theLookupValue <= lowerBound => LessThanOrEqualToLowerBound
 
-      case theValue if theValue >= upperBound => GreaterThanOrEqualToUpperBound
+      case theLookupValue if theLookupValue >= upperBound => GreaterThanOrEqualToUpperBound
 
-      case _ =>
-        val indexNextValue = theValues.search(value) match {
+      case theLookupValue =>
+        val indexNextValue = theValues.search(theLookupValue) match {
           case Found(index) => index
           case InsertionPoint(index) => index
         }
