@@ -5,35 +5,30 @@ import scala.collection.Searching.{Found, InsertionPoint}
 /**
  * A bounded set of BigDecimal values. Guaranteed to contain at least one value.
  *
- * Optimized for fast searching for the value less than a parameter. For example, given an instance containing 2.0, 4.7,
- * and 5.9:
+ * Optimized for fast searching for the value less than or equal to a lookup value.
  *
- *   - valueLessThan() on 5.7 produces 4.7.
- *   - valueLessThan() on 4.7 produces 2.0.
- *
- * This data structure implements the notion of bounds. A call to valueLessThan() with a parameter greater than or equal
- * to the upper bound receives back GreaterThanOrEqualToUpperBound. Similarly, a call to that method with a parameter
- * less than or equal to the lower bound receives back LessThanOrEqualToLowerBound.
+ * This class implements the notion of bounds. A call to valueLessThanOrEqualTo() with a lookup value greater than the
+ * upper bound receives back GreaterThanUpperBound. Similarly, a call to that method with a lookup value less than the
+ * lower bound receives back LessThanLowerBound.
  *
  * Not a case class. (This allows the class to keep its values storage--an implementation detail--out of its API.)
  */
-class BoundedBigDecimals private(private val theValues: IndexedSeq[BigDecimal], val upperBound: BigDecimal) {
-  val lowerBound: BigDecimal = theValues.min
+class BoundedBigDecimals private(private val values: IndexedSeq[BigDecimal], val lowerBound: BigDecimal, val upperBound: BigDecimal) {
 
-  def valueLessThan(lookupValue: BigDecimal): ValueLessThanResult = {
+  def valueLessThanOrEqualTo(lookupValue: BigDecimal): ValueLessThanOrEqualToResult = {
 
     lookupValue match {
 
-      case theLookupValue if theLookupValue <= lowerBound => LessThanOrEqualToLowerBound
+      case theLookupValue if theLookupValue < lowerBound => LessThanLowerBound
 
-      case theLookupValue if theLookupValue >= upperBound => GreaterThanOrEqualToUpperBound
+      case theLookupValue if theLookupValue > upperBound => GreaterThanUpperBound
 
       case theLookupValue =>
-        val indexNextValue = theValues.search(theLookupValue) match {
+        val indexToUse = values.search(theLookupValue) match {
           case Found(index) => index
-          case InsertionPoint(index) => index
+          case InsertionPoint(index) => index - 1
         }
-        WithinBounds(theValues(indexNextValue - 1))
+        WithinBounds(values(indexToUse))
     }
   }
 }
@@ -43,27 +38,36 @@ object BoundedBigDecimals {
   /**
    * Instantiate a BoundedBigDecimals.
    *
+   * Sets the lower bound to the minimum value.
+   *
+   * Sets the upper bound to the supplied parameter. Typically, client code supplies a parameter greater than the
+   * maximum value in "values". However, the only requirement is that the upper bound not be less than the lower bound.
+   *
    * @param values The values to store. Must contain at least one value.
-   * @param upperBoundOffsetFromMax The offset beyond the maximum value in "values" at which to set the upper bound.
-   *                                (For example, if the maximum value is 13.0 and the offset is 4.5, the upper bound is
-   *                                set to 17.0.)
-   * @throws java.lang.IllegalArgumentException If "values" is empty.
+   * @param upperBound The upper bound.
+   * @throws java.lang.IllegalArgumentException If "values" is empty, or if the upper bound is less than the lower
+   *                                            bound.
    * @return The BoundedBigDecimals.
    */
   @throws(classOf[IllegalArgumentException])
-  def apply(values: Set[BigDecimal], upperBoundOffsetFromMax: BigDecimal): BoundedBigDecimals = {
+  def apply(values: Set[BigDecimal], upperBound: BigDecimal): BoundedBigDecimals = {
 
     if (values.isEmpty) {
       throw new IllegalArgumentException("'values' must not be empty!")
     }
 
     val theValues = values.toIndexedSeq.sorted
-    val upperBound = theValues.max + upperBoundOffsetFromMax
-    new BoundedBigDecimals(theValues, upperBound)
+    val lowerBound = theValues.min
+
+    if (upperBound < lowerBound) {
+      throw new IllegalArgumentException(s"Upper bound ($upperBound) is less than lower bound ($lowerBound)!")
+    }
+
+    new BoundedBigDecimals(theValues, lowerBound, upperBound)
   }
 }
 
-sealed trait ValueLessThanResult
-case class WithinBounds(value: BigDecimal) extends ValueLessThanResult
-case object GreaterThanOrEqualToUpperBound extends ValueLessThanResult
-case object LessThanOrEqualToLowerBound extends ValueLessThanResult
+sealed trait ValueLessThanOrEqualToResult
+case class WithinBounds(value: BigDecimal) extends ValueLessThanOrEqualToResult
+case object GreaterThanUpperBound extends ValueLessThanOrEqualToResult
+case object LessThanLowerBound extends ValueLessThanOrEqualToResult
