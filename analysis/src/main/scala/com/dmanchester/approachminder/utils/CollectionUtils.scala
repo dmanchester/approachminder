@@ -17,7 +17,7 @@ object CollectionUtils {
    * @return the most-common `AircraftCategory` as a `Some`; or, `None` if all categories are
    *         `NoInfoAtAll`/`NoADSBEmitterCategoryInfo`.
    */
-  @throws(classOf[UnsupportedOperationException])
+  @throws(classOf[UnsupportedOperationException])  // TODO Would IllegalArgumentException be better?
   def mostCommonNonBlankCategoryInNonEmptyCollection(categories: Iterable[AircraftCategory]): Option[AircraftCategory] = {
 
     if (categories.isEmpty) {
