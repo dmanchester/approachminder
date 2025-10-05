@@ -1,10 +1,10 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.Airports.sfoData
+import com.dmanchester.approachminder.Airports.{sfo, sfoData}
 import com.dmanchester.approachminder.Utils.feetToMetersConverter
-import com.dmanchester.approachminder.typeswithbehavior.{MeanAngleAndAltitude, PolarAngle, Trajectory}
+import com.dmanchester.approachminder.typeswithbehavior.{ApproachModel, MeanAngleAndAltitude, PolarAngle, Trajectory}
 import com.dmanchester.approachminder.typeswithoutbehavior.*
-import com.dmanchester.approachminder.utils.{ApproachModeling, MathUtils}
+import com.dmanchester.approachminder.utils.ApproachModeling
 import org.specs2.matcher.Matchers.{SignificantFiguresSyntax, beCloseTo}
 import org.specs2.matcher.{Matcher, SignificantFigures}
 
@@ -55,6 +55,21 @@ object SharedResources {
   val sfoPointD = LongLat(-122.358551, 37.612304)
   val sfoPointE = LongLat(-122.359401, 37.612307)
   val sfoPointF = LongLat(-122.358387, 37.611656)
+
+  val meanTrajectoryFromSoutheast = Map(
+    BigDecimal("2000.0") -> MeanAngleAndAltitude(PolarAngle.fromCompassDegrees(119.60670416957628), 1.0, 60.0, 5.0, 1),
+    BigDecimal("1000.0") -> MeanAngleAndAltitude(PolarAngle.fromCompassDegrees(120.38477105254175), 1.0, 50.0, 10.0, 1)
+  )
+
+  val sfoRunway28L = sfo.getRunwayByName("28L")
+
+  val sfoRunway28LApproachModel = ApproachModel.newOption(sfoRunway28L, sfoRunway28L.opposite.thresholdCenter, meanTrajectoryFromSoutheast, BigDecimal("3000.0")).get
+
+  val sfo28LApproachPointA = LongLatAlt(-122.359576105216, 37.5992826103728, 100.0)
+  val sfo28LApproachPointB = LongLatAlt(-122.369627079319, 37.6044390332995, 90.0)
+  val sfo28LApproachPointC = LongLatAlt(-122.379678053421, 37.6093993053915, 80.0)
+  val sfo28LApproachPointD = LongLatAlt(-122.396155060146, 37.6157949574326, 70.0)
+  val sfo28LApproachPointE = LongLatAlt(-122.394095434306, 37.6227773371242, 60.0)
 
   def beCloseInTwoDimensionsTo(expected: HasLongLat, figures: SignificantFigures): Matcher[HasLongLat] = {
 

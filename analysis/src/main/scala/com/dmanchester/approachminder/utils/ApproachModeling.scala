@@ -1,8 +1,8 @@
 package com.dmanchester.approachminder.utils
 
+import com.dmanchester.approachminder.typeswithbehavior.{ApproachAndLanding, ApproachModel, ApproachModels, MeanAngleAndAltitude}
+import com.dmanchester.approachminder.typeswithoutbehavior.{AngleAndAltitude, HasLongLatAlt}
 import com.dmanchester.approachminder.PolarAngles
-import com.dmanchester.approachminder.typeswithbehavior.MeanAngleAndAltitude
-import com.dmanchester.approachminder.typeswithoutbehavior.AngleAndAltitude
 import org.apache.commons.math3.stat.StatUtils
 
 import scala.math.sqrt
@@ -51,5 +51,38 @@ object ApproachModeling {
       val positionsAtThisDistance = trajectories.flatMap(_.get(thisDistance))
       meanAngleAndAltitude(positionsAtThisDistance).map(thisDistance -> _)
     }.toMap
+  }
+
+  /**
+   * From a series of ApproachAndLanding instances, construct a series of ApproachModel instances.
+   *
+   * This method begins by grouping the ApproachAndLanding instances by runway and reference point. In each group, it
+   * samples the instances' trajectories at the given interval length. It then calculates a mean trajectory.
+   *
+   * That mean trajectory is the basis for the model for that runway and reference point.
+   *
+   * @param approachesAndLandings The ApproachAndLanding instances.
+   * @param intervalLengthInMeters The interval length to sample at, in meters.
+   * @return The approach models.
+   */
+  def constructModels(approachesAndLandings: Iterable[ApproachAndLanding[HasLongLatAlt]], intervalLengthInMeters: BigDecimal): ApproachModels = {
+
+    val approachesAndLandingsByRunwayAndRefPoint = approachesAndLandings.groupBy { approachAndLanding =>
+      (approachAndLanding.runway, approachAndLanding.trajectory.referencePoint)
+    }
+
+    val approachModels = approachesAndLandingsByRunwayAndRefPoint.flatMap { case (runwayAndRefPoint, approachesAndLandingsThisRunwayAndRefPoint) =>
+      val interpolatedTrajectories = approachesAndLandingsThisRunwayAndRefPoint.map { approachAndLanding =>
+        TrajectoryUtils.interpolateAtIntervals(approachAndLanding.trajectory, intervalLengthInMeters).positions
+      }
+
+      val theMeanTrajectory = meanTrajectory(interpolatedTrajectories)
+
+      val modelMaxDistanceInMeters = theMeanTrajectory.keySet.max + intervalLengthInMeters
+
+      ApproachModel.newOption(runwayAndRefPoint._1, runwayAndRefPoint._2, theMeanTrajectory, modelMaxDistanceInMeters)
+    }
+
+    ApproachModels(approachModels)
   }
 }
