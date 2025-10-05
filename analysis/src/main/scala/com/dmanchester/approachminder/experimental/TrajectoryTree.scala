@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.experimental
 
 import com.dmanchester.approachminder.typeswithbehavior.MeanAngleAndAltitude
 
