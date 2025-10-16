@@ -5,6 +5,19 @@ import org.specs2.mutable.*
 
 class ApproachModelSpec extends Specification {
 
+  "newOption" should {
+
+    "return None on an empty meanTrajectory" in {
+      val approachModel = ApproachModel.newOption(sfoRunway28L, sfoRunway28L.opposite.thresholdCenter, Map.empty, BigDecimal("3000.0"))
+      approachModel must beNone
+    }
+
+    "set minDistanceInMeters and maxDistanceInMeters correctly" in {
+      sfoRunway28LApproachModel.minDistanceInMeters mustEqual BigDecimal("1000.0")
+      sfoRunway28LApproachModel.maxDistanceInMeters mustEqual BigDecimal("3000.0")
+    }
+  }
+
   "testSegment" should {
 
     "return NotContinuouslyNearing when appropriate" in {

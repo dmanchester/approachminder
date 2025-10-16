@@ -91,6 +91,17 @@ case class ApproachModel private(runway: Airport#RunwaySurface#Runway, reference
 
 object ApproachModel {
 
+  /**
+   * Create an instance.
+   *
+   * @param runway The runway.
+   * @param referencePoint The reference point.
+   * @param meanTrajectory The mean trajectory.
+   * @param maxDistanceInMeters The maximum distance at which a trajectory segment can be tested. -- The minimum
+   *                            distance for testing is set to the minimum distance for which the meanTrajectory
+   *                            specifies a position.
+   * @return An instance wrapped in Some, provided meanTrajectory contains at least one position. Otherwise, None.
+   */
   def newOption(runway: Airport#RunwaySurface#Runway, referencePoint: HasLongLat, meanTrajectory: Map[BigDecimal, MeanAngleAndAltitude], maxDistanceInMeters: BigDecimal): Option[ApproachModel] = {
     Option.when(meanTrajectory.nonEmpty) {
       new ApproachModel(runway, referencePoint, meanTrajectory, maxDistanceInMeters)
