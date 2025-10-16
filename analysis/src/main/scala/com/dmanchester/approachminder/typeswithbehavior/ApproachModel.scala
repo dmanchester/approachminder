@@ -2,6 +2,7 @@ package com.dmanchester.approachminder.typeswithbehavior
 
 import com.dmanchester.approachminder.typeswithoutbehavior.{AngleAndAltitude, HasLongLat, HasLongLatAlt}
 import com.dmanchester.approachminder.utils.MathUtils
+import com.dmanchester.approachminder.utils.TrajectoryUtils.positionsToSegments
 
 /**
  * A model of aircraft as they approach and land on a runway.
@@ -11,7 +12,7 @@ import com.dmanchester.approachminder.utils.MathUtils
  * That trajectory is a series of mean positions that near a reference point. The positions are keyed by distance to the
  * reference point. (So, the distances' *descending* order gives the positions' order.)
  *
- * There is guaranteed to be at least one position.
+ * There are guaranteed to be at least two positions.
  *
  * Each position consists of a mean angle and altitude. The angle is a polar angle relative to the reference point.
  *
@@ -29,13 +30,12 @@ import com.dmanchester.approachminder.utils.MathUtils
  * @param runway The runway.
  * @param referencePoint The reference point.
  * @param meanTrajectory The mean trajectory.
+ * @param minDistanceInMeters The minimum distance at which a trajectory segment can be tested.
  * @param maxDistanceInMeters The maximum distance at which a trajectory segment can be tested.
  */
-case class ApproachModel private(runway: Airport#RunwaySurface#Runway, referencePoint: HasLongLat, meanTrajectory: Map[BigDecimal, MeanAngleAndAltitude], maxDistanceInMeters: BigDecimal) {
+case class ApproachModel private(runway: Airport#RunwaySurface#Runway, referencePoint: HasLongLat, meanTrajectory: Map[BigDecimal, MeanAngleAndAltitude], minDistanceInMeters: BigDecimal, maxDistanceInMeters: BigDecimal) {
 
   private val trajectoryDistancesInMeters = BoundedBigDecimals(meanTrajectory.keySet, maxDistanceInMeters)
-  val minDistanceInMeters: BigDecimal = trajectoryDistancesInMeters.lowerBound
-
   private val calculator = runway.geographicCalculator
 
   /**
@@ -92,19 +92,35 @@ case class ApproachModel private(runway: Airport#RunwaySurface#Runway, reference
 object ApproachModel {
 
   /**
-   * Create an instance.
+   * Create an instance, provided meanTrajectory contains at least two positions.
+   *
+   * Sets the range--the minimum and maximum distances at which a trajectory segment can be tested--as follows:
+   *
+   *   - minDistanceInMeters: Set to the minimum distance for which meanTrajectory supplies a position.
+   *
+   *   - maxDistanceInMeters: Set to the maximum distance for which meanTrajectory supplies a position *plus* the
+   *     minimum distance interval between any two positions. -- For example, if meanTrajectory supplies positions at
+   *     800 m, 500 m, 400 m, and 200 m, maxDistanceInMeters is set to 900 m (800 m plus the 100 m from the 400-to-500 m
+   *     interval).
    *
    * @param runway The runway.
    * @param referencePoint The reference point.
    * @param meanTrajectory The mean trajectory.
-   * @param maxDistanceInMeters The maximum distance at which a trajectory segment can be tested. -- The minimum
-   *                            distance for testing is set to the minimum distance for which the meanTrajectory
-   *                            specifies a position.
-   * @return An instance wrapped in Some, provided meanTrajectory contains at least one position. Otherwise, None.
+   * @return An instance wrapped in Some, provided meanTrajectory contains at least two positions. Otherwise, None.
    */
-  def newOption(runway: Airport#RunwaySurface#Runway, referencePoint: HasLongLat, meanTrajectory: Map[BigDecimal, MeanAngleAndAltitude], maxDistanceInMeters: BigDecimal): Option[ApproachModel] = {
-    Option.when(meanTrajectory.nonEmpty) {
-      new ApproachModel(runway, referencePoint, meanTrajectory, maxDistanceInMeters)
+  def newOption(runway: Airport#RunwaySurface#Runway, referencePoint: HasLongLat, meanTrajectory: Map[BigDecimal, MeanAngleAndAltitude]): Option[ApproachModel] = {
+
+    Option.when(meanTrajectory.size >= 2) {
+
+      val theTrajectoryDistancesInMeters = meanTrajectory.keySet
+
+      val minDistanceInMeters = theTrajectoryDistancesInMeters.min
+
+      val distanceIntervalsInMeters = positionsToSegments(theTrajectoryDistancesInMeters.toSeq.sorted) // TODO In light of this use, generalize the "positionsToSegments" name?
+      val minDistanceIntervalInMeters = distanceIntervalsInMeters.map(interval => interval._2 - interval._1).min
+      val maxDistanceInMeters = theTrajectoryDistancesInMeters.max + minDistanceIntervalInMeters
+
+      new ApproachModel(runway, referencePoint, meanTrajectory, minDistanceInMeters, maxDistanceInMeters)
     }
   }
 }

@@ -9,7 +9,7 @@ class ApproachModelsSpec extends Specification {
   "bestFit" should {
 
     val sfoRunway28R = sfo.getRunwayByName("28R")
-    val sfoRunway28RApproachModel = ApproachModel.newOption(sfoRunway28R, sfoRunway28R.opposite.thresholdCenter, meanTrajectoryFromSoutheast, BigDecimal("3000.0")).get
+    val sfoRunway28RApproachModel = ApproachModel.newOption(sfoRunway28R, sfoRunway28R.opposite.thresholdCenter, meanTrajectoryFromSoutheast).get
     val approachModels = ApproachModels(Seq(sfoRunway28LApproachModel, sfoRunway28RApproachModel))
 
     "choose the correct approach model when there are multiple candidates" in {

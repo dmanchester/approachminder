@@ -63,7 +63,7 @@ object SharedResources {
 
   val sfoRunway28L = sfo.getRunwayByName("28L")
 
-  val sfoRunway28LApproachModel = ApproachModel.newOption(sfoRunway28L, sfoRunway28L.opposite.thresholdCenter, meanTrajectoryFromSoutheast, BigDecimal("3000.0")).get
+  val sfoRunway28LApproachModel = ApproachModel.newOption(sfoRunway28L, sfoRunway28L.opposite.thresholdCenter, meanTrajectoryFromSoutheast).get
 
   val sfo28LApproachPointA = LongLatAlt(-122.359576105216, 37.5992826103728, 100.0)
   val sfo28LApproachPointB = LongLatAlt(-122.369627079319, 37.6044390332995, 90.0)

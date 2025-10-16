@@ -78,9 +78,7 @@ object ApproachModeling {
 
       val theMeanTrajectory = meanTrajectory(interpolatedTrajectories)
 
-      val modelMaxDistanceInMeters = theMeanTrajectory.keySet.max + intervalLengthInMeters
-
-      ApproachModel.newOption(runwayAndRefPoint._1, runwayAndRefPoint._2, theMeanTrajectory, modelMaxDistanceInMeters)
+      ApproachModel.newOption(runwayAndRefPoint._1, runwayAndRefPoint._2, theMeanTrajectory)
     }
 
     ApproachModels(approachModels)

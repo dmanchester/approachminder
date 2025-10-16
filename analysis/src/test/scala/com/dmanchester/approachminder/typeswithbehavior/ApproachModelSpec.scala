@@ -7,14 +7,31 @@ class ApproachModelSpec extends Specification {
 
   "newOption" should {
 
-    "return None on an empty meanTrajectory" in {
-      val approachModel = ApproachModel.newOption(sfoRunway28L, sfoRunway28L.opposite.thresholdCenter, Map.empty, BigDecimal("3000.0"))
+    val blankPosition = MeanAngleAndAltitude(PolarAngle.fromCompassDegrees(0.0), 0.0, 0.0, 0.0, 1)
+
+    "return None on a meanTrajectory with less than two positions" in {
+
+      val meanTrajectory = Map(
+        BigDecimal("800.0") -> blankPosition
+      )
+
+      val approachModel = ApproachModel.newOption(sfoRunway28L, sfoRunway28L.opposite.thresholdCenter, meanTrajectory)
       approachModel must beNone
     }
 
     "set minDistanceInMeters and maxDistanceInMeters correctly" in {
-      sfoRunway28LApproachModel.minDistanceInMeters mustEqual BigDecimal("1000.0")
-      sfoRunway28LApproachModel.maxDistanceInMeters mustEqual BigDecimal("3000.0")
+
+      val meanTrajectory = Map(
+        BigDecimal("400.0") -> blankPosition,
+        BigDecimal("800.0") -> blankPosition,
+        BigDecimal("500.0") -> blankPosition,
+        BigDecimal("200.0") -> blankPosition
+      )
+
+      val approachModel = ApproachModel.newOption(sfoRunway28L, sfoRunway28L.opposite.thresholdCenter, meanTrajectory).get
+
+      approachModel.minDistanceInMeters mustEqual BigDecimal("200.0")
+      approachModel.maxDistanceInMeters mustEqual BigDecimal("900.0")
     }
   }
 
