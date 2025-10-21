@@ -1,8 +1,8 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.typeswithbehavior.{ApproachAndLanding, ApproachModel, ApproachModels, MeanAngleAndAltitude}
-import com.dmanchester.approachminder.typeswithoutbehavior.{AngleAndAltitude, HasLongLatAlt}
 import com.dmanchester.approachminder.PolarAngles
+import com.dmanchester.approachminder.typeswithbehavior.{ApproachAndLanding, ApproachModel, MeanAngleAndAltitude}
+import com.dmanchester.approachminder.typeswithoutbehavior.{AngleAndAltitude, HasLongLatAlt}
 import org.apache.commons.math3.stat.StatUtils
 
 import scala.math.sqrt
@@ -63,15 +63,17 @@ object ApproachModeling {
    *
    * @param approachesAndLandings The ApproachAndLanding instances.
    * @param intervalLengthInMeters The interval length to sample at, in meters.
-   * @return The approach models.
+   * @return The approach models. -- Packaged as an Iterable[ApproachModel] as opposed to an ApproachModels. Doing so
+   *         allows client code of this method to apply an ordering to the models before packaging them as an
+   *         ApproachModels.
    */
-  def constructModels(approachesAndLandings: Iterable[ApproachAndLanding[HasLongLatAlt]], intervalLengthInMeters: BigDecimal): ApproachModels = {
+  def constructModels(approachesAndLandings: Iterable[ApproachAndLanding[HasLongLatAlt]], intervalLengthInMeters: BigDecimal): Iterable[ApproachModel] = {
 
     val approachesAndLandingsByRunwayAndRefPoint = approachesAndLandings.groupBy { approachAndLanding =>
       (approachAndLanding.runway, approachAndLanding.trajectory.referencePoint)
     }
 
-    val approachModels = approachesAndLandingsByRunwayAndRefPoint.flatMap { case (runwayAndRefPoint, approachesAndLandingsThisRunwayAndRefPoint) =>
+    approachesAndLandingsByRunwayAndRefPoint.flatMap { case (runwayAndRefPoint, approachesAndLandingsThisRunwayAndRefPoint) =>
       val interpolatedTrajectories = approachesAndLandingsThisRunwayAndRefPoint.map { approachAndLanding =>
         TrajectoryUtils.interpolateAtIntervals(approachAndLanding.trajectory, intervalLengthInMeters).positions
       }
@@ -80,7 +82,5 @@ object ApproachModeling {
 
       ApproachModel.newOption(runwayAndRefPoint._1, runwayAndRefPoint._2, theMeanTrajectory)
     }
-
-    ApproachModels(approachModels)
   }
 }

@@ -5,6 +5,9 @@ import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLatAlt, Model
 /**
  * A collection of approach models.
  *
+ * The collection is ordered. This fact is not typically relevant, but in unusual cases, it can be. For more
+ * information, see the documentation of testForBestFit()'s return value.
+ *
  * @param models The models.
  */
 case class ApproachModels(models: Iterable[ApproachModel]) {
@@ -15,7 +18,8 @@ case class ApproachModels(models: Iterable[ApproachModel]) {
    *
    * @param previousPosition The previous position in the trajectory.
    * @param currentPosition The current position in the trajectory.
-   * @return The best fit, if any.
+   * @return The best fit, if any. -- In the unusual case that multiple models are found to have the best fit, the
+   *         returned fit will reference the model that is first in this collection.
    */
   def testForBestFit(previousPosition: HasLongLatAlt, currentPosition: HasLongLatAlt): Option[ModelFit] = {
 
