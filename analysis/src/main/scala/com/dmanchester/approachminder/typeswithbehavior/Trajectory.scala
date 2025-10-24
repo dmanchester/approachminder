@@ -36,6 +36,22 @@ case class Trajectory[+P] private(positions: Seq[P], icao24: String, callsign: O
   def mapPositions[A](f: P => A): Trajectory[A] = new Trajectory(positions.map(f), icao24, callsign, category)
 
   /**
+   * Map this Trajectory's positions to an alternate type and produce a new Trajectory.
+   *
+   * Whereas the mapPositions method provides the mapping function with a single position, this method provides it with
+   * all the positions and with the index of the position to map. This allows the mapped value for a particular position
+   * to also rely on other positions.
+   *
+   * @param f The mapping function.
+   * @tparam A The alternate type.
+   * @return The new Trajectory.
+   */
+  def mapPositionsByIndex[A](f: (Seq[P], Int) => A): Trajectory[A] = {
+    val indices = positions.indices
+    new Trajectory(indices.map(f(positions, _)), icao24, callsign, category)
+  }
+
+  /**
    * Drop positions from the start of the trajectory.
    *
    * TODO Confirm how this method is used.

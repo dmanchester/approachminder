@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder.utils
 
 import com.dmanchester.approachminder.SharedResources.significantFigures
-import com.dmanchester.approachminder.utils.MathUtils.{divideWithAlt0_0Handling, interpolateScalar, roundDownToNearestMultiple}
+import com.dmanchester.approachminder.utils.MathUtils.{divideWithAlt0_0Handling, interpolateScalar, isoscelesBaseLength, roundDownToNearestMultiple}
 import org.specs2.mutable.*
 
 class MathUtilsSpec extends Specification {
@@ -33,6 +33,21 @@ class MathUtilsSpec extends Specification {
 
     "return 0.0 for 0.0 / 0.0" in {
       divideWithAlt0_0Handling(0.0, 0.0) mustEqual 0.0
+    }
+  }
+
+  "isoscelesBaseLength" should {
+
+    "handle positive angles" in {
+      isoscelesBaseLength(10.5, 100.6) must beCloseTo(18.410126 within significantFigures)
+    }
+
+    "handle negative angles" in {
+      isoscelesBaseLength(-10.5, 100.6) must beCloseTo(-18.410126 within significantFigures)
+    }
+
+    "handle an angle of 0" in {
+      isoscelesBaseLength(0, 99.1) must beCloseTo(0.0 within significantFigures)
     }
   }
 }

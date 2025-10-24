@@ -1,5 +1,7 @@
 package com.dmanchester.approachminder.utils
 
+import scala.math.{sin, toRadians}
+
 object MathUtils {
 
   /**
@@ -40,5 +42,19 @@ object MathUtils {
       case 0.0 => 0.0
       case _ => numerator / denominator
     }
+  }
+
+  /**
+   * Calculate the length of an Isosceles triangle's base.
+   *
+   * @param apexAngleDegrees The triangle's apex angle, in degrees.
+   * @param legLength The length of the triangle's legs.
+   * @return The length. If the angle is negative, the length is, too. -- TODO Push the responsibility of maintaining
+   *         negativity to calling code?
+   */
+  def isoscelesBaseLength(apexAngleDegrees: Double, legLength: Double): Double = {
+
+    val apexAngleRadians = toRadians(apexAngleDegrees)
+    2.0 * legLength * sin(apexAngleRadians / 2.0)
   }
 }

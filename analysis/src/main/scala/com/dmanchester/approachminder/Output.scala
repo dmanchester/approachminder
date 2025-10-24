@@ -1,6 +1,7 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.typeswithoutbehavior.HasLongLat
+import com.dmanchester.approachminder.typeswithbehavior.Trajectory
+import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, ModelFitWithDisplayFields, OpenSkyPositionReport}
 import play.api.libs.json.*
 
 import java.time.Instant
@@ -9,6 +10,75 @@ import scala.math.BigDecimal.RoundingMode
 
 object Output {
   // TODO Could we (easily) use combinator syntax in our Writes instead of what's below?
+
+  private def scaled(value: BigDecimal, scale: Int): BigDecimal = value.setScale(scale, RoundingMode.HALF_EVEN)
+
+  private def scaled(value: Double, scale: Int): BigDecimal = scaled(BigDecimal.valueOf(value), scale)
+
+  private def positionToJsObject(position: OpenSkyPositionReport): JsObject = {
+    Json.obj(
+      // TODO Set scale on any of these values?
+      "longitude" -> position.longitude,
+      "latitude" -> position.latitude,
+      "altitude" -> scaled(position.altitudeMeters, 0),
+      "onGround" -> position.onGround,
+      "velocity" -> position.velocity.map(scaled(_, 0)),
+      "trueTrack" -> position.trueTrack.map(scaled(_, 0)),
+      "verticalRate" -> position.verticalRate.map(scaled(_, 1)),
+      "squawk" -> position.squawk
+    )
+  }
+
+  private def modelFitToJsObject(modelFitWithDisplayFields: ModelFitWithDisplayFields) = {
+    Json.obj(
+      "airport" -> modelFitWithDisplayFields.modelFit.model.runway.airport.icaoID,
+      "runway" -> modelFitWithDisplayFields.modelFit.model.runway.name,
+      "thresholdDistance" -> scaled(modelFitWithDisplayFields.thresholdDistanceInMeters, 0),
+      "verticalDevMeters" -> scaled(modelFitWithDisplayFields.modelFit.deviation.altitudeDevInMeters, 0),
+      "horizontalDevMeters" -> scaled(modelFitWithDisplayFields.horizontalDevInMeters, 0),
+      "stdDevs" -> scaled(modelFitWithDisplayFields.modelFit.deviation.normalizedEuclideanDistance, 1)
+    )
+  }
+
+  private val positionWithModelFitWrites = new Writes[(OpenSkyPositionReport, Option[ModelFitWithDisplayFields])] {
+
+    override def writes(positionWithModelFit: (OpenSkyPositionReport, Option[ModelFitWithDisplayFields])): JsValue = {
+      positionToJsObject(positionWithModelFit._1) + (
+        "modelFit" -> positionWithModelFit._2.map(modelFitToJsObject).getOrElse(JsNull) // TODO Seems suboptimal to have to be explicit about null-handling
+      )
+    }
+  }
+
+  private val positionsWithModelFitsWrites = new Writes[Seq[(OpenSkyPositionReport, Option[ModelFitWithDisplayFields])]] {
+
+    override def writes(positionsWithModelFits: Seq[(OpenSkyPositionReport, Option[ModelFitWithDisplayFields])]): JsValue = {
+
+      JsObject( positionsWithModelFits.map { positionWithModelFit =>
+
+        val instant = Instant.ofEpochSecond(positionWithModelFit._1.timePosition.toLong)
+        val formattedInstant = DateTimeFormatter.ISO_INSTANT.format(instant)
+
+        formattedInstant -> positionWithModelFitWrites.writes(positionWithModelFit)  // TODO Is this "right"/optimal? Could use combinator syntax instead?
+      })
+    }
+  }
+
+  private val trajectoryWithModelFitsWrites = new Writes[Trajectory[(OpenSkyPositionReport, Option[ModelFitWithDisplayFields])]] {
+
+      override def writes(trajectoryWithModelFits: Trajectory[(OpenSkyPositionReport, Option[ModelFitWithDisplayFields])]): JsValue = {
+
+        Json.obj(
+          "icao24" -> trajectoryWithModelFits.icao24,
+          "callsign" -> trajectoryWithModelFits.callsign,  // TODO What does this output in "None" case? -- Also, may be relying on default Some.toString, which seems sub-optimal
+          "category" -> trajectoryWithModelFits.category.map(_.getClass.getSimpleName),  // TODO Switch to a user-friendly category descriptor
+          "positions" -> positionsWithModelFitsWrites.writes(trajectoryWithModelFits.positions)  // TODO Is this "right"/optimal? Could use combinator syntax instead?
+        )
+      }
+    }
+
+    val trajectoriesWithModelFitsWrites: Writes[Seq[Trajectory[(OpenSkyPositionReport, Option[ModelFitWithDisplayFields])]]] = Writes.seq(trajectoryWithModelFitsWrites)
+
+// ----------------------------------------------
 
   def timeBasedPositionPartiallyToJsObject(timeBasedPosition: TimeBasedPosition): JsObject = {  // TODO Make method private?
     Json.obj(
@@ -67,22 +137,6 @@ object Output {
       })
     }
   }
-
-// TODO ** COMMENTED OUT 29 SEPT. 2024 ***
-//  val trajectoryWithApproachSegmentsWrites = new Writes[(AircraftProfile, Seq[TimeBasedPositionWithApproachSegment])] {
-//
-//    override def writes(trajectory: (AircraftProfile, Seq[TimeBasedPositionWithApproachSegment])): JsValue = {
-//
-//      Json.obj(
-//        "icao24" -> trajectory._1.icao24,
-//        "callsign" -> trajectory._1.callsign,  // TODO What does this output in "None" case? -- Also, may be relying on default Some.toString, which seems sub-optimal
-//        "category" -> trajectory._1.category.map(_.getClass.getSimpleName),  // FIXME Switch to a user-friendly category descriptor
-//        "positions" -> multiplePositionWithApproachSegmentWrites.writes(trajectory._2)  // TODO Is this "right"/optimal? Could use combinator syntax instead?
-//      )
-//    }
-//  }
-//
-//  val trajectoriesWithApproachesWrites = Writes.seq(trajectoryWithApproachSegmentsWrites)
 
   def toWKT(trajectory: Seq[HasLongLat]): String = {
     val contents = trajectory.map({ point => s"${point.longitude} ${point.latitude}" }).mkString(", ")
