@@ -65,18 +65,18 @@ object Output {
 
   private val trajectoryWithModelFitsWrites = new Writes[Trajectory[(OpenSkyPositionReport, Option[ModelFitWithDisplayFields])]] {
 
-      override def writes(trajectoryWithModelFits: Trajectory[(OpenSkyPositionReport, Option[ModelFitWithDisplayFields])]): JsValue = {
+    override def writes(trajectoryWithModelFits: Trajectory[(OpenSkyPositionReport, Option[ModelFitWithDisplayFields])]): JsValue = {
 
-        Json.obj(
-          "icao24" -> trajectoryWithModelFits.icao24,
-          "callsign" -> trajectoryWithModelFits.callsign,  // TODO What does this output in "None" case? -- Also, may be relying on default Some.toString, which seems sub-optimal
-          "category" -> trajectoryWithModelFits.category.map(_.getClass.getSimpleName),  // TODO Switch to a user-friendly category descriptor
-          "positions" -> positionsWithModelFitsWrites.writes(trajectoryWithModelFits.positions)  // TODO Is this "right"/optimal? Could use combinator syntax instead?
-        )
-      }
+      Json.obj(
+        "icao24" -> trajectoryWithModelFits.icao24,
+        "callsign" -> trajectoryWithModelFits.callsign,  // TODO What does this output in "None" case? -- Also, may be relying on default Some.toString, which seems sub-optimal
+        "category" -> trajectoryWithModelFits.category.map(_.getClass.getSimpleName),  // TODO Switch to a user-friendly category descriptor
+        "positions" -> positionsWithModelFitsWrites.writes(trajectoryWithModelFits.positions)  // TODO Is this "right"/optimal? Could use combinator syntax instead?
+      )
     }
+  }
 
-    val trajectoriesWithModelFitsWrites: Writes[Seq[Trajectory[(OpenSkyPositionReport, Option[ModelFitWithDisplayFields])]]] = Writes.seq(trajectoryWithModelFitsWrites)
+  val trajectoriesWithModelFitsWrites: Writes[Seq[Trajectory[(OpenSkyPositionReport, Option[ModelFitWithDisplayFields])]]] = Writes.seq(trajectoryWithModelFitsWrites)
 
 // ----------------------------------------------
 
