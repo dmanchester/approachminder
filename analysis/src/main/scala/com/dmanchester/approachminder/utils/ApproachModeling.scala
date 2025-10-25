@@ -63,9 +63,7 @@ object ApproachModeling {
    *
    * @param approachesAndLandings The ApproachAndLanding instances.
    * @param intervalLengthInMeters The interval length to sample at, in meters.
-   * @return The approach models. -- Packaged as an Iterable[ApproachModel] as opposed to an ApproachModels. Doing so
-   *         allows client code of this method to apply an ordering to the models before packaging them as an
-   *         ApproachModels.
+   * @return The approach models.
    */
   def constructModels(approachesAndLandings: Iterable[ApproachAndLanding[HasLongLatAlt]], intervalLengthInMeters: BigDecimal): Iterable[ApproachModel] = {
 
