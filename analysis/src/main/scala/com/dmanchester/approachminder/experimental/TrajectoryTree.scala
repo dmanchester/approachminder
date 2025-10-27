@@ -40,6 +40,13 @@ import com.dmanchester.approachminder.typeswithbehavior.MeanAngleAndAltitude
  *
  * The example's "gap" at 1000 m--two segments at that distance, but three at 1100 m and 900 m--suggests a nuance in the
  * clustering output.
+ *
+ * Old Note (anything to retain?)
+ * --------
+ * "single-threaded" ApproachModel to be supplanted by "multi-threaded" TrajectoryTree. Will likely end up splitting
+ * ExtractionAndEstimation.meanTrajectory. Where it gets positionsAtThisDistance and then calculates a single
+ * AngleAndAltitudeWithStats, we'll send the data for clustering and then calculate multiple AngleAndAltitudeWithStats.
+ * Those will be the "trajectory segments" of our tree.
  */
 class TrajectoryTree private(val segments: Map[BigDecimal, Seq[MeanAngleAndAltitude]]) {
 
