@@ -2,9 +2,8 @@ package com.dmanchester.approachminder.mainmethods
 
 import com.dmanchester.approachminder.Airports.{oak, sfo}
 import com.dmanchester.approachminder.Output.trajectoriesWithModelFitsWrites
-import com.dmanchester.approachminder.typeswithbehavior.ApproachModelsTester
-import com.dmanchester.approachminder.typeswithoutbehavior.{ModelFitWithDisplayFields, RunwayAndReferencePoint}
-import com.dmanchester.approachminder.utils.{ApproachModeling, ApproachesAndLandingsExtraction, MathUtils, TrajectoryExtraction}
+import com.dmanchester.approachminder.typeswithoutbehavior.RunwayAndReferencePoint
+import com.dmanchester.approachminder.utils.{ApproachModeling, ApproachesAndLandingsExtraction, TrajectoryExtraction, TrajectoryTesting}
 import com.typesafe.scalalogging.StrictLogging
 import play.api.libs.json.Json
 
@@ -42,38 +41,17 @@ object Main extends StrictLogging {
     val approachModels = approachModelsUnsorted.toSeq.sortBy(model => (model.runway.airport.icaoID, model.runway.name)) // Apply a sort to ensure consistent behavior.
     logger.info(s"${approachModels.size} approach models")
 
-    val approachModelsTester = ApproachModelsTester(approachModels, maxThresholdDistanceInMeters)
-
     val trajectoriesForTestingUnfiltered = TrajectoryExtraction.openSkyFilesToTrajectories(inputDir, filesForTesting, timeGapSecsForPartitioning)
     val trajectoriesForTesting = trajectoriesForTestingUnfiltered.filter(_.isPossiblyFixedWingPowered)
     logger.info(s"${trajectoriesForTesting.length} trajectories for testing (after filtering)")
 
     val trajectoriesWithBestFits = trajectoriesForTesting.map { trajectory =>
-
-      trajectory.mapPositionsByIndex { case (positions, index) =>
-
-        val currentPosition = positions(index)
-
-        val bestFitWithDisplayFields = if (index == 0) {
-          None
-        } else {
-          val previousPosition = positions(index - 1)
-          val bestFit = approachModelsTester.testForBestFit(previousPosition, currentPosition)
-          bestFit filter { theFit =>
-            theFit.deviation.normalizedEuclideanDistance <= maxNormalizedEuclideanDistance
-          } map { theFit =>
-            val thresholdDistanceInMeters = theFit.model.runway.distanceInMetersToThresholdCenter(currentPosition)
-            val horizontalDevInMeters = MathUtils.isoscelesBaseLength(theFit.deviation.angleDevInDegrees, theFit.distanceTestedAtInMeters.toDouble)
-            ModelFitWithDisplayFields(theFit, thresholdDistanceInMeters, horizontalDevInMeters)
-          }
-        }
-
-        (currentPosition, bestFitWithDisplayFields)
-      }
+      TrajectoryTesting.testForBestFits(approachModels, trajectory, maxThresholdDistanceInMeters, maxNormalizedEuclideanDistance)
     }
+    logger.info("Trajectories tested")
 
     val trajectoriesWithBestFitsJson = Json.toJson(trajectoriesWithBestFits)(trajectoriesWithModelFitsWrites)
     Files.write(Paths.get(outputFile), trajectoriesWithBestFitsJson.toString().getBytes(StandardCharsets.UTF_8))
-    logger.info("Trajectories tested; output file written!")
+    logger.info("Output file written!")
   }
 }
