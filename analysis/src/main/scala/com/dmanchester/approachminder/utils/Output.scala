@@ -74,10 +74,10 @@ object Output {
 
   /**
    * Produce JSON for a sequence of trajectories. The trajectories' positions are expected to be a 2-tuple with an
-   * OpenSkyPositionReport in the first position.
+   * OpenSkyPositionReport as the first element.
    *
-   * In the second position, each tuple can optionally have a ModelFitWithDisplayFields (from having fit the trajectory
-   * to a model).
+   * As the second element, each position's tuple can optionally have a ModelFitWithDisplayFields. (This element would
+   * represent the best fit from having tested the position against a series of models.)
    *
    * @param trajectories The trajectories.
    * @return The JSON.
