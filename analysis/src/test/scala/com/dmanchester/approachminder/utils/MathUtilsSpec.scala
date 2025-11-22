@@ -1,6 +1,7 @@
 package com.dmanchester.approachminder.utils
 
 import com.dmanchester.approachminder.SharedResources.significantFigures
+import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
 import com.dmanchester.approachminder.utils.MathUtils.{divideWithAlt0_0Handling, interpolateScalar, isoscelesBaseLength, roundDownToNearestMultiple}
 import org.specs2.mutable.*
 
@@ -48,6 +49,27 @@ class MathUtilsSpec extends Specification {
 
     "handle an angle of 0" in {
       isoscelesBaseLength(0, 99.1) must beCloseTo(0.0 within significantFigures)
+    }
+  }
+
+  "circularMeanAndStdDevDegrees" should {
+
+    "calculate the correct values" in {
+
+      val angles = Seq(PolarAngle.fromCompassDegrees(359.1),
+        PolarAngle.fromCompassDegrees(4.2),
+        PolarAngle.fromCompassDegrees(7.3)
+      )
+
+      val actual = MathUtils.circularMeanAndStdDevDegrees(angles)
+
+      actual._1.asCompassDegrees must beCloseTo(3.533899 within significantFigures)
+      actual._2 must beCloseTo(4.140451 within significantFigures)
+    }
+
+    "throw on less than two angles" in {
+      val angles = Seq(PolarAngle.fromCompassDegrees(359.1))
+      MathUtils.circularMeanAndStdDevDegrees(angles) must throwAn[IllegalArgumentException]
     }
   }
 }

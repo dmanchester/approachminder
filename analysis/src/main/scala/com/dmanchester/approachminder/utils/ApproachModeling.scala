@@ -1,6 +1,5 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.PolarAngles
 import com.dmanchester.approachminder.typeswithbehavior.{ApproachAndLanding, ApproachModel, MeanAngleAndAltitude}
 import com.dmanchester.approachminder.typeswithoutbehavior.{AngleAndAltitude, HasLongLatAlt}
 import org.apache.commons.math3.stat.StatUtils
@@ -22,7 +21,7 @@ object ApproachModeling {
     Option.when(positions.size >= 2) {
 
       val angles = positions.map(_.angle)
-      val (meanAngle, angleStdDevInDegrees) = PolarAngles.circularMeanAndStdDevDegrees(angles)
+      val (meanAngle, angleStdDevInDegrees) = MathUtils.circularMeanAndStdDevDegrees(angles)
 
       val altitudesMetersAsArray = positions.map(_.altitudeInMeters).toArray
       val meanAltitudeInMeters = StatUtils.mean(altitudesMetersAsArray)
