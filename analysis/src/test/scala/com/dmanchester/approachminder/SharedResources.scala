@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.Airports.{sfo, sfoData}
+import com.dmanchester.approachminder.data.Airports.{sfo, sfoData}
 import com.dmanchester.approachminder.Utils.feetToMetersConverter
 import com.dmanchester.approachminder.typeswithbehavior.{ApproachModel, MeanAngleAndAltitude, PolarAngle, Trajectory}
 import com.dmanchester.approachminder.typeswithoutbehavior.*

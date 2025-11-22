@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder.typeswithbehavior
 
-import com.dmanchester.approachminder.Airports.sfo
+import com.dmanchester.approachminder.data.Airports.sfo
 import com.dmanchester.approachminder.SharedResources.{meanTrajectoryFromSoutheast, sfo28LApproachPointB, sfo28LApproachPointC, sfoRunway28LApproachModel}
 import org.specs2.mutable.*
 

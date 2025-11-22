@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.data
 
 import com.dmanchester.approachminder.Utils.feetToMetersConverter
 import com.dmanchester.approachminder.typeswithbehavior.Airport
@@ -22,7 +22,7 @@ object Airports {
     val thresholdCenter28L = LongLat(-122.358349166667, 37.6117119444444)
   }
 
-  val sfo = {
+  val sfo: Airport = {
 
     val runwayWidthInMeters = feetToMetersConverter.convert(sfoData.runwayWidthInFeet)
 
@@ -48,7 +48,7 @@ object Airports {
     val thresholdCenter33 = LongLat(-122.219673888889, 37.73136125)
   }
 
-  val oak = {
+  val oak: Airport = {
 
     val runwayWidthInMetersAllBut15_33 = feetToMetersConverter.convert(oakData.runwayWidthInFeetAllBut15_33)
     val runwayWidthInMeters15_33 = feetToMetersConverter.convert(oakData.runwayWidthInFeet15_33)

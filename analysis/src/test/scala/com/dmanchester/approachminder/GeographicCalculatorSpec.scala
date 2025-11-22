@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder
 
-import Airports.sfoData
+import com.dmanchester.approachminder.data.Airports.sfoData
 import SharedResources.*
 import com.dmanchester.approachminder.typeswithoutbehavior.LongLat
 import org.specs2.mutable.*
