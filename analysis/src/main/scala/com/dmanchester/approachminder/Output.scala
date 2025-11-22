@@ -39,7 +39,7 @@ object Output {
 
     override def writes(positionWithModelFit: (OpenSkyPositionReport, Option[ModelFitWithDisplayFields])): JsValue = {
       positionToJsObject(positionWithModelFit._1) + (
-        "modelFit" -> positionWithModelFit._2.map(modelFitToJsObject).getOrElse(JsNull) // TODO Seems suboptimal to have to be explicit about null-handling
+        "modelFit" -> positionWithModelFit._2.map(modelFitToJsObject).getOrElse(JsNull)
       )
     }
   }
@@ -64,8 +64,8 @@ object Output {
 
       Json.obj(
         "icao24" -> trajectoryWithModelFits.icao24,
-        "callsign" -> trajectoryWithModelFits.callsign,  // TODO What does this output in "None" case? -- Also, may be relying on default Some.toString, which seems sub-optimal
-        "category" -> trajectoryWithModelFits.category.map(_.getClass.getSimpleName),  // TODO Switch to a user-friendly category descriptor
+        "callsign" -> trajectoryWithModelFits.callsign,
+        "category" -> trajectoryWithModelFits.category.map(_.getClass.getSimpleName),  // TODO Switch to a category descriptor that's more user-friendly (but still shorter than the descriptions; e.g., "Large (75000 to 300000 lbs)")
         "positions" -> positionsWithModelFitsWrites.writes(trajectoryWithModelFits.positions)  // TODO Is this "right"/optimal? Could use combinator syntax instead?
       )
     }
