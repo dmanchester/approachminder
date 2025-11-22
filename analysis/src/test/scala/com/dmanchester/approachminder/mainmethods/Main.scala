@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder.mainmethods
 
 import com.dmanchester.approachminder.Airports.{oak, sfo}
-import com.dmanchester.approachminder.Output.openSkyTrajectoriesToJson
+import com.dmanchester.approachminder.utils.Output.openSkyTrajectoriesToJson
 import com.dmanchester.approachminder.typeswithoutbehavior.RunwayAndReferencePoint
 import com.dmanchester.approachminder.utils.{ApproachModeling, ApproachesAndLandingsExtraction, TrajectoryExtraction, TrajectoryTesting}
 import com.typesafe.scalalogging.StrictLogging

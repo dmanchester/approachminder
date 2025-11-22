@@ -1,9 +1,9 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.Output.openSkyTrajectoriesToJson
 import com.dmanchester.approachminder.SharedResources.sfoRunway28LApproachModel
 import com.dmanchester.approachminder.typeswithbehavior.{DeviationFromMean, Trajectory}
 import com.dmanchester.approachminder.typeswithoutbehavior.*
+import com.dmanchester.approachminder.utils.Output.openSkyTrajectoriesToJson
 import org.specs2.mutable.*
 
 class OutputSpec extends Specification {
