@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.typeswithbehavior.Trajectory
-import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, ModelFitWithDisplayFields, OpenSkyPositionReport}
+import com.dmanchester.approachminder.typeswithoutbehavior.{ModelFitWithDisplayFields, OpenSkyPositionReport}
 import play.api.libs.json.*
 
 import java.time.Instant
@@ -15,30 +15,25 @@ object Output {
 
   private def scaled(value: Double, scale: Int): BigDecimal = scaled(BigDecimal.valueOf(value), scale)
 
-  private def positionToJsObject(position: OpenSkyPositionReport): JsObject = {
-    Json.obj(
-      // TODO Set scale on any of these values?
-      "longitude" -> position.longitude,
-      "latitude" -> position.latitude,
-      "altitude" -> scaled(position.altitudeMeters, 0),
-      "onGround" -> position.onGround,
-      "velocity" -> position.velocity.map(scaled(_, 0)),
-      "trueTrack" -> position.trueTrack.map(scaled(_, 0)),
-      "verticalRate" -> position.verticalRate.map(scaled(_, 1)),
-      "squawk" -> position.squawk
-    )
-  }
+  private def positionToJsObject(position: OpenSkyPositionReport): JsObject = Json.obj(
+    "longitude" -> position.longitude,
+    "latitude" -> position.latitude,
+    "altitude" -> scaled(position.altitudeMeters, 0),
+    "onGround" -> position.onGround,
+    "velocity" -> position.velocity.map(scaled(_, 0)),
+    "trueTrack" -> position.trueTrack.map(scaled(_, 0)),
+    "verticalRate" -> position.verticalRate.map(scaled(_, 1)),
+    "squawk" -> position.squawk
+  )
 
-  private def modelFitToJsObject(modelFitWithDisplayFields: ModelFitWithDisplayFields) = {
-    Json.obj(
-      "airport" -> modelFitWithDisplayFields.modelFit.model.runway.airport.icaoID,
-      "runway" -> modelFitWithDisplayFields.modelFit.model.runway.name,
-      "thresholdDistance" -> scaled(modelFitWithDisplayFields.thresholdDistanceInMeters, 0),
-      "verticalDevMeters" -> scaled(modelFitWithDisplayFields.modelFit.deviation.altitudeDevInMeters, 0),
-      "horizontalDevMeters" -> scaled(modelFitWithDisplayFields.horizontalDevInMeters, 0),
-      "stdDevs" -> scaled(modelFitWithDisplayFields.modelFit.deviation.normalizedEuclideanDistance, 1)
-    )
-  }
+  private def modelFitToJsObject(modelFitWithDisplayFields: ModelFitWithDisplayFields) = Json.obj(
+    "airport" -> modelFitWithDisplayFields.modelFit.model.runway.airport.icaoID,
+    "runway" -> modelFitWithDisplayFields.modelFit.model.runway.name,
+    "thresholdDistance" -> scaled(modelFitWithDisplayFields.thresholdDistanceInMeters, 0),
+    "verticalDevMeters" -> scaled(modelFitWithDisplayFields.modelFit.deviation.altitudeDevInMeters, 0),
+    "horizontalDevMeters" -> scaled(modelFitWithDisplayFields.horizontalDevInMeters, 0),
+    "stdDevs" -> scaled(modelFitWithDisplayFields.modelFit.deviation.normalizedEuclideanDistance, 1)
+  )
 
   private val positionWithModelFitWrites = new Writes[(OpenSkyPositionReport, Option[ModelFitWithDisplayFields])] {
 
@@ -76,5 +71,20 @@ object Output {
     }
   }
 
-  val trajectoriesWithModelFitsWrites: Writes[Seq[Trajectory[(OpenSkyPositionReport, Option[ModelFitWithDisplayFields])]]] = Writes.seq(trajectoryWithModelFitsWrites)
+  private val trajectoriesWithModelFitsWrites: Writes[Seq[Trajectory[(OpenSkyPositionReport, Option[ModelFitWithDisplayFields])]]] = Writes.seq(trajectoryWithModelFitsWrites)
+
+  /**
+   * Produce JSON for a sequence of trajectories. The trajectories' positions are expected to be a 2-tuple with an
+   * OpenSkyPositionReport in the first position.
+   *
+   * In the second position, each tuple can optionally have a ModelFitWithDisplayFields (from having fit the trajectory
+   * to a model).
+   *
+   * @param trajectories The trajectories.
+   * @return The JSON.
+   */
+  def openSkyTrajectoriesToJson(trajectories: Seq[Trajectory[(OpenSkyPositionReport, Option[ModelFitWithDisplayFields])]]): String = {
+    val trajectoriesJson = Json.toJson(trajectories)(trajectoriesWithModelFitsWrites)
+    trajectoriesJson.toString()
+  }
 }

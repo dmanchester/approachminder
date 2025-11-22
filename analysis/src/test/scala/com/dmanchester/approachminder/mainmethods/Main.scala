@@ -1,11 +1,10 @@
 package com.dmanchester.approachminder.mainmethods
 
 import com.dmanchester.approachminder.Airports.{oak, sfo}
-import com.dmanchester.approachminder.Output.trajectoriesWithModelFitsWrites
+import com.dmanchester.approachminder.Output.openSkyTrajectoriesToJson
 import com.dmanchester.approachminder.typeswithoutbehavior.RunwayAndReferencePoint
 import com.dmanchester.approachminder.utils.{ApproachModeling, ApproachesAndLandingsExtraction, TrajectoryExtraction, TrajectoryTesting}
 import com.typesafe.scalalogging.StrictLogging
-import play.api.libs.json.Json
 
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
@@ -50,8 +49,8 @@ object Main extends StrictLogging {
     }
     logger.info("Trajectories tested")
 
-    val trajectoriesWithBestFitsJson = Json.toJson(trajectoriesWithBestFits)(trajectoriesWithModelFitsWrites)
-    Files.write(Paths.get(outputFile), trajectoriesWithBestFitsJson.toString().getBytes(StandardCharsets.UTF_8))
+    val trajectoriesWithBestFitsJson = openSkyTrajectoriesToJson(trajectoriesWithBestFits)
+    Files.write(Paths.get(outputFile), trajectoriesWithBestFitsJson.getBytes(StandardCharsets.UTF_8))
     logger.info("Output file written!")
   }
 }
