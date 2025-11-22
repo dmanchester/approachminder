@@ -1,17 +1,12 @@
 package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
-import org.apache.commons.math3.stat.StatUtils
 
-import scala.math.{atan2, cos, pow, sin, sqrt}
+import scala.math.*
 
 object PolarAngles {
 
-  def circularMean(angles: Iterable[PolarAngle]): PolarAngle = {
-
-    // TODO Enforce angles.size >= 1
-
-    // See https://en.wikipedia.org/wiki/Circular_mean for more information.
+  private def circularMean(angles: Iterable[PolarAngle]): PolarAngle = {
 
     val anglesRadians = angles.map(_.asRadians)
     val sineTerm = anglesRadians.map(sin).sum
@@ -21,9 +16,23 @@ object PolarAngles {
     PolarAngle.fromRadians(meanRadians)
   }
 
+  /**
+   * Calculate the circular mean and standard deviation of a collection of angles.
+   *
+   * For more information on the circular mean, see https://en.wikipedia.org/wiki/Circular_mean.
+   *
+   * At least two angles are required.
+   *
+   * @param angles The angles.
+   * @throws java.lang.IllegalArgumentException If less than two angles are provided.
+   * @return The circular mean and standard deviation.
+   */
+  @throws(classOf[IllegalArgumentException])
   def circularMeanAndStdDevDegrees(angles: Iterable[PolarAngle]): (PolarAngle, Double) = {
 
-    // TODO Enforce angles.size >= 2
+    if (angles.size < 2) {
+      throw new IllegalArgumentException(s"Need at least 2 angles; got ${angles.size}!")
+    }
 
     val thisCircularMean = circularMean(angles)
 
