@@ -9,7 +9,6 @@ import java.time.format.DateTimeFormatter
 import scala.math.BigDecimal.RoundingMode
 
 object Output {
-  // TODO Could we (easily) use combinator syntax in our Writes instead of what's below?
 
   private def scaled(value: BigDecimal, scale: Int): BigDecimal = value.setScale(scale, RoundingMode.HALF_EVEN)
 
@@ -53,7 +52,7 @@ object Output {
         val instant = Instant.ofEpochSecond(positionWithModelFit._1.timePosition.toLong)
         val formattedInstant = DateTimeFormatter.ISO_INSTANT.format(instant)
 
-        formattedInstant -> positionWithModelFitWrites.writes(positionWithModelFit)  // TODO Is this "right"/optimal? Could use combinator syntax instead?
+        formattedInstant -> positionWithModelFitWrites.writes(positionWithModelFit)
       })
     }
   }
@@ -66,7 +65,7 @@ object Output {
         "icao24" -> trajectoryWithModelFits.icao24,
         "callsign" -> trajectoryWithModelFits.callsign,
         "category" -> trajectoryWithModelFits.category.map(_.getClass.getSimpleName),  // TODO Switch to a category descriptor that's more user-friendly (but still shorter than the descriptions; e.g., "Large (75000 to 300000 lbs)")
-        "positions" -> positionsWithModelFitsWrites.writes(trajectoryWithModelFits.positions)  // TODO Is this "right"/optimal? Could use combinator syntax instead?
+        "positions" -> positionsWithModelFitsWrites.writes(trajectoryWithModelFits.positions)
       )
     }
   }
