@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder.typeswithbehavior
 
 import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, Polygon, RunwaySurfaceTemplate}
-import com.dmanchester.approachminder.GeographicCalculator
+import com.dmanchester.approachminder.utils.GeographicCalculator
 
 /**
  * An airport, along with--as inner classes--its runway surfaces and the runways themselves. (Each runway surface is

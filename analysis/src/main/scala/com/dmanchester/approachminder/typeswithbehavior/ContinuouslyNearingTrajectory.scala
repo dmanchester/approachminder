@@ -1,8 +1,7 @@
 package com.dmanchester.approachminder.typeswithbehavior
 
-import com.dmanchester.approachminder.utils.TrajectoryUtils
+import com.dmanchester.approachminder.utils.{GeographicCalculator, TrajectoryUtils}
 import com.dmanchester.approachminder.utils.TrajectoryUtils.positionsToSegments
-import com.dmanchester.approachminder.GeographicCalculator
 import com.dmanchester.approachminder.typeswithoutbehavior.HasLongLat
 
 /**

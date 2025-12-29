@@ -4,7 +4,7 @@ import com.dmanchester.approachminder.data.Airports.{sfo, sfoData}
 import com.dmanchester.approachminder.Utils.feetToMetersConverter
 import com.dmanchester.approachminder.typeswithbehavior.{ApproachModel, MeanAngleAndAltitude, PolarAngle, Trajectory}
 import com.dmanchester.approachminder.typeswithoutbehavior.*
-import com.dmanchester.approachminder.utils.ApproachModeling
+import com.dmanchester.approachminder.utils.{ApproachModeling, GeographicCalculator}
 import org.specs2.matcher.Matchers.{SignificantFiguresSyntax, beCloseTo}
 import org.specs2.matcher.{Matcher, SignificantFigures}
 

@@ -1,7 +1,6 @@
 package com.dmanchester.approachminder.utils
 
 import com.dmanchester.approachminder.typeswithbehavior.{BoundedCountdown, ContinuouslyNearingTrajectory, Trajectory}
-import com.dmanchester.approachminder.GeographicCalculator
 import com.dmanchester.approachminder.typeswithoutbehavior.{AngleAndAltitude, DistanceKeyedTrajectory, HasLongLat, HasLongLatAlt}
 
 import scala.annotation.tailrec

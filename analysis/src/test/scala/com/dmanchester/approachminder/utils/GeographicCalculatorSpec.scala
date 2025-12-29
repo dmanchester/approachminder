@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.utils
 
 import com.dmanchester.approachminder.SharedResources.*
 import com.dmanchester.approachminder.data.Airports.sfoData

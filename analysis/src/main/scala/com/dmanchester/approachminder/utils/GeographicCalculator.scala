@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder
+package com.dmanchester.approachminder.utils
 
 import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
 import com.dmanchester.approachminder.typeswithoutbehavior.{AngleAndRelativePosition, HasLongLat, LongLat, Polygon}
