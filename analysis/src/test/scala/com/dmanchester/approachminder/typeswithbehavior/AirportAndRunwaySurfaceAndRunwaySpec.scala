@@ -24,14 +24,14 @@ class AirportAndRunwaySurfaceAndRunwaySpec extends Specification {
     "throw on non-unique runway names (same RunwaySurfaceTemplate)" in {
       Airport("KBAD", LongLat(0.0, 0.0), Seq(
         RunwaySurfaceTemplate(50, "01L", LongLat(1.0, 0.0), "01L", LongLat(2.0, 0.0))
-      )) must throwA[IllegalArgumentException]
+      )) must throwAn[IllegalArgumentException]
     }
 
     "throw on non-unique runway names (different RunwaySurfaceTemplate)" in {
       Airport("KBAD", LongLat(0.0, 0.0), Seq(
         RunwaySurfaceTemplate(50, "01L", LongLat(1.0, 0.0), "19R", LongLat(2.0, 0.0)),
         RunwaySurfaceTemplate(50, "20R", LongLat(3.0, 0.0), "01L", LongLat(4.0, 0.0))
-      )) must throwA[IllegalArgumentException]
+      )) must throwAn[IllegalArgumentException]
     }
   }
 
@@ -89,7 +89,7 @@ class AirportAndRunwaySurfaceAndRunwaySpec extends Specification {
   "Runway.pointOnRunwayCenterline" should {
 
     "return the appropriate point" in {
-      val point = sfoRunway28L.pointOnRunwayCenterline(0.25)
+      val point = sfoRunway28L.pointAlongRunwayCenterline(0.25)
       // Confirmed the following point's correctness visually, with online map.
       point must beCloseInTwoDimensionsTo(LongLat(-122.367037, 37.615358), significantFigures)
     }

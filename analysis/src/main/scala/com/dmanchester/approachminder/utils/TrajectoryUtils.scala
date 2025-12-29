@@ -115,7 +115,9 @@ object TrajectoryUtils {
 
         case Some(theDistancesInMeters) =>
           val currentSegment = segments.head
-          val interpolatedPosition = calculator.pointOnContinuouslyNearingSegmentAtDistance(currentSegment._1, currentSegment._2, referencePoint, theDistancesInMeters.currentValue.toDouble)
+          val interpolatedPosition = calculator.pointOnHalflineAtDistance(currentSegment._1, currentSegment._2, referencePoint, theDistancesInMeters.currentValue.toDouble).filter { theInterpolatedPosition =>
+            0.0 <= theInterpolatedPosition.relativePosition && theInterpolatedPosition.relativePosition <= 1.0
+          }
 
           val (updatedSegments, updatedDistances, updatedAccumulator) = interpolatedPosition.map { theInterpolatedPosition =>
             // Successfully interpolated a position along currentSegment at the distance.

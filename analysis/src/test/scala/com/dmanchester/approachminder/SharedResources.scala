@@ -20,10 +20,10 @@ object SharedResources {
 
   val sfoRunwayHalfWidthInMeters = feetToMetersConverter.convert(sfoData.runwayWidthInFeet) / 2
 
-  val sfoThresholdLeft28L = sfoCalculator.rotateAboutArbitraryOriginAndScaleToDistance(sfoData.thresholdCenter10R, sfoData.thresholdCenter28L, 90, sfoRunwayHalfWidthInMeters)
-  val sfoThresholdRight28L = sfoCalculator.rotateAboutArbitraryOriginAndScaleToDistance(sfoData.thresholdCenter10R, sfoData.thresholdCenter28L, -90, sfoRunwayHalfWidthInMeters)
-  val sfoThresholdLeft10R = sfoCalculator.rotateAboutArbitraryOriginAndScaleToDistance(sfoData.thresholdCenter28L, sfoData.thresholdCenter10R, 90, sfoRunwayHalfWidthInMeters)
-  val sfoThresholdRight10R = sfoCalculator.rotateAboutArbitraryOriginAndScaleToDistance(sfoData.thresholdCenter28L, sfoData.thresholdCenter10R, -90, sfoRunwayHalfWidthInMeters)
+  val sfoThresholdLeft28L = sfoCalculator.rotateAboutAnOriginAndScaleToDistance(sfoData.thresholdCenter10R, sfoData.thresholdCenter28L, 90, sfoRunwayHalfWidthInMeters)
+  val sfoThresholdRight28L = sfoCalculator.rotateAboutAnOriginAndScaleToDistance(sfoData.thresholdCenter10R, sfoData.thresholdCenter28L, -90, sfoRunwayHalfWidthInMeters)
+  val sfoThresholdLeft10R = sfoCalculator.rotateAboutAnOriginAndScaleToDistance(sfoData.thresholdCenter28L, sfoData.thresholdCenter10R, 90, sfoRunwayHalfWidthInMeters)
+  val sfoThresholdRight10R = sfoCalculator.rotateAboutAnOriginAndScaleToDistance(sfoData.thresholdCenter28L, sfoData.thresholdCenter10R, -90, sfoRunwayHalfWidthInMeters)
 
   val sfoRunwaySurface28L10R = Polygon(Seq(sfoThresholdLeft28L, sfoThresholdRight28L, sfoThresholdLeft10R, sfoThresholdRight10R))
 

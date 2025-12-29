@@ -114,15 +114,15 @@ class Airport private(val icaoID: String, val referencePoint: HasLongLat, runway
       }
 
       /**
-       * Calculate a point on the runway's centerline.
+       * Calculate a point along the runway's centerline.
        *
        * @param relativePosition The position of the point relative to the runway's threshold. 0.0 = on the threshold;
        *                         1.0 = on the opposite runway's threshold. A value would typically be between 0.0 and
        *                         1.0, but it need not be.
        * @return The point.
        */
-      def pointOnRunwayCenterline(relativePosition: Double): HasLongLat = {
-        geographicCalculator.pointOnSegment((thresholdCenter, opposite.thresholdCenter), relativePosition)
+      def pointAlongRunwayCenterline(relativePosition: Double): HasLongLat = {
+        geographicCalculator.pointAlongSegment((thresholdCenter, opposite.thresholdCenter), relativePosition)
       }
 
       override def toString: String = s"${this.getClass.getSimpleName}($name,$thresholdLeft,$thresholdCenter,$thresholdRight)"
@@ -153,8 +153,8 @@ class Airport private(val icaoID: String, val referencePoint: HasLongLat, runway
 
       val halfWidthInMeters = widthInMeters / 2
 
-      val left = geographicCalculator.rotateAboutArbitraryOriginAndScaleToDistance(oppositeThresholdCenter, thresholdCenter, 90.0, halfWidthInMeters)
-      val right = geographicCalculator.rotateAboutArbitraryOriginAndScaleToDistance(oppositeThresholdCenter, thresholdCenter, -90.0, halfWidthInMeters)
+      val left = geographicCalculator.rotateAboutAnOriginAndScaleToDistance(oppositeThresholdCenter, thresholdCenter, 90.0, halfWidthInMeters)
+      val right = geographicCalculator.rotateAboutAnOriginAndScaleToDistance(oppositeThresholdCenter, thresholdCenter, -90.0, halfWidthInMeters)
 
       (left, right)
     }
