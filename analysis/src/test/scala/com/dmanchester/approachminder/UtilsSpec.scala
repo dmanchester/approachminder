@@ -1,16 +1,9 @@
 package com.dmanchester.approachminder
 
-import com.dmanchester.approachminder.SharedResources.*
-import com.dmanchester.approachminder.Utils.{hypotenuseLength, mostCommonString}
+import com.dmanchester.approachminder.Utils.mostCommonString
 import org.specs2.mutable.*
 
 class UtilsSpec extends Specification {
-
-  "hypotenuseLength" should {
-    "calculate length" in {
-      hypotenuseLength(6.0, 7.0) must beCloseTo(9.219544 within significantFigures)
-    }
-  }
 
   "mostCommonString" should {
 

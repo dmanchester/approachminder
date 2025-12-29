@@ -2,7 +2,7 @@ package com.dmanchester.approachminder.utils
 
 import com.dmanchester.approachminder.SharedResources.significantFigures
 import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
-import com.dmanchester.approachminder.utils.MathUtils.{divideWithAlt0_0Handling, interpolateScalar, isoscelesBaseLength, roundDownToNearestMultiple}
+import com.dmanchester.approachminder.utils.MathUtils.*
 import org.specs2.mutable.*
 
 class MathUtilsSpec extends Specification {
@@ -34,6 +34,12 @@ class MathUtilsSpec extends Specification {
 
     "return 0.0 for 0.0 / 0.0" in {
       divideWithAlt0_0Handling(0.0, 0.0) mustEqual 0.0
+    }
+  }
+
+  "hypotenuseLength" should {
+    "calculate length" in {
+      hypotenuseLength(6.0, 7.0) must beCloseTo(9.219544 within significantFigures)
     }
   }
 

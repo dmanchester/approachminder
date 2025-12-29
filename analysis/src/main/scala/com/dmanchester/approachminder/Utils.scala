@@ -2,16 +2,10 @@ package com.dmanchester.approachminder
 
 import org.geotools.measure.Units
 
-import scala.math.{pow, sqrt}
-
 /**
  * Utility functions that operate on standard Scala datatypes.
  */
 object Utils {
-
-  def hypotenuseLength(aLength: Double, bLength: Double): Double = {
-    sqrt(pow(aLength, 2) + pow(bLength, 2))
-  }
 
   /**
    * Determine the most-common string in a collection.

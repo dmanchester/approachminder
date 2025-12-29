@@ -47,6 +47,15 @@ object MathUtils {
   }
 
   /**
+   * Calculate the length of a right triangle's hypotenuse.
+   *
+   * @param legALength The length of one leg.
+   * @param legBLength The length of the other leg.
+   * @return The length of the hypotenuse.
+   */
+  def hypotenuseLength(legALength: Double, legBLength: Double): Double = sqrt(pow(legALength, 2) + pow(legBLength, 2))
+
+  /**
    * Calculate the length of an Isosceles triangle's base.
    *
    * @param apexAngleDegrees The triangle's apex angle, in degrees.

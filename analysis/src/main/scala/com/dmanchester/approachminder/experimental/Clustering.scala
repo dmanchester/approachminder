@@ -2,7 +2,7 @@ package com.dmanchester.approachminder.experimental
 
 import com.dmanchester.approachminder.*
 import com.dmanchester.approachminder.typeswithoutbehavior.{AngleAndAltitude, HasLongLat, LongLatAlt}
-import com.dmanchester.approachminder.utils.GeographicCalculator
+import com.dmanchester.approachminder.utils.{GeographicCalculator, MathUtils}
 import org.apache.commons.math3.ml.clustering.{Clusterable, DBSCANClusterer}
 import org.apache.commons.math3.ml.distance.DistanceMeasure
 
@@ -52,7 +52,7 @@ class LongLatAltDistanceMeasure private(val positions: Seq[LongLatAlt], geograph
     val distance2D = geographicCalculator.distanceInMeters(a, b)
     val altitudeDifference = a.altitudeMeters - b.altitudeMeters
 
-    Utils.hypotenuseLength(distance2D, altitudeDifference)
+    MathUtils.hypotenuseLength(distance2D, altitudeDifference)
   }
 }
 
