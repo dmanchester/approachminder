@@ -1,35 +1,49 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.Utils
 import com.dmanchester.approachminder.typeswithoutbehavior.AircraftCategory
 
 object CollectionUtils {
 
   /**
-   * In a collection of aircraft categories, determine the most-common one that is "non-blank" (i.e., not `NoInfoAtAll`
-   * or `NoADSBEmitterCategoryInfo`). The collection cannot be empty.
+   * In a non-empty collection of categories, determine the most-common one that is "non-blank" (i.e., neither
+   * "NoInfoAtAll" nor "NoADSBEmitterCategoryInfo"; see AircraftCategory.blank).
    *
-   * If multiple categories are equally common, pick the one that is alphabetically first by class name. (This is just
-   * to ensure deterministic behavior regardless of the categories' ordering.)
+   * If multiple non-blank categories are equally common, pick the one that is alphabetically first by class name. (This
+   * ensures deterministic behavior regardless of the categories' ordering.)
    *
-   * @param categories The categories.
-   * @throws java.lang.UnsupportedOperationException If collection is empty.
-   * @return the most-common `AircraftCategory` as a `Some`; or, `None` if all categories are
-   *         `NoInfoAtAll`/`NoADSBEmitterCategoryInfo`.
+   * @param categories The collection of categories.
+   * @throws java.lang.IllegalArgumentException If the collection is empty.
+   * @return The most-common non-blank category, wrapped in Some; or None, if all categories are blank.
    */
-  @throws(classOf[UnsupportedOperationException])  // TODO Would IllegalArgumentException be better?
+  @throws(classOf[IllegalArgumentException])
   def mostCommonNonBlankCategoryInNonEmptyCollection(categories: Iterable[AircraftCategory]): Option[AircraftCategory] = {
 
     if (categories.isEmpty) {
-      throw new UnsupportedOperationException("'categories' must not be empty!")
+      throw new IllegalArgumentException("'categories' must not be empty!")
     }
 
     val nonBlankCategories = categories.filter(!AircraftCategory.blank.contains(_))
-    if (nonBlankCategories.isEmpty) {
-      None
-    } else {
-      val category = Utils.mostCommonValueInNonEmptyCollection(nonBlankCategories) { (a, b) => a.getClass.getSimpleName < b.getClass.getSimpleName }
-      Some(category)
+
+    Option.when(nonBlankCategories.nonEmpty) {
+
+      val categoriesAndCounts = nonBlankCategories.groupBy(identity).map { case (category, categoryOccurrences) =>
+        (category, categoryOccurrences.size)
+      }
+
+      // Pick category and count "a" if:
+      //
+      //   * a's count is higher than b's; or,
+      //   * their counts are the same, but "a" comes first alphabetically.
+      //
+      // Otherwise, pick "b".
+      val mostCommonCategoryWithCount = categoriesAndCounts.reduce { (a, b) =>
+        if (a._2 > b._2 || (a._2 == b._2 && a._1.getClass.getSimpleName < b._1.getClass.getSimpleName))
+          a
+        else
+          b
+      }
+
+      mostCommonCategoryWithCount._1
     }
   }
 }
