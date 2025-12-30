@@ -1,10 +1,13 @@
 package com.dmanchester.approachminder.utils
 
 import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
+import org.geotools.measure.Units
 
 import scala.math.{atan2, cos, pow, sin, sqrt, toRadians}
 
 object MathUtils {
+
+  val feetToMetersConverter = Units.FOOT.getConverterTo(Units.METRE)
 
   /**
    * Interpolate the value that is some percentage of the distance from one number to another.

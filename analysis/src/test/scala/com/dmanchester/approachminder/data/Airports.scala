@@ -1,8 +1,8 @@
 package com.dmanchester.approachminder.data
 
-import com.dmanchester.approachminder.Utils.feetToMetersConverter
 import com.dmanchester.approachminder.typeswithbehavior.Airport
 import com.dmanchester.approachminder.typeswithoutbehavior.{LongLat, RunwaySurfaceTemplate}
+import com.dmanchester.approachminder.utils.MathUtils.feetToMetersConverter
 
 object Airports {
 
