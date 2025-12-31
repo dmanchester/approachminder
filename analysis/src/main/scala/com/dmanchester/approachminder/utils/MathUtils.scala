@@ -1,7 +1,6 @@
 package com.dmanchester.approachminder.utils
 
 import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
-import org.geotools.measure.Units
 
 import scala.math.{atan2, cos, pow, sin, sqrt, toRadians}
 
