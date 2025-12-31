@@ -7,8 +7,6 @@ import scala.math.{atan2, cos, pow, sin, sqrt, toRadians}
 
 object MathUtils {
 
-  val feetToMetersConverter = Units.FOOT.getConverterTo(Units.METRE)
-
   /**
    * Convert feet to meters.
    *

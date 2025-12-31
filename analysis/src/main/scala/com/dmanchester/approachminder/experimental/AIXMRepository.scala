@@ -4,7 +4,7 @@ import com.dmanchester.approachminder.experimental.AIXM.{AIXMAirportHeliport, AI
 import com.dmanchester.approachminder.experimental.AIXMRepository.{AirportHeliportGmlId, RunwayGmlId, RunwayGmlIdNumericPortion, gmlIdNonNumericAndNumericPortions}
 import com.dmanchester.approachminder.typeswithoutbehavior.{LongLat, RunwaySurfaceTemplate}
 import com.dmanchester.approachminder.utils.GeographicCalculator
-import com.dmanchester.approachminder.utils.MathUtils.feetToMetersConverter
+import com.dmanchester.approachminder.utils.MathUtils.feetToMeters
 
 import scala.math.abs
 
@@ -31,7 +31,7 @@ case class AIXMRepository private(runwaysMain: Map[AirportHeliportGmlId, Seq[AIX
       runwayDirectionReciprocalEnd <- runwayDirections.get(runwayReciprocalEnd.gmlId).toRight(s"No runway direction found for reciprocal-end runway with GML ID '${runwayReciprocalEnd.gmlId}'.")
       runwayDirectionReciprocalEndPoint <- runwayDirectionReciprocalEnd.runwayEnd.toRight("No point found for reciprocal-end runway direction.")
 
-      widthInMeters = feetToMetersConverter.convert(runwayMainWidthStrip.value)
+      widthInMeters = feetToMeters(runwayMainWidthStrip.value)
     } yield {
       RunwaySurfaceTemplate(widthInMeters, runwayBaseEnd.designator, toLongLat(runwayDirectionBaseEndPoint), runwayReciprocalEnd.designator, toLongLat(runwayDirectionReciprocalEndPoint))
     }
@@ -62,7 +62,7 @@ case class AIXMRepository private(runwaysMain: Map[AirportHeliportGmlId, Seq[AIX
       runwayDirectionReciprocalEnd <- runwayDirections.get(runwayReciprocalEnd.gmlId).toRight(s"No runway direction found for reciprocal-end runway with GML ID '${runwayReciprocalEnd.gmlId}'.")
       runwayDirectionReciprocalEndPoint <- runwayDirectionReciprocalEnd.runwayEnd.toRight("No point found for reciprocal-end runway direction.")
 
-      lengthInMeters = feetToMetersConverter.convert(runwayMainLengthStrip.value)
+      lengthInMeters = feetToMeters(runwayMainLengthStrip.value)
     } yield {
       (lengthInMeters, toLongLat(runwayDirectionBaseEndPoint), toLongLat(runwayDirectionReciprocalEndPoint))
     }

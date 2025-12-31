@@ -2,7 +2,7 @@ package com.dmanchester.approachminder.data
 
 import com.dmanchester.approachminder.typeswithbehavior.Airport
 import com.dmanchester.approachminder.typeswithoutbehavior.{LongLat, RunwaySurfaceTemplate}
-import com.dmanchester.approachminder.utils.MathUtils.feetToMetersConverter
+import com.dmanchester.approachminder.utils.MathUtils.feetToMeters
 
 object Airports {
 
@@ -24,7 +24,7 @@ object Airports {
 
   val sfo: Airport = {
 
-    val runwayWidthInMeters = feetToMetersConverter.convert(sfoData.runwayWidthInFeet)
+    val runwayWidthInMeters = feetToMeters(sfoData.runwayWidthInFeet)
 
     Airport("KSFO", sfoData.referencePoint, Seq(
       RunwaySurfaceTemplate(runwayWidthInMeters, "01L", sfoData.thresholdCenter01L, "19R", sfoData.thresholdCenter19R),
@@ -50,8 +50,8 @@ object Airports {
 
   val oak: Airport = {
 
-    val runwayWidthInMetersAllBut15_33 = feetToMetersConverter.convert(oakData.runwayWidthInFeetAllBut15_33)
-    val runwayWidthInMeters15_33 = feetToMetersConverter.convert(oakData.runwayWidthInFeet15_33)
+    val runwayWidthInMetersAllBut15_33 = feetToMeters(oakData.runwayWidthInFeetAllBut15_33)
+    val runwayWidthInMeters15_33 = feetToMeters(oakData.runwayWidthInFeet15_33)
 
     Airport("KOAK", oakData.referencePoint, Seq(
       RunwaySurfaceTemplate(runwayWidthInMetersAllBut15_33, "10L", oakData.thresholdCenter10L, "28R", oakData.thresholdCenter28R),

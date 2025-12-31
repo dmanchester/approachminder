@@ -3,7 +3,7 @@ package com.dmanchester.approachminder
 import com.dmanchester.approachminder.data.Airports.{sfo, sfoData}
 import com.dmanchester.approachminder.typeswithbehavior.{ApproachModel, MeanAngleAndAltitude, PolarAngle, Trajectory}
 import com.dmanchester.approachminder.typeswithoutbehavior.*
-import com.dmanchester.approachminder.utils.MathUtils.feetToMetersConverter
+import com.dmanchester.approachminder.utils.MathUtils.feetToMeters
 import com.dmanchester.approachminder.utils.{ApproachModeling, GeographicCalculator}
 import org.specs2.matcher.Matchers.{SignificantFiguresSyntax, beCloseTo}
 import org.specs2.matcher.{Matcher, SignificantFigures}
@@ -18,7 +18,7 @@ object SharedResources {
 
   val sfoCalculator = GeographicCalculator(sfoData.referencePoint)
 
-  val sfoRunwayHalfWidthInMeters = feetToMetersConverter.convert(sfoData.runwayWidthInFeet) / 2
+  val sfoRunwayHalfWidthInMeters = feetToMeters(sfoData.runwayWidthInFeet) / 2
 
   val sfoThresholdLeft28L = sfoCalculator.rotateAboutAnOriginAndScaleToDistance(sfoData.thresholdCenter10R, sfoData.thresholdCenter28L, 90, sfoRunwayHalfWidthInMeters)
   val sfoThresholdRight28L = sfoCalculator.rotateAboutAnOriginAndScaleToDistance(sfoData.thresholdCenter10R, sfoData.thresholdCenter28L, -90, sfoRunwayHalfWidthInMeters)
