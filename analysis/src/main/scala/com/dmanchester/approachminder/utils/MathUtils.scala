@@ -10,6 +10,14 @@ object MathUtils {
   val feetToMetersConverter = Units.FOOT.getConverterTo(Units.METRE)
 
   /**
+   * Convert feet to meters.
+   *
+   * @param feet A value in feet.
+   * @return The value in meters.
+   */
+  def feetToMeters(feet: Double): Double = 0.3048 * feet
+
+  /**
    * Interpolate the value that is some percentage of the distance from one number to another.
    *
    * @param a The first number.

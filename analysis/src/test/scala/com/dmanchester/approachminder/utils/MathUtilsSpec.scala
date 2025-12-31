@@ -7,8 +7,14 @@ import org.specs2.mutable.*
 
 class MathUtilsSpec extends Specification {
 
+  "feetToMeters" should {
+    "convert correctly" in {
+      feetToMeters(50.0) must beCloseTo(15.24 within significantFigures)
+    }
+  }
+
   "interpolateScalar" should {
-    "interpolate" in {
+    "interpolate correctly" in {
       interpolateScalar(-0.5, 9.5, 0.95) must beCloseTo(9.0 within significantFigures)
       // The distance from -0.5 to 9.5 is 10.0.
       // 95% of 10.0 is 9.5.
