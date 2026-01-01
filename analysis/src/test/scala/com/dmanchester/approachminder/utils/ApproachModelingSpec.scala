@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.SharedResources.significantFigures
+import com.dmanchester.approachminder.resources.TestHelpers.significantFigures
 import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
 import com.dmanchester.approachminder.typeswithoutbehavior.AngleAndAltitude
 import org.specs2.mutable.*

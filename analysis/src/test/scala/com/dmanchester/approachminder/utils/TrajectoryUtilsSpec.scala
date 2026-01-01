@@ -1,6 +1,7 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.SharedResources.*
+import com.dmanchester.approachminder.data.SFOConstructs.*
+import com.dmanchester.approachminder.resources.TestHelpers.{significantFigures, trajectoryFromPositions}
 import com.dmanchester.approachminder.typeswithbehavior.ContinuouslyNearingTrajectory
 import com.dmanchester.approachminder.typeswithoutbehavior.{LongLat, LongLatAlt}
 import com.dmanchester.approachminder.utils.TrajectoryUtils.{continuouslyNearingSegmentsEndingAt, continuouslyNearingSegmentsStartingAt}

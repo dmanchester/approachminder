@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder.typeswithbehavior
 
 import com.dmanchester.approachminder.data.Airports.sfo
-import com.dmanchester.approachminder.SharedResources.*
+import com.dmanchester.approachminder.resources.TestHelpers.{beCloseInTwoDimensionsTo, significantFigures, trajectoryFromPositions}
 import com.dmanchester.approachminder.typeswithoutbehavior.{LongLatAlt, RunwayAndReferencePoint}
 import org.specs2.mutable.*
 

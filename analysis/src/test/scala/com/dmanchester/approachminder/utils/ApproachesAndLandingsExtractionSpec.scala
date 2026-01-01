@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder.utils
 
 import com.dmanchester.approachminder.data.Airports.{oak, sfo}
-import com.dmanchester.approachminder.SharedResources.{beCloseInThreeDimensionsTo, significantFigures, trajectoryFromPositions}
+import com.dmanchester.approachminder.resources.TestHelpers.{beCloseInThreeDimensionsTo, significantFigures, trajectoryFromPositions}
 import com.dmanchester.approachminder.typeswithoutbehavior.{LongLatAlt, RunwayAndReferencePoint}
 import org.specs2.mutable.Specification
 

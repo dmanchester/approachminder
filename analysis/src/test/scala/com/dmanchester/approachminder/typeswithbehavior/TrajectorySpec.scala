@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder.typeswithbehavior
 
-import com.dmanchester.approachminder.SharedResources.trajectoryFromPositions
+import com.dmanchester.approachminder.resources.TestHelpers.trajectoryFromPositions
 import org.specs2.mutable.*
 
 class TrajectorySpec extends Specification {

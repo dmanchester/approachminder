@@ -1,7 +1,8 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.SharedResources.*
+import com.dmanchester.approachminder.data.SFOConstructs.*
 import com.dmanchester.approachminder.data.Airports.sfoData
+import com.dmanchester.approachminder.resources.TestHelpers.{beCloseInTwoDimensionsTo, significantFigures}
 import com.dmanchester.approachminder.typeswithoutbehavior.{AngleAndRelativePosition, HasLongLat, LongLat}
 import org.specs2.mutable.*
 

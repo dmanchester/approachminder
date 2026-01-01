@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.SharedResources.sfoRunway28LApproachModel
+import com.dmanchester.approachminder.data.SFOConstructs.sfoRunway28LApproachModel
 import com.dmanchester.approachminder.typeswithbehavior.{DeviationFromMean, Large, Trajectory}
 import com.dmanchester.approachminder.typeswithoutbehavior.*
 import com.dmanchester.approachminder.utils.Output.openSkyTrajectoriesToJson

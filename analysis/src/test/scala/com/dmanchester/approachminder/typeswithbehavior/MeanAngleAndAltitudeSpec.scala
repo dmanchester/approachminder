@@ -1,8 +1,8 @@
 package com.dmanchester.approachminder.typeswithbehavior
 
-import com.dmanchester.approachminder.SharedResources.significantFigures
+import com.dmanchester.approachminder.resources.TestHelpers.significantFigures
 import com.dmanchester.approachminder.typeswithoutbehavior.AngleAndAltitude
-import com.dmanchester.approachminder.utils.{ApproachModeling, MathUtils}
+import com.dmanchester.approachminder.utils.ApproachModeling
 import org.specs2.mutable.*
 
 class MeanAngleAndAltitudeSpec extends Specification {

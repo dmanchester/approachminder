@@ -1,6 +1,7 @@
 package com.dmanchester.approachminder.typeswithbehavior
 
-import com.dmanchester.approachminder.SharedResources.*
+import com.dmanchester.approachminder.data.SFOConstructs.*
+import com.dmanchester.approachminder.resources.TestHelpers.trajectoryFromPositions
 import com.dmanchester.approachminder.typeswithoutbehavior.{LongLat, LongLatAlt}
 import org.specs2.mutable.*
 
