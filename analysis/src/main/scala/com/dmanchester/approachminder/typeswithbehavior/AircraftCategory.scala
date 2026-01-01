@@ -70,8 +70,8 @@ object AircraftCategory {
    * In a non-empty collection of categories, determine the most-common one that is "non-blank" (i.e., neither
    * "NoInfoAtAll" nor "NoADSBEmitterCategoryInfo"; see AircraftCategory.blank).
    *
-   * If multiple non-blank categories are equally common, pick the one that is alphabetically first by class name. (This
-   * ensures deterministic behavior regardless of the categories' ordering.)
+   * If multiple non-blank categories are equally common, pick the one that is lexicographically first by description.
+   * (This ensures deterministic behavior regardless of the categories' ordering.)
    *
    * @param categories The collection of categories.
    * @throws java.lang.IllegalArgumentException If the collection is empty.
@@ -99,7 +99,7 @@ object AircraftCategory {
       //
       // Otherwise, pick "b".
       val mostCommonCategoryWithCount = categoriesAndCounts.reduce { (a, b) =>
-        if (a._2 > b._2 || (a._2 == b._2 && a._1.getClass.getSimpleName < b._1.getClass.getSimpleName))
+        if (a._2 > b._2 || (a._2 == b._2 && a._1.description < b._1.description))
           a
         else
           b
