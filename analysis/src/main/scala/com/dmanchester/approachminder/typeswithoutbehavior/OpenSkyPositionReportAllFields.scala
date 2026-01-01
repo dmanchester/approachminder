@@ -1,5 +1,7 @@
 package com.dmanchester.approachminder.typeswithoutbehavior
 
+import com.dmanchester.approachminder.typeswithbehavior.AircraftCategory
+
 /**
  * An OpenSky position report with all the fields of an `OpenSkyVector`, but requires values for the following fields
  * (`OpenSkyVector` has them as `Option[...]`):

@@ -1,6 +1,7 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.typeswithoutbehavior.{AircraftCategory, OpenSkyVector, PositionSource}
+import com.dmanchester.approachminder.typeswithbehavior.AircraftCategory
+import com.dmanchester.approachminder.typeswithoutbehavior.{OpenSkyVector, PositionSource}
 import com.dmanchester.approachminder.utils.Input.{SingleOpenSkyFileToVectorsFailure, SingleOpenSkyFileToVectorsSuccess}
 import org.specs2.mutable.*
 

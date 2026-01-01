@@ -1,6 +1,5 @@
 package com.dmanchester.approachminder.typeswithbehavior
 
-import com.dmanchester.approachminder.typeswithoutbehavior.AircraftCategory
 import com.dmanchester.approachminder.utils.TrajectoryUtils.positionsToSegments
 
 /**

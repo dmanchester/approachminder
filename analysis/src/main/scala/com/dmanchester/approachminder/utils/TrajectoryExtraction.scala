@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder.utils
 
-import com.dmanchester.approachminder.typeswithbehavior.Trajectory
+import com.dmanchester.approachminder.typeswithbehavior.{AircraftCategory, Trajectory}
 import com.dmanchester.approachminder.typeswithoutbehavior.*
 import com.typesafe.scalalogging.StrictLogging
 
@@ -79,7 +79,7 @@ object TrajectoryExtraction extends StrictLogging {
       sortedReports = reportsThisICAO24.sortBy(_.timePosition)
       cleanedReports = resolveTimeConflicts(sortedReports)
       categories = cleanedReports.map(_.category)
-      mostCommonCategory = CollectionUtils.mostCommonNonBlankCategoryInNonEmptyCollection(categories)
+      mostCommonCategory = AircraftCategory.mostCommonNonBlankCategory(categories)
       partitionedReports = ReportsPartitioning.partition(cleanedReports, timeGapSecsForPartitioning)
       (callsign, reports) <- partitionedReports
     } yield {

@@ -1,5 +1,7 @@
 package com.dmanchester.approachminder.typeswithoutbehavior
 
+import com.dmanchester.approachminder.typeswithbehavior.AircraftCategory
+
 /**
  * An OpenSky vector, as provided by their API.
  *
