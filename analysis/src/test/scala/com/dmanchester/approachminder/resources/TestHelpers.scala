@@ -10,7 +10,7 @@ object TestHelpers {
   // The number of significant figures to examine in specifications/tests when checking floating-point numbers.
   val significantFigures: SignificantFigures = 6.significantFigures
 
-  // A matcher.
+  // A specs2 Matcher.
   def beCloseInTwoDimensionsTo(expected: HasLongLat, figures: SignificantFigures): Matcher[HasLongLat] = {
 
     val longitudeTerm = beCloseTo(expected.longitude, figures) ^^ { (actual: HasLongLat) => actual.longitude }
@@ -19,14 +19,10 @@ object TestHelpers {
     longitudeTerm and latitudeTerm
   }
 
-  // Another matcher.
+  // Another specs2 Matcher.
   def beCloseInThreeDimensionsTo(expected: HasLongLatAlt, figures: SignificantFigures): Matcher[HasLongLatAlt] = {
-
-    val longitudeTerm = beCloseTo(expected.longitude, figures) ^^ { (actual: HasLongLatAlt) => actual.longitude }
-    val latitudeTerm = beCloseTo(expected.latitude, figures) ^^ { (actual: HasLongLatAlt) => actual.latitude }
     val altitudeMetersTerm = beCloseTo(expected.altitudeMeters, figures) ^^ { (actual: HasLongLatAlt) => actual.altitudeMeters }
-
-    longitudeTerm and latitudeTerm and altitudeMetersTerm
+    beCloseInTwoDimensionsTo(expected, figures) and altitudeMetersTerm
   }
 
   def trajectoryFromPositions[P](positions: Seq[P]): Trajectory[P] = {
