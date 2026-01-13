@@ -19,12 +19,13 @@
   import '../node_modules/cesium/Source/Widgets/widgets.css';  // TODO Compare with "import 'cesium/Build/Cesium/Widgets/widgets.css'"; and, what do I get from this?
   import IO from '../lib/IO.js';
   import trajectoriesFromJSON from './data.json';
+  import cesiumAccessTokenUntrimmed from '../cesium-access-token.txt?raw';
   import sortBy from 'lodash/sortBy.js';
 
   window.CESIUM_BASE_URL = './libs/cesium';
+  const cesiumAccessToken = cesiumAccessTokenUntrimmed.trim();
 
-  // TODO Externalize access token.
-  Ion.defaultAccessToken = '*** INSERT ACCESS TOKEN FROM https://ion.cesium.com/ ***';
+  Ion.defaultAccessToken = cesiumAccessToken;
 
   const aircraft3DModelId = 3164521;  // "B737-800 Model"
   const start = JulianDate.fromIso8601('2022-12-06T18:49:09Z');

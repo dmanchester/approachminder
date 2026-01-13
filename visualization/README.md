@@ -1,6 +1,17 @@
 # Developer Notes
 
-## Start in Development Mode
+## One-Time Setup
+1. Obtain a [Cesium ion access token](https://cesium.com/learn/ion/cesium-ion-access-tokens/).
+
+2. Under `visualization/`, create a file named `cesium-access-token.txt`.
+
+3. Paste the token from step #1 into the file.
+
+   _The token is a sensitive value and should **not** be committed to version control. `cesium-access-token.txt` is listed in `.gitignore`, which should help prevent accidentally committing it._
+
+
+
+## Starting in Development Mode
 
 ### Accept Local Connections Only
 
@@ -14,7 +25,7 @@ npm run dev
 npm run dev -- --host
 ```
 
-## Create a Distribution
+## Creating a Distribution
 
 ```bash
 npm run build
