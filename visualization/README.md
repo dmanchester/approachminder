@@ -4,7 +4,7 @@
 
 1. Create a [Sketchfab](https://sketchfab.com/) account (unless you already have one).
 
-2. Navigate to [B737-800 Model](https://sketchfab.com/3d-models/b737-800-model-6cbe380405794ea69d6b0a3d144dd1af).
+2. Navigate in Sketchfab to [B737-800 Model](https://sketchfab.com/3d-models/b737-800-model-6cbe380405794ea69d6b0a3d144dd1af).
 
 3. Download the model in glTF format.
 
@@ -12,7 +12,7 @@
 
 5. In Cesium ion:
 
-   1. Under Access Tokens, obtain a [token](https://cesium.com/learn/ion/cesium-ion-access-tokens/).
+   1. Under Access Tokens, create a [token](https://cesium.com/learn/ion/cesium-ion-access-tokens/) or identify an existing one.
 
    2. Under My Assets:
       1. Click "Add data" > "Add files...".
