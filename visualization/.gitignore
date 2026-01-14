@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # Specific to ApproachMinder
-cesium-access-token.txt
+approachminder-config.json

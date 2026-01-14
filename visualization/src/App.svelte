@@ -19,15 +19,13 @@
   import '../node_modules/cesium/Source/Widgets/widgets.css';  // TODO Compare with "import 'cesium/Build/Cesium/Widgets/widgets.css'"; and, what do I get from this?
   import IO from '../lib/IO.js';
   import trajectoriesFromJSON from './data.json';
-  import cesiumAccessTokenUntrimmed from '../cesium-access-token.txt?raw';
+  import approachMinderConfig from '../approachminder-config.json';
   import sortBy from 'lodash/sortBy.js';
 
   window.CESIUM_BASE_URL = './libs/cesium';
-  const cesiumAccessToken = cesiumAccessTokenUntrimmed.trim();
 
-  Ion.defaultAccessToken = cesiumAccessToken;
+  Ion.defaultAccessToken = approachMinderConfig.cesiumIon.accessToken;
 
-  const aircraft3DModelId = 3164521;  // "B737-800 Model"
   const start = JulianDate.fromIso8601('2022-12-06T18:49:09Z');
   const stop = JulianDate.fromIso8601('2022-12-06T18:56:01Z');
   const maxThresholdDistanceMetersForApproach = 10000;
@@ -83,7 +81,7 @@
     viewer.clock.clockRange = ClockRange.CLAMPED;
     viewer.timeline.zoomTo(start, stop);
 
-    const airplaneUri = await IonResource.fromAssetId(aircraft3DModelId);
+    const airplaneUri = await IonResource.fromAssetId(approachMinderConfig.cesiumIon.assetIdAirplane);
 
     trajectories.theTrajectories.forEach(trajectory => {
 

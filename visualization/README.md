@@ -1,15 +1,40 @@
 # Developer Notes
 
 ## One-Time Setup
-1. Obtain a [Cesium ion access token](https://cesium.com/learn/ion/cesium-ion-access-tokens/).
 
-2. Under `visualization/`, create a file named `cesium-access-token.txt`.
+1. Create a [Sketchfab](https://sketchfab.com/) account (unless you already have one).
 
-3. Paste the token from step #1 into the file.
+2. Navigate to [B737-800 Model](https://sketchfab.com/3d-models/b737-800-model-6cbe380405794ea69d6b0a3d144dd1af).
 
-   _The token is a sensitive value and should **not** be committed to version control. `cesium-access-token.txt` is listed in `.gitignore`, which should help prevent accidentally committing it._
+3. Download the model in glTF format.
 
+4. Create a [Cesium ion](https://ion.cesium.com/) account (unless you already have one).
 
+5. In Cesium ion:
+
+   1. Under Access Tokens, obtain a [token](https://cesium.com/learn/ion/cesium-ion-access-tokens/).
+
+   2. Under My Assets:
+      1. Click "Add data" > "Add files...".
+      2. Upload the file downloaded from Sketchfab in step 3.
+      3. On the Add Data screen, for "What kind of data is this?", choose "3D Model (convert to glTF)".
+      4. Click Upload.
+      5. Note the ID of the asset.
+
+6. Under `visualization/`, create a file named `approachminder-config.json`.
+
+7. Populate the file with the following JSON, _substituting the values from steps 5.i and 5.ii:_
+
+   ```json
+   {
+     "cesiumIon": {
+       "accessToken": "ABCDEFGH",
+       "assetIdAirplane": 12345678
+     }
+   }
+   ```
+
+   _**Important:** The access token is a sensitive value and should **not** be committed to version control. `approachminder-config.json` is listed in `.gitignore`, which should help prevent accidentally committing it._
 
 ## Starting in Development Mode
 
