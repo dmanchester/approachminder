@@ -1,7 +1,10 @@
-<script>
-  export let observations;
-  export let showApproachSegments;
-  export let clickHandlerTrajectory;
+<script lang="ts">
+  import type Trajectory from "../lib/Trajectory";
+  import type { Observation } from "../lib/Observation";
+
+  export let observations: Array<Observation>;
+  export let showApproachSegments: boolean;
+  export let clickHandlerTrajectory: (trajectory: Trajectory) => void;
 
   const numberFormat = new Intl.NumberFormat();
 </script>
@@ -45,13 +48,13 @@
             <td>{observation.position.latitude}°</td>
             <td>{observation.position.longitude}°</td>
             <td>{numberFormat.format(observation.position.altitude)} m</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
-            {#if showApproachSegments}
-                <td class="td-emphasis">{observation.position.approachSegment.airport}</td>
-                <td class="td-emphasis">{observation.position.approachSegment.threshold}</td>
-                <td class="td-emphasis">{numberFormat.format(observation.position.approachSegment.thresholdDistanceMeters)} m</td>
-                <td class="td-emphasis">{numberFormat.format(observation.position.approachSegment.verticalDevMeters)} m</td>
-                <td class="td-emphasis">{numberFormat.format(observation.position.approachSegment.horizontalDevMeters)} m</td>
-                <td class="td-emphasis">{observation.position.approachSegment.normalizedEuclideanDistance}</td>
+            {#if showApproachSegments}  <!-- TODO Better option than using "?" on each line below? -->
+                <td class="td-emphasis">{observation.position.approachSegment?.airport}</td>
+                <td class="td-emphasis">{observation.position.approachSegment?.threshold}</td>
+                <td class="td-emphasis">{numberFormat.format(observation.position.approachSegment?.thresholdDistanceMeters ?? -1)} m</td>  <!-- TODO Here and below, "?? -1" definitely not optimal. Better option? -->
+                <td class="td-emphasis">{numberFormat.format(observation.position.approachSegment?.verticalDevMeters ?? -1)} m</td>
+                <td class="td-emphasis">{numberFormat.format(observation.position.approachSegment?.horizontalDevMeters ?? -1)} m</td>
+                <td class="td-emphasis">{observation.position.approachSegment?.normalizedEuclideanDistance}</td>
             {/if}
 <!--            <td>{observation.position.onGround}</td>-->
             <td>{observation.position.velocity} m/s</td>

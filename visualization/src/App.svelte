@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { SplitPane } from '@rich_harris/svelte-split-pane';
   import AircraftTable from './AircraftTable.svelte';
@@ -17,12 +17,14 @@
     Viewer,
   } from 'cesium';
   import '../node_modules/cesium/Source/Widgets/widgets.css';  // TODO Compare with "import 'cesium/Build/Cesium/Widgets/widgets.css'"; and, what do I get from this?
-  import IO from '../lib/IO.js';
+
+  import IO from '../lib/IO';
+  import type { Observation } from '../lib/Observation';
+  import type Trajectory from '../lib/Trajectory';
   import trajectoriesFromJSON from './data.json';
   import approachMinderConfig from '../approachminder-config.json';
-  import sortBy from 'lodash/sortBy.js';
 
-  window.CESIUM_BASE_URL = './libs/cesium';
+  import { sortBy } from 'lodash';
 
   Ion.defaultAccessToken = approachMinderConfig.cesiumIon.accessToken;
 
@@ -36,17 +38,18 @@
   const useBingImagery = urlParams.get('bing') === 'true';
 
   const trajectories = IO.trajectoriesFromParsedJSON(trajectoriesFromJSON, JulianDate.fromIso8601);
-  const trajectoriesToEntities = new Map();
-  let viewer;
-  let observationsAircraftOnApproach = [];
-  let observationsOtherAircraft = [];
+  const trajectoriesToEntities = new Map<Trajectory, Entity>();
+
+  let viewer: Viewer;
+  let observationsAircraftOnApproach: Array<Observation> = [];
+  let observationsOtherAircraft: Array<Observation> = [];
 
   onMount(async () => {
 
     // TODO What code that's currently in this function can be moved before it, to improve startup performance?
 
     try {
-      const viewerOptions = {
+      const viewerOptions: Viewer.ConstructorOptions = {
         baseLayerPicker: false,
         geocoder: false,
         homeButton: false,
@@ -67,9 +70,9 @@
 
       viewer = new Viewer('cesiumContainer', viewerOptions);
 
-    } catch(error) {
+    } catch (err) {
        // TODO Error is likely fatal. Better to not catch and allow to propagate?
-      console.log(error);
+      console.log(err);
     }
 
     // const start = trajectories.earliestTime();
@@ -92,7 +95,7 @@
       positionProperty.addSamples(times, positions);
 
       const entity = new Entity({
-        name: trajectory.aircraftProfile.callsign,
+        name: trajectory.aircraftProfile.callsign ?? "null",
         //  availability: new Cesium.TimeIntervalCollection([ new Cesium.TimeInterval({ start: start, stop: stop }) ]),
         position: positionProperty,
         model: { uri: airplaneUri },
@@ -108,17 +111,17 @@
     }
 
     // const firstTrajectory = trajectories.theTrajectories[0];  // TODO This is hacky. Also, concern ourselves with no-entities case?
-    const trajectoryToTrack = trajectories.theTrajectories.find(trajectory => trajectory.aircraftProfile.callsign === firstCallsignToTrack);
+    const trajectoryToTrack = trajectories.theTrajectories.find(trajectory => trajectory.aircraftProfile.callsign === firstCallsignToTrack)!;
     viewer.trackedEntity = trajectoriesToEntities.get(trajectoryToTrack);
     // viewer.clock.currentTime = firstTrajectory.earliestTime().clone();
 
-    let lastTimeProcessed = undefined;
+    let lastTimeProcessed: JulianDate | null = null;  // TODO Switched from "undefined" to "null". Any other explicit "undefined" in codebase?
 
     viewer.clock.onTick.addEventListener(() => {  // Whoa, this gets called all the time, even when clock is stopped!
 
       const time = viewer.clock.currentTime;
 
-      if (JulianDate.equals(time, lastTimeProcessed)) {
+      if ((lastTimeProcessed !== null) && JulianDate.equals(time, lastTimeProcessed)) {
         // Nothing to do.
         return;
       }
@@ -131,9 +134,12 @@
         position: timeBasedPosition,
         ageOfObservation: Math.round(JulianDate.secondsDifference(time, timeBasedPosition.time))
       }));
-      const observationsAircraftOnApproachUnsorted = observations.filter(observation => observation.position.approachSegment?.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach);
+      const observationsAircraftOnApproachUnsorted = observations.filter(observation => {
+        const approachSegment = observation.position.approachSegment
+        return approachSegment && approachSegment.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach
+      });
       // TODO Move sorting into AircraftTable.svelte?
-      observationsAircraftOnApproach = sortBy(observationsAircraftOnApproachUnsorted, observation => observation.position.approachSegment.thresholdDistanceMeters);
+      observationsAircraftOnApproach = sortBy(observationsAircraftOnApproachUnsorted, observation => observation.position.approachSegment!.thresholdDistanceMeters);
       observationsOtherAircraft = sortBy(observations.filter(observation => !observation.position.approachSegment), observation => observation.trajectory.aircraftProfile.callsign);
       lastTimeProcessed = time;
     });

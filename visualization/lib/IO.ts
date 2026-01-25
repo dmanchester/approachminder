@@ -1,8 +1,11 @@
-import AircraftProfile from "./AircraftProfile.js";
-import TimeBasedPosition from "./TimeBasedPosition.js";
-import Trajectories from "./Trajectories.js";
-import Trajectory from "./Trajectory.js";
-import ApproachSegment from "./ApproachSegment.js";
+import AircraftProfile from "./AircraftProfile";
+import ApproachSegment from "./ApproachSegment";
+import type { ParsedJSON } from "./ParsedJSON";
+import TimeBasedPosition from "./TimeBasedPosition";
+import Trajectories from "./Trajectories";
+import Trajectory from "./Trajectory";
+
+import type { JulianDate } from "cesium";
 
 class IO {
 
@@ -14,11 +17,10 @@ class IO {
    * App.svelte). This leads to a stack trace with the message, "julianDate is required." -- As a workaround, we require
    * calling code to import JulianDate.fromIso8601() and pass it a reference.
    *
-   * @param {object} parsedJSON
-   * @param {function} julianDateFromIso8601 a reference to CesiumJS's JulianDate.fromIso8601() function
-   * @returns {Trajectories}
+   * @param parsedJSON
+   * @param julianDateFromIso8601
    */
-  static trajectoriesFromParsedJSON(parsedJSON, julianDateFromIso8601) {
+  static trajectoriesFromParsedJSON(parsedJSON: ParsedJSON, julianDateFromIso8601: (iso8601String: string, result?: JulianDate) => JulianDate) {
 
     const theTrajectories = parsedJSON.map(trajectoryFromJSON => {
 
