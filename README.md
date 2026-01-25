@@ -108,23 +108,27 @@ With the help of the [CesiumJS](https://cesium.com/platform/cesiumjs/) library, 
 
 ## Architecture and Libraries
 
-ApproachMinder's **analysis component** is written in [Scala](https://www.scala-lang.org/). It relies on various libraries in Scala and Java, employing them as follows:
+ApproachMinder's **analysis component** is written in **[Scala](https://www.scala-lang.org/).** It relies on various libraries in Scala and Java, employing them as follows:
 * **[Play JSON](https://www.playframework.com/documentation/2.9.x/ScalaJson#The-Play-JSON-library):** Parse JSON-based ADS-B reports from the OpenSky Network. Produce JSON for the visualization component.
 * **[GeoTools](https://geotools.org/):** Convert latitude and longitude positions to the meters-based [Universal Transverse Mercator](https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system) (UTM) projection.
 * **[JTS Topology Suite](https://github.com/locationtech/jts?tab=readme-ov-file#jts-topology-suite):** Perform calculations on UTM coordinates.
 * **[Apache Commons Math](https://commons.apache.org/proper/commons-math/):** Calculate statistics.
 * **[specs2](https://etorreborre.github.io/specs2/):** Automated testing.
 
-ApproachMinder's **visualization component** is written in JavaScript. It employs libraries as follows:
+ApproachMinder's **visualization component** is written in **[TypeScript](https://www.typescriptlang.org/).**
+
+**[Vite](https://vite.dev/)** ([pronunciation](https://vite.dev/guide/#overview)), the build tool of the visualization component, [transpiles](https://en.wikipedia.org/wiki/Source-to-source_compiler) the TypeScript code to JavaScript.
+
+Vite also hosts the visualization component in development mode and produces production builds, handling tasks such as bundling and minification.
+
+ApproachMinder's Vite configuration is derived from the "[simply-cesium-vite-vue](https://github.com/s3xysteak/simply-cesium-vite-vue)" example.
+
+ApproachMinder's visualization component employs libraries as follows:
 * **[CesiumJS](https://cesium.com/platform/cesiumjs/):** Provide in-browser, three-dimensional visualizations of aircraft in flight. Offer various controls to the user.
 * **[Svelte](https://svelte.dev/):** Display a dashboard of aircraft data, keeping it synchronized with the clock time as managed by CesiumJS.
 * **[svelte-split-pane](https://www.npmjs.com/package/@rich_harris/svelte-split-pane):** Provide a draggable split pane between the CesiumJS-based view and the Svelte-based dashboard.
 * **[B737-800 Model](https://skfb.ly/oSG9Q):** 3D model used in the view. (Created by [hikami3150](https://sketchfab.com/hikami3150). Licensed under the [Creative Commons Attribution](http://creativecommons.org/licenses/by/4.0/) license.)
-* **[Jasmine](https://jasmine.github.io/):** Automated testing.
-
-**[Vite](https://vite.dev/)** ([pronunciation](https://vite.dev/guide/#overview)) is the build tool of the ApproachMinder visualization and hosts it in development mode. Vite also produces production builds of the visualization and handles associated tasks, including bundling and minification.
-
-ApproachMinder's Vite configuration is derived from the "[simply-cesium-vite-vue](https://github.com/s3xysteak/simply-cesium-vite-vue)" example.
+* **[Vitest](https://vitest.dev/):** Automated testing.
 
 ## Future Development
 
@@ -157,7 +161,3 @@ Geospatial information about an airport's runways—their width; the coordinates
 A future version of ApproachMinder will source that data from XML-based [AIXM](https://aixm.aero/) files; in the case of the United States, files from the [NASR data](https://www.faa.gov/air_traffic/flight_info/aeronav/aero_data/NASR_Subscription/) of the Federal Aviation Administration (FAA).
 
 Initial development against FAA AIXM data with the [xml-spac](https://github.com/dylemma/xml-spac) parser has been successful.
-
-### TypeScript Migration
-
-A future version of ApproachMinder will migrate the visualization component to [TypeScript](https://www.typescriptlang.org/).
