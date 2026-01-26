@@ -7,7 +7,7 @@ import Trajectory from "./Trajectory";
 
 import type { JulianDate } from "cesium";
 
-class IO {
+namespace IO {
 
   /**
    * Construct a `Trajectories` instance from parsed trajectories JSON.
@@ -20,7 +20,7 @@ class IO {
    * @param parsedJSON
    * @param julianDateFromIso8601
    */
-  static trajectoriesFromParsedJSON(parsedJSON: ParsedJSON, julianDateFromIso8601: (iso8601String: string, result?: JulianDate) => JulianDate) {
+  export function trajectoriesFromParsedJSON(parsedJSON: ParsedJSON, julianDateFromIso8601: (iso8601String: string, result?: JulianDate) => JulianDate) {
 
     const theTrajectories = parsedJSON.map(trajectoryFromJSON => {
 
