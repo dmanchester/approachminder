@@ -58,10 +58,14 @@ npm run build
 
 The distribution is created in `dist/`.
 
-The above command runs with a larger-than-default heap, setting `--max-old-space-size` to 4096 MB. This is to avoid `JavaScript heap out of memory` errors like the following:
+## Other Notes
+
+With a large `data.json` (or other large resources that must be processed by Vite), the `npm run build` command above may fail on a `JavaScript heap out of memory` error like the following:
 
 ```
 FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
 ```
+
+The error can typically be resolved by changing the command's definition in `package.json` to run with a sufficiently large heap (e.g., `NODE_OPTIONS=--max-old-space-size=4096 vite build`; value is in megabytes).
 
 For background information, please see [this Vite issue](https://github.com/vitejs/vite/issues/2433) and [this documentation from Rollup](https://rollupjs.org/troubleshooting/#error-javascript-heap-out-of-memory) (used by Vite).

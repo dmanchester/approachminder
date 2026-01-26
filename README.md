@@ -49,9 +49,9 @@ For point #1 of the ApproachMinder concept (extracting approaches and landings f
 
 **An interactive demo of ApproachMinder's visualization component is available.** It provides a perspective on the implementation of point #2 (training statistical models) and point #3 (inferring which aircraft are on approach and their intended runways; quantifying deviation from the models) of the ApproachMinder concept.
 
-**[The demo is accessible here](https://www.dmanchester.com/approachminder-demo/?bing=true).** It typically requires **several seconds** to load.
+**[The demo is accessible here](https://www.dmanchester.com/approachminder-demo/?bing=true).** It typically requires a few seconds to load.
 
-Due to the demo's use of satellite imagery, it is fairly bandwidth-intensive: the initial download is approximately **50 MB,** and additional imagery is downloaded as the demo progresses.
+Due to the demo's use of satellite imagery, it is somewhat bandwidth-intensive: the initial download is approximately **10 MB,** and additional imagery is downloaded as the demo progresses.
 
 #### Walkthrough of Demo
 
