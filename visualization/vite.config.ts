@@ -1,74 +1,43 @@
-import { fileURLToPath, URL } from 'node:url';
-
 import { defineConfig } from "vitest/config";
-import { type Plugin } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 
-import { type Target, viteStaticCopy } from 'vite-plugin-static-copy';
-import { viteExternalsPlugin } from 'vite-plugin-externals';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
-// See also: https://vitejs.dev/config/.
+const cesiumSource = "node_modules/cesium/Build/Cesium";
+const cesiumBaseUrl = "cesiumStatic";
 
-function cesiumTargets(): Array<Target> {
+const cesiumTargets = ['Assets', 'ThirdParty', 'Widgets', 'Workers'].map(dir => ({
+  src: `${cesiumSource}/${dir}`,
+  dest: cesiumBaseUrl
+}));
 
-  const targets: Array<Target> = [];
-
-  ['Assets', 'ThirdParty', 'Widgets', 'Workers'].forEach(dir => {
-    targets.push({
-      src: `node_modules/cesium/Build/Cesium/${dir}/*`,
-      dest: `libs/cesium/${dir}/`
-    });
-  });
-
-  targets.push({
-    src: 'node_modules/cesium/Build/Cesium/Cesium.js',
-    dest: 'libs/cesium/'
-  });
-
-  return targets;
-}
-
-const scriptTagTransformer = () => [ {
-  tag: 'script',
-  attrs: { src: 'libs/cesium/Cesium.js' }
-}];
-
-// TODO Is scriptTagTransformerPlugin() needed? When it's uncommented in defineConfig(), it drives a line like the
-// following into the top of index.html's <head> element (when running in dev mode):
-//
-//   <script src="libs/cesium/Cesium.js"></script>
-//
-// However, there seems to be no negative impact from having it commented out.
-//
-// If it isn't needed, remove it. And if it's removed, the above Target to copy Cesium.js can likely be removed, too.
-//
-// @ts-ignore
-function scriptTagTransformerPlugin(): Plugin {
-  return {
-    name: 'scriptTagTransformerPlugin',
-    transformIndexHtml: scriptTagTransformer
-  }
-}
-
+// https://vite.dev/config/
 export default defineConfig({
+  // TODO Do I need to exclude "*.test.ts" files from bundle via a "build" property?
   base: './',  // see https://github.com/vitejs/vite/discussions/5081
-  // TODO Do I need to add "build" and exclude "*.test.ts" files from bundle?
-  define: {  // from https://community.cesium.com/t/is-there-a-good-way-to-use-cesium-with-vite/27545/18
-    CESIUM_BASE_URL: JSON.stringify('./libs/cesium'),
-  },
+  // TODO After upgrading Vite, try again to set CESIUM_BASE_URL via "define". (See below.)
+  //
+  // This approach to to setting CESIUM_BASE_URL has not seemed to work with Vite v4.5.9. "npm run build" gets an error
+  // like this one:
+  //
+  // [commonjs--resolver] Unexpected token (66:97) in /home/dan/IdeaUltProjects/approachminder/visualization/node_modules/@cesium/engine/Source/Core/buildModuleUrl.js
+  // file: /home/dan/IdeaUltProjects/approachminder/visualization/node_modules/@cesium/engine/Source/Core/buildModuleUrl.js:66:97
+  // 64:   if (!defined(baseUrlString)) {
+  // 65:     throw new DeveloperError(
+  // 66:       "Unable to determine Cesium base URL automatically, try defining a global variable called "cesiumStatic".",
+  //                                                                                                      ^
+  // 67:     );
+  // 68:   }
+  //
+  // Bizarrely, the source code quoted above ("try defining a global variable...") happens to reflect replacement of
+  // "CESIUM_BASE_URL" with "cesiumStatic".
+  //
+  // define: {  // from https://community.cesium.com/t/is-there-a-good-way-to-use-cesium-with-vite/27545/18
+  //   CESIUM_BASE_URL: JSON.stringify(cesiumBaseUrl),
+  // },
   plugins: [
     svelte(),
-    viteStaticCopy({ targets: cesiumTargets() }),
-    viteExternalsPlugin(
-      { cesium: 'Cesium' },
-      { disableInServe: true }
-    ),
-    // scriptTagTransformerPlugin(),
+    viteStaticCopy({ targets: cesiumTargets }),
   ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
-  },
   test: {}
 })

@@ -121,7 +121,7 @@ ApproachMinder's **visualization component** is written in **[TypeScript](https:
 
 Vite also hosts the visualization component in development mode and produces production builds, handling tasks such as bundling and minification.
 
-ApproachMinder's Vite configuration is derived from the "[simply-cesium-vite-vue](https://github.com/s3xysteak/simply-cesium-vite-vue)" example.
+ApproachMinder's Vite configuration is based on a [posting](https://community.cesium.com/t/is-there-a-good-way-to-use-cesium-with-vite/27545/18) in the CesiumJS forum by user "[JackOfAllBugs](https://community.cesium.com/u/jackofallbugs)".
 
 ApproachMinder's visualization component employs libraries as follows:
 * **[CesiumJS](https://cesium.com/platform/cesiumjs/):** Provide in-browser, three-dimensional visualizations of aircraft in flight. Offer various controls to the user.

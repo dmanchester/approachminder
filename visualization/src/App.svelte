@@ -26,6 +26,9 @@
 
   import { sortBy } from 'lodash';
 
+  // @ts-ignore
+  window.CESIUM_BASE_URL = 'cesiumStatic';
+
   Ion.defaultAccessToken = approachMinderConfig.cesiumIon.accessToken;
 
   const start = JulianDate.fromIso8601('2022-12-06T18:49:09Z');
@@ -37,7 +40,7 @@
   const urlParams = new URLSearchParams(window.location.search);
   const useBingImagery = urlParams.get('bing') === 'true';
 
-  const trajectories = IO.trajectoriesFromParsedJSON(trajectoriesFromJSON, JulianDate.fromIso8601);
+  const trajectories = IO.trajectoriesFromParsedJSON(trajectoriesFromJSON as any, JulianDate.fromIso8601);
   const trajectoriesToEntities = new Map<Trajectory, Entity>();
 
   let viewer: Viewer;
