@@ -16,7 +16,7 @@
     "@types/lodash": "^4.17.21",
     "@types/node": "^24.10.9",
     "@vitest/ui": "^0.34.7",
-    "cesium": "^1.127.0",
+    "cesium": "^1.137.0",
     "lodash": "^4.17.21",
     "svelte": "^4.2.2",
     "typescript": "~5.9.3",
