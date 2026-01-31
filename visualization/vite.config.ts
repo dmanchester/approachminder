@@ -39,5 +39,12 @@ export default defineConfig({
     svelte(),
     viteStaticCopy({ targets: cesiumTargets }),
   ],
-  test: {}
+  test: {
+    // TODO Specify something like "dir: './lib/'" to speed up test discovery? Since that's also where the non-test code
+    // lives, need to ensure that an "include" of "*.test.ts" is still enforced. See also:
+    //
+    // https://v4.vitest.dev/guide/migration.html#simplified-exclude
+    // https://v4.vitest.dev/config/dir.html
+    // https://v4.vitest.dev/config/include.html
+  }
 })

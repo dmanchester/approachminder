@@ -2,9 +2,13 @@
   import type Trajectory from "../lib/Trajectory";
   import type { Observation } from "../lib/Observation";
 
-  export let observations: Array<Observation>;
-  export let showApproachSegments: boolean;
-  export let clickHandlerTrajectory: (trajectory: Trajectory) => void;
+  interface Props {
+    observations: Array<Observation>;
+    showApproachSegments: boolean;
+    clickHandlerTrajectory: (trajectory: Trajectory) => void;
+  }
+
+  let { observations, showApproachSegments, clickHandlerTrajectory }: Props = $props();
 
   const numberFormat = new Intl.NumberFormat();
 </script>
@@ -37,11 +41,11 @@
     {#each observations as observation (observation.trajectory.aircraftProfile.icao24)}
         <tr>
             <td class="align-center">
-                <button on:click={() => { clickHandlerTrajectory(observation.trajectory); }}>
+                <button onclick={() => { clickHandlerTrajectory(observation.trajectory); }}>
                     {observation.trajectory.aircraftProfile.callsign}
                 </button>
             </td>
-            <!-- FIXNE Handle nulls better (for example, currently, squawk shows as "null" when not present. -->
+            <!-- FIXME Handle nulls better (for example, currently, squawk shows as "null" when not present. -->
             <!-- TODO Can we establish intermediate vars to make the following dot lookups shorter? -->
             <!-- TODO For fields with a decimal component, show trailing zeros (e.g., "1.0")  -->
 <!--            <td>{observation.trajectory.aircraftProfile.category}</td>-->

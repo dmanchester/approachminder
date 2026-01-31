@@ -44,8 +44,8 @@
   const trajectoriesToEntities = new Map<Trajectory, Entity>();
 
   let viewer: Viewer;
-  let observationsAircraftOnApproach: Array<Observation> = [];
-  let observationsOtherAircraft: Array<Observation> = [];
+  let observationsAircraftOnApproach: Array<Observation> = $state([]);
+  let observationsOtherAircraft: Array<Observation> = $state([]);
 
   onMount(async () => {
 
@@ -149,25 +149,26 @@
   });
 </script>
 
-<!-- TODO What additional parameters to pass to SplitPane? See https://www.npmjs.com/package/@rich_harris/svelte-split-pane.
-     TODO Work thru issue: we're using Svelte 4; svelte-split-pane expects 3.x. -->
-<SplitPane
-        type="vertical"
->
-  <section slot="a">
-    <div id="cesiumContainer"></div>
-  </section>
-  <section slot="b" id="tableSection">
-    <!-- TODO Specify the click handler once and share below -->
-    <h1>Aircraft on Approach</h1>
-    <AircraftTable observations="{observationsAircraftOnApproach}" showApproachSegments={true} clickHandlerTrajectory={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
-    <h1>Other Aircraft</h1>
-    <AircraftTable observations="{observationsOtherAircraft}" showApproachSegments={false} clickHandlerTrajectory={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
-    <div id="bottomRightBox">
-      <div id="appName"><b><a href="https://github.com/dmanchester/approachminder#approachminder" target="_blank">ApproachMinder</a></b></div>
-      ADS-B data by <a href="https://opensky-network.org/" target="_blank">OpenSky Network</a>
-    </div>
-  </section>
+<!-- TODO What additional parameters to pass to SplitPane? See https://www.npmjs.com/package/@rich_harris/svelte-split-pane. -->
+<SplitPane type="rows">
+  {#snippet a()}
+    <section>
+      <div id="cesiumContainer"></div>
+    </section>
+  {/snippet}
+  {#snippet b()}
+    <section id="tableSection">
+      <!-- TODO Specify the click handler once and share below -->
+      <h1>Aircraft on Approach</h1>
+      <AircraftTable observations={observationsAircraftOnApproach} showApproachSegments={true} clickHandlerTrajectory={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
+      <h1>Other Aircraft</h1>
+      <AircraftTable observations={observationsOtherAircraft} showApproachSegments={false} clickHandlerTrajectory={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
+      <div id="bottomRightBox">
+        <div id="appName"><b><a href="https://github.com/dmanchester/approachminder#approachminder" target="_blank">ApproachMinder</a></b></div>
+        ADS-B data by <a href="https://opensky-network.org/" target="_blank">OpenSky Network</a>
+      </div>
+    </section>
+  {/snippet}
 </SplitPane>
 
 <style>
