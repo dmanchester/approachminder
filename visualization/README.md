@@ -2,13 +2,13 @@
 
 ## One-Time Setup
 
-1. Create a [Sketchfab](https://sketchfab.com/) account (unless you already have one).
+1. Create a [Sketchfab](https://sketchfab.com/) account (if you don't yet have one).
 
 2. Navigate in Sketchfab to [B737-800 Model](https://sketchfab.com/3d-models/b737-800-model-6cbe380405794ea69d6b0a3d144dd1af).
 
 3. Download the model in glTF format.
 
-4. Create a [Cesium ion](https://ion.cesium.com/) account (unless you already have one).
+4. Create a [Cesium ion](https://ion.cesium.com/) account (if you don't yet have one).
 
 5. In Cesium ion:
 
@@ -48,6 +48,20 @@ npm run dev
 
 ```bash
 npm run dev -- --host
+```
+
+## Running Tests
+
+### Test Runner UI: Console Only
+
+```bash
+npm run test
+```
+
+### Test Runner UI: Console and Browser
+
+```bash
+npm run test -- --ui
 ```
 
 ## Creating a Distribution
