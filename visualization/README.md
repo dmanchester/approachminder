@@ -72,6 +72,14 @@ npm run build
 
 The distribution is created in `dist/`.
 
+## Running "svelte-check"
+
+_Documentation for "svelte-check": [npmjs.com](https://www.npmjs.com/package/svelte-check); [svelte.dev](https://svelte.dev/docs/cli/sv-check)._
+
+```bash
+npm run check
+```
+
 ## Other Notes
 
 With a large `data.json` (or other large resources that must be processed by Vite), the `npm run build` command above may fail on a `JavaScript heap out of memory` error like the following:
