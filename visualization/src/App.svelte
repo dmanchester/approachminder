@@ -26,9 +26,6 @@
 
   import { sortBy } from 'lodash';
 
-  // @ts-ignore
-  window.CESIUM_BASE_URL = 'cesiumStatic';
-
   Ion.defaultAccessToken = approachMinderConfig.cesiumIon.accessToken;
 
   const start = JulianDate.fromIso8601('2022-12-06T18:49:09Z');
