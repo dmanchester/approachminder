@@ -3,28 +3,21 @@
   import { SplitPane } from '@rich_harris/svelte-split-pane';
   import AircraftTable from './AircraftTable.svelte';
   import {
-    Cartesian3,
-    ClockRange,
     Entity,
-    ImageryLayer,
     Ion,
     IonResource,
-    IonImageryProvider,
     JulianDate,
-    SampledPositionProperty,
-    Terrain,
-    VelocityOrientationProperty,
-    Viewer,
+    Viewer
   } from 'cesium';
   import '../node_modules/cesium/Source/Widgets/widgets.css';  // TODO Compare with "import 'cesium/Build/Cesium/Widgets/widgets.css'"; and, what do I get from this?
+  import { sortBy } from 'lodash';
 
   import IO from '../lib/IO';
   import type { Observation } from '../lib/Observation';
   import type Trajectory from '../lib/Trajectory';
   import trajectoriesFromJSON from './data.json';
   import approachMinderConfig from '../approachminder-config.json';
-
-  import { sortBy } from 'lodash';
+  import { configureViewer, createCesiumEntities, viewerOptions } from "../lib/UI";
 
   Ion.defaultAccessToken = approachMinderConfig.cesiumIon.accessToken;
 
@@ -38,8 +31,10 @@
   const useBingImagery = urlParams.get('bing') === 'true';
 
   const trajectories = IO.trajectoriesFromParsedJSON(trajectoriesFromJSON as any, JulianDate.fromIso8601);
-  const trajectoriesToEntities = new Map<Trajectory, Entity>();
+  let trajectoriesToEntities: Map<Trajectory, Entity>;
 
+  // While we have to defer initialization of the viewer until the onMount() handler has fired, we seemingly must make
+  // it a top-level declaration so it's visible to the trajectory click handlers in this file's UI template.
   let viewer: Viewer;
   let observationsAircraftOnApproach: Array<Observation> = $state([]);
   let observationsOtherAircraft: Array<Observation> = $state([]);
@@ -48,67 +43,12 @@
 
     // TODO What code that's currently in this function can be moved before it, to improve startup performance?
 
-    try {
-      const viewerOptions: Viewer.ConstructorOptions = {
-        baseLayerPicker: false,
-        geocoder: false,
-        homeButton: false,
-        sceneModePicker: false,
-        terrain: Terrain.fromWorldTerrain()
-        // Using "terrain: ..." instead of "terrainProvider: await createWorldTerrainAsync()" per:
-        //
-        // https://github.com/CesiumGS/cesium-webpack-example/blob/23638ff7ce845a655c949de9a01e765c91ee94ba/webpack-5/src/index.js#L17
-      };
+    viewer = new Viewer('cesiumContainer', viewerOptions(useBingImagery));
+    configureViewer(viewer, start, stop);
 
-      if (!useBingImagery) {
-        // Use Sentinel-2 imagery. See:
-        //
-        //   * https://sandcastle.cesium.com/?src=Sentinel-2.html
-        //   * https://cesium.com/learn/ion/optimizing-quotas/
-        viewerOptions.baseLayer = ImageryLayer.fromProviderAsync(IonImageryProvider.fromAssetId(3954));
-      }
-
-      viewer = new Viewer('cesiumContainer', viewerOptions);
-
-    } catch (err) {
-       // TODO Error is likely fatal. Better to not catch and allow to propagate?
-      console.log(err);
-    }
-
-    // const start = trajectories.earliestTime();
-    // const stop = trajectories.latestTime();
-    viewer.clock.shouldAnimate = true;
-    viewer.clock.startTime = start.clone();
-    viewer.clock.stopTime = stop.clone();
-    viewer.clock.currentTime = start.clone();
-    viewer.clock.clockRange = ClockRange.CLAMPED;
-    viewer.timeline.zoomTo(start, stop);
-
-    const airplaneUri = await IonResource.fromAssetId(approachMinderConfig.cesiumIon.assetIdAirplane);
-
-    trajectories.theTrajectories.forEach(trajectory => {
-
-      const times = trajectory.timeBasedPositions.map(timeBasedPosition => timeBasedPosition.time);
-      const positions = trajectory.timeBasedPositions.map(timeBasedPosition => Cartesian3.fromDegrees(timeBasedPosition.longitude, timeBasedPosition.latitude, timeBasedPosition.altitude));
-
-      const positionProperty = new SampledPositionProperty();
-      positionProperty.addSamples(times, positions);
-
-      const entity = new Entity({
-        name: trajectory.aircraftProfile.callsign ?? "null",
-        //  availability: new Cesium.TimeIntervalCollection([ new Cesium.TimeInterval({ start: start, stop: stop }) ]),
-        position: positionProperty,
-        model: { uri: airplaneUri },
-        // Automatically compute the orientation from the position.
-        orientation: new VelocityOrientationProperty(positionProperty)
-      });
-
-      trajectoriesToEntities.set(trajectory, entity);
-    });
-
-    for (const entity of trajectoriesToEntities.values()) {
-       viewer.entities.add(entity);
-    }
+    const airplaneIonResource = await IonResource.fromAssetId(approachMinderConfig.cesiumIon.assetIdAirplane);
+    trajectoriesToEntities = createCesiumEntities(trajectories.theTrajectories, airplaneIonResource);
+    trajectoriesToEntities.values().forEach(entity => { viewer.entities.add(entity); });
 
     // const firstTrajectory = trajectories.theTrajectories[0];  // TODO This is hacky. Also, concern ourselves with no-entities case?
     const trajectoryToTrack = trajectories.theTrajectories.find(trajectory => trajectory.aircraftProfile.callsign === firstCallsignToTrack)!;

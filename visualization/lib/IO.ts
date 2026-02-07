@@ -7,6 +7,7 @@ import Trajectory from "./Trajectory";
 
 import type { JulianDate } from "cesium";
 
+// TODO Does it add value to have these functions in a namespace? If not, eliminate it.
 namespace IO {
 
   /**
