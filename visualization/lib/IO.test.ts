@@ -34,7 +34,7 @@ test("trajectoriesFromParsedJSON() should correctly construct a Trajectories ins
       }
     ];
 
-  const trajectories = IO.trajectoriesFromParsedJSON(parsedJSON as any, JulianDate.fromIso8601);
+  const trajectories = IO.trajectoriesFromParsedJSON(parsedJSON as any);
 
   expect(trajectories.theTrajectories.length).toEqual(2);
 

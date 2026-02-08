@@ -30,7 +30,7 @@
   const urlParams = new URLSearchParams(window.location.search);
   const useBingImagery = urlParams.get('bing') === 'true';
 
-  const trajectories = IO.trajectoriesFromParsedJSON(trajectoriesFromJSON as any, JulianDate.fromIso8601);
+  const trajectories = IO.trajectoriesFromParsedJSON(trajectoriesFromJSON as any);
   let trajectoriesToEntities: Map<Trajectory, Entity>;
 
   // While we have to defer initialization of the viewer until the onMount() handler has fired, we seemingly must make
