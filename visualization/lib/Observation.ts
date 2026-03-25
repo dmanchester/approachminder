@@ -1,8 +1,6 @@
-import type TimeBasedPosition from "./TimeBasedPosition";
-import type Trajectory from "./Trajectory";
+import type Position from "./Position";
 
 export type Observation = ({
-  trajectory: Trajectory,
-  position: TimeBasedPosition,
+  position: Position,
   ageOfObservation: number
 })

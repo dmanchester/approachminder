@@ -12,9 +12,10 @@
   import '../node_modules/cesium/Source/Widgets/widgets.css';  // TODO Compare with "import 'cesium/Build/Cesium/Widgets/widgets.css'"; and, what do I get from this?
   import { sortBy } from 'lodash';
 
-  import IO from '../lib/IO';
+  import { constructTrajectoryCollection } from '../lib/IO';
   import type { Observation } from '../lib/Observation';
   import type Trajectory from '../lib/Trajectory';
+  import type { TrajectoryCollectionTemplate } from "../lib/TrajectoryCollectionTemplate";
   import trajectoriesFromJSON from './data.json';
   import approachMinderConfig from '../approachminder-config.json';
   import { configureViewer, createCesiumEntities, viewerOptions } from "../lib/UI";
@@ -23,6 +24,9 @@
 
   const start = JulianDate.fromIso8601('2022-12-06T18:49:09Z');
   const stop = JulianDate.fromIso8601('2022-12-06T18:56:01Z');
+  // TODO How do the above values compare with what we'd get from TrajectoryCollection's earliestTime() and
+  // latestTime()?
+
   const maxThresholdDistanceMetersForApproach = 10000;
   const windowDuration = 60;  // seconds
   const firstCallsignToTrack = 'SKW4081';
@@ -30,7 +34,7 @@
   const urlParams = new URLSearchParams(window.location.search);
   const useBingImagery = urlParams.get('bing') === 'true';
 
-  const trajectories = IO.trajectoriesFromParsedJSON(trajectoriesFromJSON as any);
+  const trajectories = constructTrajectoryCollection(trajectoriesFromJSON as unknown as TrajectoryCollectionTemplate);
   let trajectoriesToEntities: Map<Trajectory, Entity>;
 
   // While we have to defer initialization of the viewer until the onMount() handler has fired, we seemingly must make
@@ -47,11 +51,11 @@
     configureViewer(viewer, start, stop);
 
     const airplaneIonResource = await IonResource.fromAssetId(approachMinderConfig.cesiumIon.assetIdAirplane);
-    trajectoriesToEntities = createCesiumEntities(trajectories.theTrajectories, airplaneIonResource);
+    trajectoriesToEntities = createCesiumEntities(trajectories.trajectories, airplaneIonResource);
     trajectoriesToEntities.values().forEach(entity => { viewer.entities.add(entity); });
 
     // const firstTrajectory = trajectories.theTrajectories[0];  // TODO This is hacky. Also, concern ourselves with no-entities case?
-    const trajectoryToTrack = trajectories.theTrajectories.find(trajectory => trajectory.aircraftProfile.callsign === firstCallsignToTrack)!;
+    const trajectoryToTrack = trajectories.trajectories.find(trajectory => trajectory.aircraftProfile.callsign === firstCallsignToTrack)!;
     viewer.trackedEntity = trajectoriesToEntities.get(trajectoryToTrack);
     // viewer.clock.currentTime = firstTrajectory.earliestTime().clone();
 
@@ -69,10 +73,9 @@
       // Get the latest positions within the time window, one per aircraft.
       const latestPositionsWithinWindow = trajectories.latestPositionsWithinWindow(time, windowDuration);  // TODO Rather than a tuple, this function could return an Object that names the two members (I end up doing this below anyway)
       // TODO First time I've used the "observations" terminology. If it sticks, broaden back to the Scala code?
-      const observations = latestPositionsWithinWindow.map(([trajectory, timeBasedPosition]) => ({
-        trajectory: trajectory,
-        position: timeBasedPosition,
-        ageOfObservation: Math.round(JulianDate.secondsDifference(time, timeBasedPosition.time))
+      const observations = latestPositionsWithinWindow.map(position => ({
+        position: position,
+        ageOfObservation: Math.round(JulianDate.secondsDifference(time, position.time))
       }));
       const observationsAircraftOnApproachUnsorted = observations.filter(observation => {
         const approachSegment = observation.position.approachSegment
@@ -80,7 +83,7 @@
       });
       // TODO Move sorting into AircraftTable.svelte?
       observationsAircraftOnApproach = sortBy(observationsAircraftOnApproachUnsorted, observation => observation.position.approachSegment!.thresholdDistanceMeters);
-      observationsOtherAircraft = sortBy(observations.filter(observation => !observation.position.approachSegment), observation => observation.trajectory.aircraftProfile.callsign);
+      observationsOtherAircraft = sortBy(observations.filter(observation => !observation.position.approachSegment), observation => observation.position.trajectory.aircraftProfile.callsign);
       lastTimeProcessed = time;
     });
   });

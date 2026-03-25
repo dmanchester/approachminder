@@ -38,11 +38,11 @@
     </tr>
     </thead>
     <tbody>
-    {#each observations as observation (observation.trajectory.aircraftProfile.icao24)}
+    {#each observations as observation (observation.position.trajectory.aircraftProfile.icao24)}
         <tr>
             <td class="align-center">
-                <button onclick={() => { clickHandlerTrajectory(observation.trajectory); }}>
-                    {observation.trajectory.aircraftProfile.callsign}
+                <button onclick={() => { clickHandlerTrajectory(observation.position.trajectory); }}>
+                    {observation.position.trajectory.aircraftProfile.callsign}
                 </button>
             </td>
             <!-- FIXME Handle nulls better (for example, currently, squawk shows as "null" when not present. -->

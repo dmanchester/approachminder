@@ -1,49 +1,48 @@
 import AircraftProfile from "./AircraftProfile";
 import ApproachSegment from "./ApproachSegment";
-import type { ParsedJSON } from "./ParsedJSON";
-import TimeBasedPosition from "./TimeBasedPosition";
-import Trajectories from "./Trajectories";
+import type { PositionTemplate } from "./PositionTemplate";
 import Trajectory from "./Trajectory";
+import TrajectoryCollection from "./TrajectoryCollection";
+import type { TrajectoryCollectionTemplate } from "./TrajectoryCollectionTemplate";
 
-import { JulianDate } from "cesium";
+/**
+ * Construct a TrajectoryCollection instance.
+ *
+ * @param template The data to use in constructing the instance. Typically, a parse/import of file
+ * "visualization/src/data.json".
+ * @throws {Error} If template is empty (i.e., it contains no trajectories); or, if a trajectory in the template
+ *                 contains no positions.
+ */
+export function constructTrajectoryCollection(template: TrajectoryCollectionTemplate) {
 
-// TODO Does it add value to have these functions in a namespace? If not, eliminate it.
-namespace IO {
+  const trajectories = template.map(trajectoryTemplatePart => {
 
-  /**
-   * Construct a `Trajectories` instance from parsed trajectories JSON.
-   *
-   * @param parsedJSON
-   */
-  export function trajectoriesFromParsedJSON(parsedJSON: ParsedJSON) {
+    const aircraftProfile = new AircraftProfile(trajectoryTemplatePart.icao24, trajectoryTemplatePart.callsign, trajectoryTemplatePart.category);
+    const positionTemplates: Array<[string, PositionTemplate]> = Object.entries(trajectoryTemplatePart.positions).map(([time, positionTemplatePart]) => {
 
-    const theTrajectories = parsedJSON.map(trajectoryFromJSON => {
+      const approachSegmentTemplatePart = positionTemplatePart.approachSegment;
+      const approachSegment = approachSegmentTemplatePart ?
+        new ApproachSegment(approachSegmentTemplatePart.airport, approachSegmentTemplatePart.threshold, approachSegmentTemplatePart.thresholdDistanceMeters, approachSegmentTemplatePart.verticalDevMeters, approachSegmentTemplatePart.horizontalDevMeters, approachSegmentTemplatePart.normalizedEuclideanDistance) :
+        null;
 
-      const aircraftProfile = new AircraftProfile(trajectoryFromJSON.icao24, trajectoryFromJSON.callsign, trajectoryFromJSON.category);
-      const timeBasedPositions = Object.entries(trajectoryFromJSON.positions).map(([timeFromJSON, positionFromJSON]) => {
-
-        const approachSegmentFromJSON = positionFromJSON.approachSegment;
-        const approachSegment = approachSegmentFromJSON ? new ApproachSegment(approachSegmentFromJSON.airport, approachSegmentFromJSON.threshold, approachSegmentFromJSON.thresholdDistanceMeters, approachSegmentFromJSON.verticalDevMeters, approachSegmentFromJSON.horizontalDevMeters, approachSegmentFromJSON.normalizedEuclideanDistance) : null;
-
-        return new TimeBasedPosition(
-          JulianDate.fromIso8601(timeFromJSON),
-          positionFromJSON.longitude,
-          positionFromJSON.latitude,
-          positionFromJSON.altitude,
-          positionFromJSON.onGround,
-          positionFromJSON.velocity,
-          positionFromJSON.trueTrack,
-          positionFromJSON.verticalRate,
-          positionFromJSON.squawk,
-          approachSegment
-        );
-      });
-
-      return new Trajectory(aircraftProfile, timeBasedPositions);
+      return [
+        time,
+        {  // a PositionTemplate
+          longitude: positionTemplatePart.longitude,
+          latitude: positionTemplatePart.latitude,
+          altitude: positionTemplatePart.altitude,
+          onGround: positionTemplatePart.onGround,
+          velocity: positionTemplatePart.velocity,
+          trueTrack: positionTemplatePart.trueTrack,
+          verticalRate: positionTemplatePart.verticalRate,
+          squawk: positionTemplatePart.squawk,
+          approachSegment,
+        }
+      ];
     });
 
-    return new Trajectories(theTrajectories);
-  }
-}
+    return new Trajectory(aircraftProfile, Object.fromEntries(positionTemplates));
+  });
 
-export default IO;
+  return new TrajectoryCollection(trajectories);
+}
