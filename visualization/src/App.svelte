@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { SplitPane } from '@rich_harris/svelte-split-pane';
-  import AircraftTable from './AircraftTable.svelte';
   import {
     Entity,
     Ion,
@@ -9,36 +8,37 @@
     JulianDate,
     Viewer
   } from 'cesium';
-  import '../node_modules/cesium/Source/Widgets/widgets.css';  // TODO Compare with "import 'cesium/Build/Cesium/Widgets/widgets.css'"; and, what do I get from this?
-  import { sortBy } from 'lodash';
+  import 'cesium/Build/Cesium/Widgets/widgets.css';
 
+  import AircraftTable from './AircraftTable.svelte';
   import { constructTrajectoryCollection } from '../lib/IO';
   import type { Observation } from '../lib/Observation';
   import type Trajectory from '../lib/Trajectory';
   import type { TrajectoryCollectionTemplate } from "../lib/TrajectoryCollectionTemplate";
-  import trajectoriesFromJSON from './data.json';
-  import approachMinderConfig from '../approachminder-config.json';
   import { configureViewer, createCesiumEntities, viewerOptions } from "../lib/UI";
 
-  Ion.defaultAccessToken = approachMinderConfig.cesiumIon.accessToken;
+  import { sortBy } from 'lodash';
 
-  const start = JulianDate.fromIso8601('2022-12-06T18:49:09Z');
-  const stop = JulianDate.fromIso8601('2022-12-06T18:56:01Z');
-  // TODO How do the above values compare with what we'd get from TrajectoryCollection's earliestTime() and
-  // latestTime()?
+  import trajectoriesFromJSON from './data.json';
+  import approachMinderConfig from '../approachminder-config.json';
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const useBingImagery = urlParams.get('bing') === 'true';
 
   const maxThresholdDistanceMetersForApproach = 10000;
   const windowDuration = 60;  // seconds
   const firstCallsignToTrack = 'SKW4081';
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const useBingImagery = urlParams.get('bing') === 'true';
+  Ion.defaultAccessToken = approachMinderConfig.cesiumIon.accessToken;
 
-  const trajectories = constructTrajectoryCollection(trajectoriesFromJSON as unknown as TrajectoryCollectionTemplate);
+  const trajectoryCollection = constructTrajectoryCollection(trajectoriesFromJSON as unknown as TrajectoryCollectionTemplate);
+  const firstTrajectoryToTrack = trajectoryCollection.trajectories.find(trajectory => trajectory.aircraftProfile.callsign === firstCallsignToTrack)!;
+
   let trajectoriesToEntities: Map<Trajectory, Entity>;
 
-  // While we have to defer initialization of the viewer until the onMount() handler has fired, we seemingly must make
-  // it a top-level declaration so it's visible to the trajectory click handlers in this file's UI template.
+  // TODO Confirm this is accurate: While we have to defer initialization of the viewer until the onMount() handler has
+  // fired, we seemingly must make it a top-level declaration so it's visible to the trajectory click handlers in this
+  // file's UI template.
   let viewer: Viewer;
   let observationsAircraftOnApproach: Array<Observation> = $state([]);
   let observationsOtherAircraft: Array<Observation> = $state([]);
@@ -48,20 +48,22 @@
     // TODO What code that's currently in this function can be moved before it, to improve startup performance?
 
     viewer = new Viewer('cesiumContainer', viewerOptions(useBingImagery));
-    configureViewer(viewer, start, stop);
+    configureViewer(
+      viewer,
+      trajectoryCollection.earliestTime(),
+      trajectoryCollection.latestTime(),
+      firstTrajectoryToTrack.earliestTime()
+    );
 
     const airplaneIonResource = await IonResource.fromAssetId(approachMinderConfig.cesiumIon.assetIdAirplane);
-    trajectoriesToEntities = createCesiumEntities(trajectories.trajectories, airplaneIonResource);
+    trajectoriesToEntities = createCesiumEntities(trajectoryCollection.trajectories, airplaneIonResource);
     trajectoriesToEntities.values().forEach(entity => { viewer.entities.add(entity); });
 
-    // const firstTrajectory = trajectories.theTrajectories[0];  // TODO This is hacky. Also, concern ourselves with no-entities case?
-    const trajectoryToTrack = trajectories.trajectories.find(trajectory => trajectory.aircraftProfile.callsign === firstCallsignToTrack)!;
-    viewer.trackedEntity = trajectoriesToEntities.get(trajectoryToTrack);
-    // viewer.clock.currentTime = firstTrajectory.earliestTime().clone();
+    viewer.trackedEntity = trajectoriesToEntities.get(firstTrajectoryToTrack);
 
-    let lastTimeProcessed: JulianDate | null = null;  // TODO Switched from "undefined" to "null". Any other explicit "undefined" in codebase?
+    let lastTimeProcessed: JulianDate | null = null;
 
-    viewer.clock.onTick.addEventListener(() => {  // Whoa, this gets called all the time, even when clock is stopped!
+    viewer.clock.onTick.addEventListener(() => {  // This gets called very frequently, even when the clock is stopped!
 
       const time = viewer.clock.currentTime;
 
@@ -71,8 +73,7 @@
       }
 
       // Get the latest positions within the time window, one per aircraft.
-      const latestPositionsWithinWindow = trajectories.latestPositionsWithinWindow(time, windowDuration);  // TODO Rather than a tuple, this function could return an Object that names the two members (I end up doing this below anyway)
-      // TODO First time I've used the "observations" terminology. If it sticks, broaden back to the Scala code?
+      const latestPositionsWithinWindow = trajectoryCollection.latestPositionsWithinWindow(time, windowDuration);
       const observations = latestPositionsWithinWindow.map(position => ({
         position: position,
         ageOfObservation: Math.round(JulianDate.secondsDifference(time, position.time))
@@ -89,7 +90,6 @@
   });
 </script>
 
-<!-- TODO What additional parameters to pass to SplitPane? See https://www.npmjs.com/package/@rich_harris/svelte-split-pane. -->
 <SplitPane type="rows">
   {#snippet a()}
     <section>

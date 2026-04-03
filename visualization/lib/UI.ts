@@ -45,13 +45,13 @@ export function viewerOptions(useBingImagery: boolean): Viewer.ConstructorOption
   return options;
 }
 
-export function configureViewer(viewer: Viewer, start: JulianDate, stop: JulianDate): void {
+export function configureViewer(viewer: Viewer, startTime: JulianDate, stopTime: JulianDate, currentTime: JulianDate): void {
   viewer.clock.shouldAnimate = true;
-  viewer.clock.startTime = start.clone();
-  viewer.clock.stopTime = stop.clone();
-  viewer.clock.currentTime = start.clone();
+  viewer.clock.startTime = startTime.clone();
+  viewer.clock.stopTime = stopTime.clone();
+  viewer.clock.currentTime = currentTime.clone();
   viewer.clock.clockRange = ClockRange.CLAMPED;
-  viewer.timeline.zoomTo(start, stop);
+  viewer.timeline.zoomTo(startTime, stopTime);
 }
 
 function createCesiumEntity(trajectory: Trajectory, airplaneIonResource: IonResource): Entity {
