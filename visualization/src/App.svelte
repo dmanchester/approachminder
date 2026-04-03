@@ -34,14 +34,6 @@
   const trajectoryCollection = constructTrajectoryCollection(trajectoriesFromJSON as unknown as TrajectoryCollectionTemplate);
   const firstTrajectoryToTrack = trajectoryCollection.trajectories.find(trajectory => trajectory.aircraftProfile.callsign === firstCallsignToTrack)!;
 
-  // TODO Move trajectoriesToEntities initialization here?
-  let trajectoriesToEntities: Map<Trajectory, Entity>;
-
-  // While we can't initialize the viewer via top-level code (we can only do so within the onMount() handler), we must
-  // make the viewer a top-level declaration. (That's necessary for it to be visible to the trajectory click handlers in
-  // this file's UI template.)
-  let viewer: Viewer;
-
   let time: JulianDate | null = $state(null);
 
   let [ observationsAircraftOnApproach, observationsOtherAircraft ] = $derived.by(() => {
@@ -71,10 +63,14 @@
     return [ observationsAircraftOnApproach, observationsOtherAircraft ];
   });
 
+  // For "trajectoriesToEntities" and "viewer" to be visible to this file's UI template, they must have top-level
+  // declarations like the following. However, they can't actually be initialized here. ("trajectoriesToEntities"
+  // indirectly requires asynchronous initialization--see IonResource.fromAssetId()--which can't be done here.
+  // Meanwhile, "viewer" can only be initialized in the onMount() handler.)
+  let trajectoriesToEntities: Map<Trajectory, Entity>;
+  let viewer: Viewer;
 
   onMount(async () => {
-
-    // TODO What code that's currently in this function can be moved before it, to improve startup performance?
 
     viewer = new Viewer('cesiumContainer', viewerOptions(useBingImagery));
     configureViewer(
@@ -87,7 +83,6 @@
     const airplaneIonResource = await IonResource.fromAssetId(approachMinderConfig.cesiumIon.assetIdAirplane);
     trajectoriesToEntities = createCesiumEntities(trajectoryCollection.trajectories, airplaneIonResource);
     trajectoriesToEntities.values().forEach(entity => { viewer.entities.add(entity); });
-
     viewer.trackedEntity = trajectoriesToEntities.get(firstTrajectoryToTrack);
 
     viewer.clock.onTick.addEventListener(() => {  // This gets called very frequently, even when the clock is stopped!
