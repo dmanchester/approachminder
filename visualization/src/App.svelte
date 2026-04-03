@@ -34,14 +34,43 @@
   const trajectoryCollection = constructTrajectoryCollection(trajectoriesFromJSON as unknown as TrajectoryCollectionTemplate);
   const firstTrajectoryToTrack = trajectoryCollection.trajectories.find(trajectory => trajectory.aircraftProfile.callsign === firstCallsignToTrack)!;
 
+  // TODO Move trajectoriesToEntities initialization here?
   let trajectoriesToEntities: Map<Trajectory, Entity>;
 
-  // TODO Confirm this is accurate: While we have to defer initialization of the viewer until the onMount() handler has
-  // fired, we seemingly must make it a top-level declaration so it's visible to the trajectory click handlers in this
-  // file's UI template.
+  // While we can't initialize the viewer via top-level code (we can only do so within the onMount() handler), we must
+  // make the viewer a top-level declaration. (That's necessary for it to be visible to the trajectory click handlers in
+  // this file's UI template.)
   let viewer: Viewer;
-  let observationsAircraftOnApproach: Array<Observation> = $state([]);
-  let observationsOtherAircraft: Array<Observation> = $state([]);
+
+  let time: JulianDate | null = $state(null);
+
+  let [ observationsAircraftOnApproach, observationsOtherAircraft ] = $derived.by(() => {
+
+    let observationsAircraftOnApproach: Array<Observation>;
+    let observationsOtherAircraft: Array<Observation>;
+
+    if (time === null) {
+      observationsAircraftOnApproach = [];
+      observationsOtherAircraft = [];
+    } else {
+      // Get the latest positions within the time window, one per aircraft.
+      const latestPositionsWithinWindow = trajectoryCollection.latestPositionsWithinWindow(time, windowDuration);
+      const observations = latestPositionsWithinWindow.map(position => ({
+        position: position,
+        ageOfObservation: Math.round(JulianDate.secondsDifference(time!, position.time))
+      }));
+      const observationsAircraftOnApproachUnsorted = observations.filter(observation => {
+        const approachSegment = observation.position.approachSegment
+        return approachSegment && approachSegment.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach
+      });
+      // TODO Move sorting into AircraftTable.svelte?
+      observationsAircraftOnApproach = sortBy(observationsAircraftOnApproachUnsorted, observation => observation.position.approachSegment!.thresholdDistanceMeters);
+      observationsOtherAircraft = sortBy(observations.filter(observation => !observation.position.approachSegment), observation => observation.position.trajectory.aircraftProfile.callsign);
+    }
+
+    return [ observationsAircraftOnApproach, observationsOtherAircraft ];
+  });
+
 
   onMount(async () => {
 
@@ -61,31 +90,8 @@
 
     viewer.trackedEntity = trajectoriesToEntities.get(firstTrajectoryToTrack);
 
-    let lastTimeProcessed: JulianDate | null = null;
-
     viewer.clock.onTick.addEventListener(() => {  // This gets called very frequently, even when the clock is stopped!
-
-      const time = viewer.clock.currentTime;
-
-      if ((lastTimeProcessed !== null) && JulianDate.equals(time, lastTimeProcessed)) {
-        // Nothing to do.
-        return;
-      }
-
-      // Get the latest positions within the time window, one per aircraft.
-      const latestPositionsWithinWindow = trajectoryCollection.latestPositionsWithinWindow(time, windowDuration);
-      const observations = latestPositionsWithinWindow.map(position => ({
-        position: position,
-        ageOfObservation: Math.round(JulianDate.secondsDifference(time, position.time))
-      }));
-      const observationsAircraftOnApproachUnsorted = observations.filter(observation => {
-        const approachSegment = observation.position.approachSegment
-        return approachSegment && approachSegment.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach
-      });
-      // TODO Move sorting into AircraftTable.svelte?
-      observationsAircraftOnApproach = sortBy(observationsAircraftOnApproachUnsorted, observation => observation.position.approachSegment!.thresholdDistanceMeters);
-      observationsOtherAircraft = sortBy(observations.filter(observation => !observation.position.approachSegment), observation => observation.position.trajectory.aircraftProfile.callsign);
-      lastTimeProcessed = time;
+      time = viewer.clock.currentTime;
     });
   });
 </script>
