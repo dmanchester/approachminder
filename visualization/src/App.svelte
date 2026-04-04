@@ -17,7 +17,7 @@
   import type { TrajectoryCollectionTemplate } from "../lib/TrajectoryCollectionTemplate";
   import { configureViewer, createCesiumEntities, viewerOptions } from "../lib/UI";
 
-  import { sortBy } from 'lodash';
+  import { partition } from 'lodash';
 
   import trajectoriesFromJSON from './data.json';
   import approachMinderConfig from '../approachminder-config.json';
@@ -45,19 +45,19 @@
       observationsAircraftOnApproach = [];
       observationsOtherAircraft = [];
     } else {
+
       // Get the latest positions within the time window, one per aircraft.
       const latestPositionsWithinWindow = trajectoryCollection.latestPositionsWithinWindow(time, windowDuration);
+
       const observations = latestPositionsWithinWindow.map(position => ({
         position: position,
         ageOfObservation: Math.round(JulianDate.secondsDifference(time!, position.time))
       }));
-      const observationsAircraftOnApproachUnsorted = observations.filter(observation => {
-        const approachSegment = observation.position.approachSegment
-        return approachSegment && approachSegment.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach
+
+      [ observationsAircraftOnApproach, observationsOtherAircraft ] = partition(observations, observation => {
+        const approachSegment = observation.position.approachSegment;
+        return approachSegment && approachSegment.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach;
       });
-      // TODO Move sorting into AircraftTable.svelte?
-      observationsAircraftOnApproach = sortBy(observationsAircraftOnApproachUnsorted, observation => observation.position.approachSegment!.thresholdDistanceMeters);
-      observationsOtherAircraft = sortBy(observations.filter(observation => !observation.position.approachSegment), observation => observation.position.trajectory.aircraftProfile.callsign);
     }
 
     return [ observationsAircraftOnApproach, observationsOtherAircraft ];

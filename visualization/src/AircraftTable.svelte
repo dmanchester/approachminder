@@ -2,6 +2,8 @@
   import type Trajectory from "../lib/Trajectory";
   import type { Observation } from "../lib/Observation";
 
+  import { sortBy } from 'lodash';
+
   interface Props {
     observations: Array<Observation>;
     showApproachSegments: boolean;
@@ -9,6 +11,15 @@
   }
 
   let { observations, showApproachSegments, clickHandlerTrajectory }: Props = $props();
+
+  let observationsSorted = $derived.by(() => {
+
+    const fieldAccessor: (observation: Observation) => any = showApproachSegments ?
+      observation => observation.position.approachSegment!.thresholdDistanceMeters :
+      observation => observation.position.trajectory.aircraftProfile.callsign;
+
+    return sortBy(observations, fieldAccessor);
+  });
 
   const numberFormat = new Intl.NumberFormat();
 </script>
@@ -38,7 +49,7 @@
     </tr>
     </thead>
     <tbody>
-    {#each observations as observation (observation.position.trajectory.aircraftProfile.icao24)}
+    {#each observationsSorted as observation (observation.position.trajectory.aircraftProfile.icao24)}
         <tr>
             <td class="align-center">
                 <button onclick={() => { clickHandlerTrajectory(observation.position.trajectory); }}>
