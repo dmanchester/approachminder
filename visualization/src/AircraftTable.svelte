@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type Trajectory from "../lib/Trajectory";
   import type { Observation } from "../lib/Observation";
 
   import { sortBy } from 'lodash';
@@ -7,10 +6,9 @@
   interface Props {
     observations: Array<Observation>;
     showApproachSegments: boolean;
-    onTrajectoryClick: (trajectory: Trajectory) => void;
   }
 
-  let { observations, showApproachSegments, onTrajectoryClick }: Props = $props();
+  let { observations, showApproachSegments }: Props = $props();
 
   let observationsSorted = $derived.by(() => {
 
@@ -52,7 +50,7 @@
     {#each observationsSorted as observation (observation.position.trajectory.aircraftProfile.icao24)}
         <tr>
             <td class="align-center">
-                <button onclick={() => { onTrajectoryClick(observation.position.trajectory); }}>
+                <button onclick={observation.trackEntityFunc}>
                     {observation.position.trajectory.aircraftProfile.callsign}
                 </button>
             </td>

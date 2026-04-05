@@ -2,7 +2,6 @@
   import { onMount } from 'svelte';
   import { SplitPane } from '@rich_harris/svelte-split-pane';
   import {
-    Entity,
     Ion,
     IonResource,
     JulianDate,
@@ -15,7 +14,7 @@
   import type { Observation } from '../lib/Observation';
   import type Trajectory from '../lib/Trajectory';
   import type { TrajectoryCollectionTemplate } from "../lib/TrajectoryCollectionTemplate";
-  import { configureViewer, createCesiumEntities, viewerOptions } from "../lib/UI";
+  import { configureViewer, createCesiumEntity, viewerOptions } from "../lib/UI";
 
   import { partition } from 'lodash';
 
@@ -34,6 +33,16 @@
   const trajectoryCollection = constructTrajectoryCollection(trajectoriesFromJSON as unknown as TrajectoryCollectionTemplate);
   const firstTrajectoryToTrack = trajectoryCollection.trajectories.find(trajectory => trajectory.aircraftProfile.callsign === firstCallsignToTrack)!;
 
+  // For "viewer" and "trajectoriesToTrackEntityFuncs" to be visible to this file's UI template, they must have
+  // top-level declarations like the following. However, they can't actually be initialized ("viewer")/populated
+  // ("trajectoriesToTrackEntityFuncs") here. ("viewer" can only be initialized in the onMount() handler. Meanwhile,
+  // population of "trajectoriesToTrackEntityFuncs" involves an asynchronous call--IonResource.fromAssetId()--which
+  // can't be done here.)
+  let viewer: Viewer;
+  // When called, a trajectory's "track-entity function" leads the viewer to begin tracking the entity (3-D model) that
+  // flies that trajectory.
+  const trajectoriesToTrackEntityFuncs = new Map<Trajectory, () => void>();
+
   let time: JulianDate | null = $state(null);
 
   let [ observationsAircraftOnApproach, observationsOtherAircraft ] = $derived.by(() => {
@@ -49,9 +58,10 @@
       // Get the latest positions within the time window, one per aircraft.
       const latestPositionsWithinWindow = trajectoryCollection.latestPositionsWithinWindow(time, windowDuration);
 
-      const observations = latestPositionsWithinWindow.map(position => ({
+      const observations: Array<Observation> = latestPositionsWithinWindow.map(position => ({
         position: position,
-        ageOfObservation: Math.round(JulianDate.secondsDifference(time!, position.time))
+        ageOfObservation: Math.round(JulianDate.secondsDifference(time!, position.time)),
+        trackEntityFunc: trajectoriesToTrackEntityFuncs.get(position.trajectory)!
       }));
 
       [ observationsAircraftOnApproach, observationsOtherAircraft ] = partition(observations, observation => {
@@ -62,13 +72,6 @@
 
     return [ observationsAircraftOnApproach, observationsOtherAircraft ];
   });
-
-  // For "trajectoriesToEntities" and "viewer" to be visible to this file's UI template, they must have top-level
-  // declarations like the following. However, they can't actually be initialized here. ("trajectoriesToEntities"
-  // indirectly requires asynchronous initialization--see IonResource.fromAssetId()--which can't be done here.
-  // Meanwhile, "viewer" can only be initialized in the onMount() handler.)
-  let trajectoriesToEntities: Map<Trajectory, Entity>;
-  let viewer: Viewer;
 
   onMount(async () => {
 
@@ -81,9 +84,16 @@
     );
 
     const airplaneIonResource = await IonResource.fromAssetId(approachMinderConfig.cesiumIon.assetIdAirplane);
-    trajectoriesToEntities = createCesiumEntities(trajectoryCollection.trajectories, airplaneIonResource);
-    trajectoriesToEntities.values().forEach(entity => { viewer.entities.add(entity); });
-    viewer.trackedEntity = trajectoriesToEntities.get(firstTrajectoryToTrack);
+
+    trajectoryCollection.trajectories.forEach(trajectory => {
+      const entity = createCesiumEntity(trajectory, airplaneIonResource);
+      viewer.entities.add(entity);
+      const trackEntityFunc = () => { viewer.trackedEntity = entity; };
+      trajectoriesToTrackEntityFuncs.set(trajectory, trackEntityFunc);
+    });
+
+    // Begin tracking the entity of the designated trajectory (by calling the trajectory's function).
+    trajectoriesToTrackEntityFuncs.get(firstTrajectoryToTrack)!();
 
     viewer.clock.onTick.addEventListener(() => {  // This gets called very frequently, even when the clock is stopped!
       time = viewer.clock.currentTime;
@@ -99,11 +109,10 @@
   {/snippet}
   {#snippet b()}
     <section id="tableSection">
-      <!-- TODO Specify the click handler once and share below -->
       <h1>Aircraft on Approach</h1>
-      <AircraftTable observations={observationsAircraftOnApproach} showApproachSegments={true} onTrajectoryClick={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
+      <AircraftTable observations={observationsAircraftOnApproach} showApproachSegments={true}/>
       <h1>Other Aircraft</h1>
-      <AircraftTable observations={observationsOtherAircraft} showApproachSegments={false} onTrajectoryClick={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
+      <AircraftTable observations={observationsOtherAircraft} showApproachSegments={false}/>
       <div id="bottomRightBox">
         <div id="appName"><b><a href="https://github.com/dmanchester/approachminder#approachminder" target="_blank">ApproachMinder</a></b></div>
         ADS-B data by <a href="https://opensky-network.org/" target="_blank">OpenSky Network</a>

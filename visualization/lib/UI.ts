@@ -54,7 +54,7 @@ export function configureViewer(viewer: Viewer, startTime: JulianDate, stopTime:
   viewer.timeline.zoomTo(startTime, stopTime);
 }
 
-function createCesiumEntity(trajectory: Trajectory, airplaneIonResource: IonResource): Entity {
+export function createCesiumEntity(trajectory: Trajectory, airplaneIonResource: IonResource): Entity {
 
   const times = trajectory.positions.map(position => position.time);
   const positions = trajectory.positions.map(position => Cartesian3.fromDegrees(position.longitude, position.latitude, position.altitude));
@@ -70,9 +70,4 @@ function createCesiumEntity(trajectory: Trajectory, airplaneIonResource: IonReso
     // Automatically compute the orientation from the position.
     orientation: new VelocityOrientationProperty(positionProperty)
   });
-}
-
-export function createCesiumEntities(trajectories: Array<Trajectory>, airplaneIonResource: IonResource): Map<Trajectory, Entity> {
-  const trajectoriesToEntities: Array<[Trajectory, Entity]> = trajectories.map(trajectory => [trajectory, createCesiumEntity(trajectory, airplaneIonResource)]);
-  return new Map(trajectoriesToEntities);
 }
