@@ -45,27 +45,6 @@
 
   let time: JulianDate | null = $state(null);
 
-  let [ observationsAircraftOnApproach, observationsOtherAircraft ] = $derived.by(() => {
-
-    if (time === null) {
-      return [ new Array<Observation>(), new Array<Observation>() ];
-    }
-
-    // Get the latest positions within the time window, one per aircraft.
-    const latestPositionsWithinWindow = trajectoryCollection.latestPositionsWithinWindow(time, windowDuration);
-
-    const observations: Array<Observation> = latestPositionsWithinWindow.map(position => ({
-      position: position,
-      ageOfObservation: Math.round(JulianDate.secondsDifference(time!, position.time)),
-      trackEntityFunc: trajectoriesToTrackEntityFuncs.get(position.trajectory)!
-    }));
-
-    return partition(observations, observation => {
-      const approachSegment = observation.position.approachSegment;
-      return approachSegment && approachSegment.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach;
-    });
-  });
-
   onMount(async () => {
 
     viewer = new Viewer('cesiumContainer', viewerOptions(useBingImagery));
@@ -90,6 +69,27 @@
 
     viewer.clock.onTick.addEventListener(() => {  // This gets called very frequently, even when the clock is stopped!
       time = viewer.clock.currentTime;
+    });
+  });
+
+  let [ observationsAircraftOnApproach, observationsOtherAircraft ] = $derived.by(() => {
+
+    if (time === null) {
+      return [ new Array<Observation>(), new Array<Observation>() ];
+    }
+
+    // Get the latest positions within the time window, one per aircraft.
+    const latestPositionsWithinWindow = trajectoryCollection.latestPositionsWithinWindow(time, windowDuration);
+
+    const observations: Array<Observation> = latestPositionsWithinWindow.map(position => ({
+      position: position,
+      ageOfObservation: Math.round(JulianDate.secondsDifference(time!, position.time)),
+      trackEntityFunc: trajectoriesToTrackEntityFuncs.get(position.trajectory)!
+    }));
+
+    return partition(observations, observation => {
+      const approachSegment = observation.position.approachSegment;
+      return approachSegment && approachSegment.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach;
     });
   });
 </script>
