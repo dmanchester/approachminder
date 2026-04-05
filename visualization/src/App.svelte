@@ -101,9 +101,9 @@
     <section id="tableSection">
       <!-- TODO Specify the click handler once and share below -->
       <h1>Aircraft on Approach</h1>
-      <AircraftTable observations={observationsAircraftOnApproach} showApproachSegments={true} clickHandlerTrajectory={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
+      <AircraftTable observations={observationsAircraftOnApproach} showApproachSegments={true} onTrajectoryClick={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
       <h1>Other Aircraft</h1>
-      <AircraftTable observations={observationsOtherAircraft} showApproachSegments={false} clickHandlerTrajectory={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
+      <AircraftTable observations={observationsOtherAircraft} showApproachSegments={false} onTrajectoryClick={(trajectory) => { viewer.trackedEntity = trajectoriesToEntities.get(trajectory); }}/>
       <div id="bottomRightBox">
         <div id="appName"><b><a href="https://github.com/dmanchester/approachminder#approachminder" target="_blank">ApproachMinder</a></b></div>
         ADS-B data by <a href="https://opensky-network.org/" target="_blank">OpenSky Network</a>

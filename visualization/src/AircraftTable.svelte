@@ -7,10 +7,10 @@
   interface Props {
     observations: Array<Observation>;
     showApproachSegments: boolean;
-    clickHandlerTrajectory: (trajectory: Trajectory) => void;
+    onTrajectoryClick: (trajectory: Trajectory) => void;
   }
 
-  let { observations, showApproachSegments, clickHandlerTrajectory }: Props = $props();
+  let { observations, showApproachSegments, onTrajectoryClick }: Props = $props();
 
   let observationsSorted = $derived.by(() => {
 
@@ -52,7 +52,7 @@
     {#each observationsSorted as observation (observation.position.trajectory.aircraftProfile.icao24)}
         <tr>
             <td class="align-center">
-                <button onclick={() => { clickHandlerTrajectory(observation.position.trajectory); }}>
+                <button onclick={() => { onTrajectoryClick(observation.position.trajectory); }}>
                     {observation.position.trajectory.aircraftProfile.callsign}
                 </button>
             </td>
