@@ -47,30 +47,23 @@
 
   let [ observationsAircraftOnApproach, observationsOtherAircraft ] = $derived.by(() => {
 
-    let observationsAircraftOnApproach: Array<Observation>;
-    let observationsOtherAircraft: Array<Observation>;
-
     if (time === null) {
-      observationsAircraftOnApproach = [];
-      observationsOtherAircraft = [];
-    } else {
-
-      // Get the latest positions within the time window, one per aircraft.
-      const latestPositionsWithinWindow = trajectoryCollection.latestPositionsWithinWindow(time, windowDuration);
-
-      const observations: Array<Observation> = latestPositionsWithinWindow.map(position => ({
-        position: position,
-        ageOfObservation: Math.round(JulianDate.secondsDifference(time!, position.time)),
-        trackEntityFunc: trajectoriesToTrackEntityFuncs.get(position.trajectory)!
-      }));
-
-      [ observationsAircraftOnApproach, observationsOtherAircraft ] = partition(observations, observation => {
-        const approachSegment = observation.position.approachSegment;
-        return approachSegment && approachSegment.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach;
-      });
+      return [ new Array<Observation>(), new Array<Observation>() ];
     }
 
-    return [ observationsAircraftOnApproach, observationsOtherAircraft ];
+    // Get the latest positions within the time window, one per aircraft.
+    const latestPositionsWithinWindow = trajectoryCollection.latestPositionsWithinWindow(time, windowDuration);
+
+    const observations: Array<Observation> = latestPositionsWithinWindow.map(position => ({
+      position: position,
+      ageOfObservation: Math.round(JulianDate.secondsDifference(time!, position.time)),
+      trackEntityFunc: trajectoriesToTrackEntityFuncs.get(position.trajectory)!
+    }));
+
+    return partition(observations, observation => {
+      const approachSegment = observation.position.approachSegment;
+      return approachSegment && approachSegment.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach;
+    });
   });
 
   onMount(async () => {
