@@ -49,13 +49,13 @@ describe("constructTrajectoryCollection()", () => {
 
   test("should construct a collection of the correct size and with trajectories ordered as in the template", () => {
     expect(trajectoryCollection.trajectories.length).toBe(2);
-    expect(trajectoryA.aircraftProfile.icao24).toBe(icao24A);
-    expect(trajectoryB.aircraftProfile.icao24).toBe(icao24B);
+    expect(trajectoryA.icao24).toBe(icao24A);
+    expect(trajectoryB.icao24).toBe(icao24B);
   });
 
   test("should construct a collection with top-level trajectory properties set correctly and with trajectories' positions ordered correctly", () => {
-    expect(trajectoryA.aircraftProfile.callsign).toBe(callsignA);
-    expect(trajectoryA.aircraftProfile.category).toBe(categoryA);
+    expect(trajectoryA.callsign).toBe(callsignA);
+    expect(trajectoryA.category).toBe(categoryA);
     expect(trajectoryA.positions[0].time.equals(JulianDate.fromIso8601(timeA0))).toBe(true);
     expect(trajectoryA.positions[1].time.equals(JulianDate.fromIso8601(timeA1))).toBe(true);
   });

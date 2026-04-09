@@ -63,7 +63,7 @@ export function createCesiumEntity(trajectory: Trajectory, airplaneIonResource: 
   positionProperty.addSamples(times, positions);
 
   return new Entity({
-    name: trajectory.aircraftProfile.callsign ?? "null",
+    name: trajectory.callsign ?? "null",
     // TODO Add "availability"? Along lines of... availability: new Cesium.TimeIntervalCollection([ new Cesium.TimeInterval({ start: start, stop: stop }) ])
     position: positionProperty,
     model: { uri: airplaneIonResource },

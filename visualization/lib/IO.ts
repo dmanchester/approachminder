@@ -1,4 +1,3 @@
-import AircraftProfile from "./AircraftProfile";
 import ApproachSegment from "./ApproachSegment";
 import type { PositionTemplate } from "./PositionTemplate";
 import Trajectory from "./Trajectory";
@@ -17,7 +16,6 @@ export function constructTrajectoryCollection(template: TrajectoryCollectionTemp
 
   const trajectories = template.map(trajectoryTemplatePart => {
 
-    const aircraftProfile = new AircraftProfile(trajectoryTemplatePart.icao24, trajectoryTemplatePart.callsign, trajectoryTemplatePart.category);
     const positionTemplates: Array<[string, PositionTemplate]> = Object.entries(trajectoryTemplatePart.positions).map(([time, positionTemplatePart]) => {
 
       const approachSegmentTemplatePart = positionTemplatePart.approachSegment;
@@ -41,7 +39,7 @@ export function constructTrajectoryCollection(template: TrajectoryCollectionTemp
       ];
     });
 
-    return new Trajectory(aircraftProfile, Object.fromEntries(positionTemplates));
+    return new Trajectory(trajectoryTemplatePart.icao24, trajectoryTemplatePart.callsign, trajectoryTemplatePart.category, Object.fromEntries(positionTemplates));
   });
 
   return new TrajectoryCollection(trajectories);

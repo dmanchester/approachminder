@@ -14,7 +14,7 @@
 
     const fieldAccessor: (observation: Observation) => any = showApproachSegments ?
       observation => observation.position.approachSegment!.thresholdDistanceMeters :
-      observation => observation.position.trajectory.aircraftProfile.callsign;
+      observation => observation.position.trajectory.callsign;
 
     return sortBy(observations, fieldAccessor);
   });
@@ -47,11 +47,11 @@
     </tr>
     </thead>
     <tbody>
-    {#each observationsSorted as observation (observation.position.trajectory.aircraftProfile.icao24)}
+    {#each observationsSorted as observation (observation.position.trajectory.icao24)}
         <tr>
             <td class="align-center">
                 <button onclick={observation.trackEntityFunc}>
-                    {observation.position.trajectory.aircraftProfile.callsign}
+                    {observation.position.trajectory.callsign}
                 </button>
             </td>
             <!-- FIXME Handle nulls better (for example, currently, squawk shows as "null" when not present. -->

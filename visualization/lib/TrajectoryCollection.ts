@@ -72,7 +72,7 @@ class TrajectoryCollection {
     // Group the found trajectories and positions by aircraft *physical identifier* (icao24).
     const positionsGroupedByAircraft: Record<string, Array<Position>> = groupBy(
       positionsUngrouped,
-      position => position.trajectory.aircraftProfile.icao24
+      position => position.trajectory.icao24
     );
 
     // Obtain the latest position per aircraft.

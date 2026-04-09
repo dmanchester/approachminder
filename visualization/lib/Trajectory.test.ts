@@ -1,4 +1,3 @@
-import AircraftProfile from "./AircraftProfile";
 import Trajectory from "./Trajectory";
 
 import { JulianDate } from "cesium";
@@ -35,7 +34,7 @@ test("constructor should time-order its Positions",  () => {
 
 test("constructor should throw if it receives no PositionTemplate instances",  () => {
   expect(() => {
-    new Trajectory(new AircraftProfile("foo", null, null), Object.fromEntries([]));
+    new Trajectory("foo", null, null, Object.fromEntries([]));
   }).toThrow();
 });
 

@@ -31,7 +31,7 @@
   Ion.defaultAccessToken = approachMinderConfig.cesiumIon.accessToken;
 
   const trajectoryCollection = constructTrajectoryCollection(trajectoriesFromJSON as unknown as TrajectoryCollectionTemplate);
-  const firstTrajectoryToTrack = trajectoryCollection.trajectories.find(trajectory => trajectory.aircraftProfile.callsign === firstCallsignToTrack)!;
+  const firstTrajectoryToTrack = trajectoryCollection.trajectories.find(trajectory => trajectory.callsign === firstCallsignToTrack)!;
 
   // For "viewer" and "trajectoriesToTrackEntityFuncs" to be visible to this file's UI template, they must have
   // top-level declarations like the following. However, they can't actually be initialized ("viewer")/populated

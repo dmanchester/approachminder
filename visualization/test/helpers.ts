@@ -1,9 +1,6 @@
-import AircraftProfile from "../lib/AircraftProfile";
 import Trajectory from "../lib/Trajectory";
 
 export function constructTrajectory(icao24: string, times: Array<string>): Trajectory {
-
-  const aircraftProfile = new AircraftProfile(icao24, null, null);
 
   const positionTemplate = {
     longitude: 0,
@@ -19,5 +16,5 @@ export function constructTrajectory(icao24: string, times: Array<string>): Traje
 
   const positionTemplates = times.map(time => [ time, positionTemplate ]);
 
-  return new Trajectory(aircraftProfile, Object.fromEntries(positionTemplates));
+  return new Trajectory(icao24, null, null, Object.fromEntries(positionTemplates));
 }

@@ -23,7 +23,7 @@ const trajectoryD = constructTrajectory("baz", [ trajectoryDTime0, trajectoryDTi
 const trajectoryCollection = new TrajectoryCollection([trajectoryA, trajectoryB, trajectoryC, trajectoryD]);
 
 test("class should retain the ordering of the trajectories as supplied to the constructor", () => {
-  const icao24Values = trajectoryCollection.trajectories.map(trajectory => trajectory.aircraftProfile.icao24);
+  const icao24Values = trajectoryCollection.trajectories.map(trajectory => trajectory.icao24);
   expect(icao24Values).toEqual(["foo", "bar", "baz", "baz"]);
 });
 
@@ -46,19 +46,19 @@ describe("latestPositionsWithinWindow()", () => {
   const latestPositions = trajectoryCollection.latestPositionsWithinWindow(JulianDate.fromIso8601("2026-01-02T00:02:00Z"), 60);
 
   test("should include the latest position in the window from an aircraft's single trajectory in the collection", () => {
-    const filteredPositions = latestPositions.filter(position => position.trajectory.aircraftProfile.icao24 === "foo");
+    const filteredPositions = latestPositions.filter(position => position.trajectory.icao24 === "foo");
     expect(filteredPositions.length).toBe(1);
     expect(filteredPositions[0].time.equals(JulianDate.fromIso8601(trajectoryATime1)));
   });
 
   test("should include the latest position in the window across all of an aircraft's multiple trajectories in the collection", () => {
-    const filteredPositions = latestPositions.filter(position => position.trajectory.aircraftProfile.icao24 === "baz");
+    const filteredPositions = latestPositions.filter(position => position.trajectory.icao24 === "baz");
     expect(filteredPositions.length).toBe(1);
     expect(filteredPositions[0].time.equals(JulianDate.fromIso8601(trajectoryDTime0)));
   });
 
   test("should not reflect an aircraft that does not have a trajectory intersecting the window", () => {
-    const filteredPositions = latestPositions.filter(position => position.trajectory.aircraftProfile.icao24 === "bar");
+    const filteredPositions = latestPositions.filter(position => position.trajectory.icao24 === "bar");
     expect(filteredPositions.length).toBe(0);
   });
 });
