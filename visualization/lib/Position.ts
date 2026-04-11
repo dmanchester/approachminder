@@ -1,4 +1,4 @@
-import type ApproachSegment from "./ApproachSegment"
+import type ApproachSegment from "./ApproachSegment";
 import type { PositionTemplate } from "./PositionTemplate";
 import Trajectory from "./Trajectory";
 
