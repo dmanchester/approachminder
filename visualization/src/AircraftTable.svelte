@@ -1,22 +1,22 @@
 <script lang="ts">
-  import type { Observation } from "../lib/Observation";
+  import type { PositionWrapper } from "../lib/UI";
 
   import { sortBy } from 'lodash';
 
   interface Props {
-    observations: Array<Observation>;
+    posWrappers: Array<PositionWrapper>;
     showApproachSegments: boolean;
   }
 
-  let { observations, showApproachSegments }: Props = $props();
+  let { posWrappers, showApproachSegments }: Props = $props();
 
-  let observationsSorted = $derived.by(() => {
+  let posWrappersSorted = $derived.by(() => {
 
-    const fieldAccessor: (observation: Observation) => any = showApproachSegments ?
-      observation => observation.position.approachSegment!.thresholdDistanceMeters :
-      observation => observation.position.trajectory.callsign;
+    const fieldAccessor: (wrapper: PositionWrapper) => any = showApproachSegments ?
+      wrapper => wrapper.position.approachSegment!.thresholdDistanceMeters :
+      wrapper => wrapper.position.trajectory.callsign;
 
-    return sortBy(observations, fieldAccessor);
+    return sortBy(posWrappers, fieldAccessor);
   });
 
   const numberFormat = new Intl.NumberFormat();
@@ -26,7 +26,6 @@
     <thead>
     <tr>
         <th>Callsign</th>
-<!--        <th>Category</th>-->
         <th>Latitude</th>
         <th>Longitude</th>
         <th>Altitude</th>
@@ -38,43 +37,38 @@
             <th class="td-emphasis">Horiz. Deviation</th>
             <th class="td-emphasis">Standard Devs.</th>
         {/if}
-<!--        <th>On Ground?</th>-->
         <th>Velocity</th>
         <th>True Track</th>
         <th>Vertical Rate</th>
-<!--        <th>Squawk</th>-->
         <th>Report Age</th>
     </tr>
     </thead>
     <tbody>
-    {#each observationsSorted as observation (observation.position.trajectory.icao24)}
+    {#each posWrappersSorted as wrapper (wrapper.position.trajectory.icao24)}
         <tr>
             <td class="align-center">
-                <button onclick={observation.trackEntityFunc}>
-                    {observation.position.trajectory.callsign}
+                <button onclick={wrapper.trackEntityFunc}>
+                    {wrapper.position.trajectory.callsign}
                 </button>
             </td>
             <!-- FIXME Handle nulls better (for example, currently, squawk shows as "null" when not present. -->
             <!-- TODO Can we establish intermediate vars to make the following dot lookups shorter? -->
             <!-- TODO For fields with a decimal component, show trailing zeros (e.g., "1.0")  -->
-<!--            <td>{observation.trajectory.aircraftProfile.category}</td>-->
-            <td>{observation.position.latitude}°</td>
-            <td>{observation.position.longitude}°</td>
-            <td>{numberFormat.format(observation.position.altitude)} m</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
+            <td>{wrapper.position.latitude}°</td>
+            <td>{wrapper.position.longitude}°</td>
+            <td>{numberFormat.format(wrapper.position.altitude)} m</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
             {#if showApproachSegments}  <!-- TODO Better option than using "?" on each line below? -->
-                <td class="td-emphasis">{observation.position.approachSegment?.airport}</td>
-                <td class="td-emphasis">{observation.position.approachSegment?.threshold}</td>
-                <td class="td-emphasis">{numberFormat.format(observation.position.approachSegment?.thresholdDistanceMeters ?? -1)} m</td>  <!-- TODO Here and below, "?? -1" definitely not optimal. Better option? -->
-                <td class="td-emphasis">{numberFormat.format(observation.position.approachSegment?.verticalDevMeters ?? -1)} m</td>
-                <td class="td-emphasis">{numberFormat.format(observation.position.approachSegment?.horizontalDevMeters ?? -1)} m</td>
-                <td class="td-emphasis">{observation.position.approachSegment?.normalizedEuclideanDistance}</td>
+                <td class="td-emphasis">{wrapper.position.approachSegment?.airport}</td>
+                <td class="td-emphasis">{wrapper.position.approachSegment?.threshold}</td>
+                <td class="td-emphasis">{numberFormat.format(wrapper.position.approachSegment?.thresholdDistanceMeters ?? -1)} m</td>  <!-- TODO Here and below, "?? -1" definitely not optimal. Better option? -->
+                <td class="td-emphasis">{numberFormat.format(wrapper.position.approachSegment?.verticalDevMeters ?? -1)} m</td>
+                <td class="td-emphasis">{numberFormat.format(wrapper.position.approachSegment?.horizontalDevMeters ?? -1)} m</td>
+                <td class="td-emphasis">{wrapper.position.approachSegment?.normalizedEuclideanDistance}</td>
             {/if}
-<!--            <td>{observation.position.onGround}</td>-->
-            <td>{observation.position.velocity} m/s</td>
-            <td>{observation.position.trueTrack}°</td>
-            <td>{observation.position.verticalRate} m/s</td>
-<!--            <td>{observation.position.squawk}</td>-->
-            <td>{observation.ageOfObservation} s.</td>
+            <td>{wrapper.position.velocity} m/s</td>
+            <td>{wrapper.position.trueTrack}°</td>
+            <td>{wrapper.position.verticalRate} m/s</td>
+            <td>{wrapper.ageSecs} s.</td>
         </tr>
     {/each}
     </tbody>

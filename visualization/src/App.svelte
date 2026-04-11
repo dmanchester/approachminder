@@ -11,10 +11,9 @@
 
   import AircraftTable from './AircraftTable.svelte';
   import { constructTrajectoryCollection } from '../lib/IO';
-  import type { Observation } from '../lib/Observation';
   import type Trajectory from '../lib/Trajectory';
   import type { TrajectoryCollectionTemplate } from "../lib/TrajectoryCollectionTemplate";
-  import { configureViewer, createCesiumEntity, viewerOptions } from "../lib/UI";
+  import { configureViewer, createCesiumEntity, viewerOptions, type PositionWrapper } from "../lib/UI";
 
   import { partition } from 'lodash';
 
@@ -72,23 +71,23 @@
     });
   });
 
-  let [ observationsAircraftOnApproach, observationsOtherAircraft ] = $derived.by(() => {
+  let [ posWrappersAircraftOnApproach, posWrappersOtherAircraft ] = $derived.by(() => {
 
     if (time === null) {
-      return [ new Array<Observation>(), new Array<Observation>() ];
+      return [ new Array<PositionWrapper>(), new Array<PositionWrapper>() ];
     }
 
     // Get the latest positions within the time window, one per aircraft.
     const latestPositionsWithinWindow = trajectoryCollection.latestPositionsWithinWindow(time, windowDuration);
 
-    const observations: Array<Observation> = latestPositionsWithinWindow.map(position => ({
+    const posWrappers: Array<PositionWrapper> = latestPositionsWithinWindow.map(position => ({
       position: position,
-      ageOfObservation: Math.round(JulianDate.secondsDifference(time!, position.time)),
+      ageSecs: Math.round(JulianDate.secondsDifference(time!, position.time)),
       trackEntityFunc: trajectoriesToTrackEntityFuncs.get(position.trajectory)!
     }));
 
-    return partition(observations, observation => {
-      const approachSegment = observation.position.approachSegment;
+    return partition(posWrappers, wrapper => {
+      const approachSegment = wrapper.position.approachSegment;
       return approachSegment && approachSegment.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach;
     });
   });
@@ -103,9 +102,9 @@
   {#snippet b()}
     <section id="tableSection">
       <h1>Aircraft on Approach</h1>
-      <AircraftTable observations={observationsAircraftOnApproach} showApproachSegments={true}/>
+      <AircraftTable posWrappers={posWrappersAircraftOnApproach} showApproachSegments={true}/>
       <h1>Other Aircraft</h1>
-      <AircraftTable observations={observationsOtherAircraft} showApproachSegments={false}/>
+      <AircraftTable posWrappers={posWrappersOtherAircraft} showApproachSegments={false}/>
       <div id="bottomRightBox">
         <div id="appName"><b><a href="https://github.com/dmanchester/approachminder#approachminder" target="_blank">ApproachMinder</a></b></div>
         ADS-B data by <a href="https://opensky-network.org/" target="_blank">OpenSky Network</a>
