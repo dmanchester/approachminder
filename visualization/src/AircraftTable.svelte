@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { PositionWrapper } from "../lib/UI";
+  import { formatNumber, type PositionWrapper } from "../lib/UI";
 
   import { sortBy } from 'lodash';
 
@@ -18,8 +18,6 @@
 
     return sortBy(posWrappers, fieldAccessor);
   });
-
-  const numberFormat = new Intl.NumberFormat();
 </script>
 
 <table id={showApproachSegments ? "table-with-segments" : "table-without-segments"}>
@@ -52,23 +50,22 @@
             {position.trajectory.callsign}
           </button>
         </td>
-        <!-- TODO For fields with a decimal component, show trailing zeros (e.g., "1.0")  -->
-        <td>{position.latitude}°</td>
-        <td>{position.longitude}°</td>
-        <td>{numberFormat.format(position.altitude)} m</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
+        <td>{formatNumber(position.latitude, 4)}°</td>
+        <td>{formatNumber(position.longitude, 4)}°</td>
+        <td>{formatNumber(position.altitude, 0)} m</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
         {#if (showApproachSegments && position.approachSegment)}
           {@const approachSegment = position.approachSegment}
           <td class="td-emphasis">{approachSegment.airport}</td>
           <td class="td-emphasis">{approachSegment.threshold}</td>
-          <td class="td-emphasis">{numberFormat.format(approachSegment.thresholdDistanceMeters)} m</td>
-          <td class="td-emphasis">{numberFormat.format(approachSegment.verticalDevMeters)} m</td>
-          <td class="td-emphasis">{numberFormat.format(approachSegment.horizontalDevMeters)} m</td>
-          <td class="td-emphasis">{approachSegment.normalizedEuclideanDistance}</td>
+          <td class="td-emphasis">{formatNumber(approachSegment.thresholdDistanceMeters, 0)} m</td>
+          <td class="td-emphasis">{formatNumber(approachSegment.verticalDevMeters, 0)} m</td>
+          <td class="td-emphasis">{formatNumber(approachSegment.horizontalDevMeters, 0)} m</td>
+          <td class="td-emphasis">{formatNumber(approachSegment.normalizedEuclideanDistance, 1)}</td>
         {/if}
-        <td>{position.velocity} m/s</td>
-        <td>{position.trueTrack}°</td>
-        <td>{position.verticalRate} m/s</td>
-        <td>{wrapper.ageSecs} s.</td>
+        <td>{formatNumber(position.velocity, 0)} m/s</td>
+        <td>{formatNumber(position.trueTrack, 0)}°</td>
+        <td>{formatNumber(position.verticalRate, 1)} m/s</td>
+        <td>{formatNumber(wrapper.ageSecs, 0)} s.</td>
       </tr>
     {/each}
   </tbody>
