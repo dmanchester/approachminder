@@ -24,53 +24,53 @@
 
 <table id={showApproachSegments ? "table-with-segments" : "table-without-segments"}>
   <thead>
-  <tr>
-    <th>Callsign</th>
-    <th>Latitude</th>
-    <th>Longitude</th>
-    <th>Altitude</th>
-    {#if showApproachSegments}
-      <th class="td-emphasis">Airport</th>
-      <th class="td-emphasis">Runway</th>
-      <th class="td-emphasis">Dist. to Threshold</th>
-      <th class="td-emphasis">Vertical Deviation</th>
-      <th class="td-emphasis">Horiz. Deviation</th>
-      <th class="td-emphasis">Standard Devs.</th>
-    {/if}
-    <th>Velocity</th>
-    <th>True Track</th>
-    <th>Vertical Rate</th>
-    <th>Report Age</th>
-  </tr>
+    <tr>
+      <th>Callsign</th>
+      <th>Latitude</th>
+      <th>Longitude</th>
+      <th>Altitude</th>
+      {#if showApproachSegments}
+        <th class="td-emphasis">Airport</th>
+        <th class="td-emphasis">Runway</th>
+        <th class="td-emphasis">Dist. to Threshold</th>
+        <th class="td-emphasis">Vertical Deviation</th>
+        <th class="td-emphasis">Horiz. Deviation</th>
+        <th class="td-emphasis">Standard Devs.</th>
+      {/if}
+      <th>Velocity</th>
+      <th>True Track</th>
+      <th>Vertical Rate</th>
+      <th>Report Age</th>
+    </tr>
   </thead>
   <tbody>
-  {#each posWrappersSorted as wrapper (wrapper.position.trajectory.icao24)}
-    {@const position = wrapper.position}
-    <tr>
-      <td class="align-center">
-        <button onclick={wrapper.trackEntityFunc}>
-          {position.trajectory.callsign}
-        </button>
-      </td>
-      <!-- TODO For fields with a decimal component, show trailing zeros (e.g., "1.0")  -->
-      <td>{position.latitude}°</td>
-      <td>{position.longitude}°</td>
-      <td>{numberFormat.format(position.altitude)} m</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
-      {#if (showApproachSegments && position.approachSegment)}
-        {@const approachSegment = position.approachSegment}
-        <td class="td-emphasis">{approachSegment.airport}</td>
-        <td class="td-emphasis">{approachSegment.threshold}</td>
-        <td class="td-emphasis">{numberFormat.format(approachSegment.thresholdDistanceMeters)} m</td>
-        <td class="td-emphasis">{numberFormat.format(approachSegment.verticalDevMeters)} m</td>
-        <td class="td-emphasis">{numberFormat.format(approachSegment.horizontalDevMeters)} m</td>
-        <td class="td-emphasis">{approachSegment.normalizedEuclideanDistance}</td>
-      {/if}
-      <td>{position.velocity} m/s</td>
-      <td>{position.trueTrack}°</td>
-      <td>{position.verticalRate} m/s</td>
-      <td>{wrapper.ageSecs} s.</td>
-    </tr>
-  {/each}
+    {#each posWrappersSorted as wrapper (wrapper.position.trajectory.icao24)}
+      {@const position = wrapper.position}
+      <tr>
+        <td class="align-center">
+          <button onclick={wrapper.trackEntityFunc}>
+            {position.trajectory.callsign}
+          </button>
+        </td>
+        <!-- TODO For fields with a decimal component, show trailing zeros (e.g., "1.0")  -->
+        <td>{position.latitude}°</td>
+        <td>{position.longitude}°</td>
+        <td>{numberFormat.format(position.altitude)} m</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
+        {#if (showApproachSegments && position.approachSegment)}
+          {@const approachSegment = position.approachSegment}
+          <td class="td-emphasis">{approachSegment.airport}</td>
+          <td class="td-emphasis">{approachSegment.threshold}</td>
+          <td class="td-emphasis">{numberFormat.format(approachSegment.thresholdDistanceMeters)} m</td>
+          <td class="td-emphasis">{numberFormat.format(approachSegment.verticalDevMeters)} m</td>
+          <td class="td-emphasis">{numberFormat.format(approachSegment.horizontalDevMeters)} m</td>
+          <td class="td-emphasis">{approachSegment.normalizedEuclideanDistance}</td>
+        {/if}
+        <td>{position.velocity} m/s</td>
+        <td>{position.trueTrack}°</td>
+        <td>{position.verticalRate} m/s</td>
+        <td>{wrapper.ageSecs} s.</td>
+      </tr>
+    {/each}
   </tbody>
 </table>
 
