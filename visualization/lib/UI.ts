@@ -86,3 +86,32 @@ export type PositionWrapper = ({
   ageSecs: number,
   trackEntityFunc: () => void
 });
+
+/**
+ * Formats a number, showing a specified count of digits after the decimal point. As needed: rounds/right-pads with
+ * zeroes; includes thousands separators.
+ *
+ * Uses U.S.-style decimal point and thousands separator.
+ *
+ * If null or undefined is passed, returns "null" or "undefined", respectively.
+ *
+ * @param value The number to format.
+ * @param fractionDigits How many digits to show after the decimal point.
+ */
+export function formatNumber(value: number | null | undefined, fractionDigits: number): string {
+
+  if (value === null) {
+    return "null";
+  }
+
+  if (value === undefined) {
+    return "undefined";
+  }
+
+  const numberFormat = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits
+  });
+
+  return numberFormat.format(value);
+}
