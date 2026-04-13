@@ -98,7 +98,7 @@
 
     const posWrappers: Array<PositionWrapper> = latestPositionsWithinWindow.map(position => ({
       position: position,
-      ageSecs: Math.round(JulianDate.secondsDifference(timeAsJulianDate!, position.time)),
+      ageSecs: JulianDate.secondsDifference(timeAsJulianDate!, position.time),
       trackEntityFunc: trajectoriesToTrackEntityFuncs.get(position.trajectory)!
     }));
 
