@@ -42,7 +42,21 @@
   // flies that trajectory.
   const trajectoriesToTrackEntityFuncs = new Map<Trajectory, () => void>();
 
-  let time: JulianDate | null = $state(null);
+  let time: number | null = $state(null);  // milliseconds since the epoch (see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTime)
+  // It would be preferable for time to be a JulianDate, the type used natively by the CesiumJS viewer (and indeed,
+  // through commit f796071c, this code relied on a JulianDate).
+  //
+  // However, using JulianDate leads to unnecessary Svelte re-rendering when the CesiumJS viewer is paused.
+  //
+  // Even when paused, the viewer's clock continues to emit "onTick" events. They are for the same moment in time,
+  // represented by a new JulianDate instance on each tick.
+  //
+  // Svelte's change-detection logic compares the instances by reference equality. (It appears not to support
+  // user-defined notions of equality.) It concludes that successive instances from a paused viewer constitute a
+  // difference and triggers a re-render.
+  //
+  // By instead using a number-based representation of time, we enable Svelte to correctly determine when the moment in
+  // time has actually changed.
 
   onMount(async () => {
 
@@ -67,7 +81,7 @@
     trajectoriesToTrackEntityFuncs.get(firstTrajectoryToTrack)!();
 
     viewer.clock.onTick.addEventListener(() => {  // This gets called very frequently, even when the clock is stopped!
-      time = viewer.clock.currentTime;
+      time = JulianDate.toDate(viewer.clock.currentTime).getTime();
     });
   });
 
@@ -77,12 +91,14 @@
       return [ new Array<PositionWrapper>(), new Array<PositionWrapper>() ];
     }
 
+    const timeAsJulianDate = JulianDate.fromDate(new Date(time));
+
     // Get the latest positions within the time window, one per aircraft.
-    const latestPositionsWithinWindow = trajectoryCollection.latestPositionsWithinWindow(time, windowDuration);
+    const latestPositionsWithinWindow = trajectoryCollection.latestPositionsWithinWindow(timeAsJulianDate, windowDuration);
 
     const posWrappers: Array<PositionWrapper> = latestPositionsWithinWindow.map(position => ({
       position: position,
-      ageSecs: Math.round(JulianDate.secondsDifference(time!, position.time)),
+      ageSecs: Math.round(JulianDate.secondsDifference(timeAsJulianDate!, position.time)),
       trackEntityFunc: trajectoriesToTrackEntityFuncs.get(position.trajectory)!
     }));
 
