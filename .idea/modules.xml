@@ -7,7 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/analysis/.idea/modules/analysis/analysis.main.iml" filepath="$PROJECT_DIR$/analysis/.idea/modules/analysis/analysis.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/analysis/.idea/modules/analysis/analysis.test.iml" filepath="$PROJECT_DIR$/analysis/.idea/modules/analysis/analysis.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/approachminder.iml" filepath="$PROJECT_DIR$/approachminder.iml" />
-      <module fileurl="file://$PROJECT_DIR$/visualization.iml" filepath="$PROJECT_DIR$/visualization.iml" />
+      <module fileurl="file://$PROJECT_DIR$/visualization/visualization.iml" filepath="$PROJECT_DIR$/visualization/visualization.iml" />
     </modules>
   </component>
 </project>
