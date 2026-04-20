@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { SplitPane } from '@rich_harris/svelte-split-pane';
   import {
+    Entity,
     Ion,
     IonResource,
     JulianDate,
@@ -11,9 +12,10 @@
 
   import AircraftTable from './AircraftTable.svelte';
   import { constructTrajectoryCollection } from '../lib/IO';
+  import type Position from '../lib/Position';
   import type Trajectory from '../lib/Trajectory';
-  import type { TrajectoryCollectionTemplate } from "../lib/TrajectoryCollectionTemplate";
-  import { configureViewer, createCesiumEntity, viewerOptions, type PositionWrapper } from "../lib/UI";
+  import type { TrajectoryCollectionTemplate } from '../lib/TrajectoryCollectionTemplate';
+  import { configureViewer, createCesiumEntity, viewerOptions, type PositionWrapper } from '../lib/UI';
 
   import { partition } from 'lodash';
 
@@ -25,22 +27,22 @@
 
   const maxThresholdDistanceMetersForApproach = 10000;
   const windowDuration = 60;  // seconds
-  const firstCallsignToTrack = 'SKW4081';
 
   Ion.defaultAccessToken = approachMinderConfig.cesiumIon.accessToken;
 
+  // Hydrate the JSON-sourced data into "real" objects.
   const trajectoryCollection = constructTrajectoryCollection(trajectoriesFromJSON as unknown as TrajectoryCollectionTemplate);
-  const firstTrajectoryToTrack = trajectoryCollection.trajectories.find(trajectory => trajectory.callsign === firstCallsignToTrack)!;
 
-  // For "viewer" and "trajectoriesToTrackEntityFuncs" to be visible to this file's UI template, they must have
-  // top-level declarations like the following. However, they can't actually be initialized ("viewer")/populated
-  // ("trajectoriesToTrackEntityFuncs") here. ("viewer" can only be initialized in the onMount() handler. Meanwhile,
-  // population of "trajectoriesToTrackEntityFuncs" involves an asynchronous call--IonResource.fromAssetId()--which
-  // can't be done here.)
   let viewer: Viewer;
-  // When called, a trajectory's "track-entity function" leads the viewer to begin tracking the entity (3-D model) that
-  // flies that trajectory.
-  const trajectoriesToTrackEntityFuncs = new Map<Trajectory, () => void>();
+  const trajectoriesToEntities = new Map<Trajectory, Entity>();
+  // Regarding initialization/population of the above variables *not* occurring here:
+  //
+  //   * viewer: Can only be initialized in the onMount() handler.
+  //
+  //   * trajectoriesToEntities: Population involves an asynchronous call--IonResource.fromAssetId()--which can't be
+  //     done here.
+
+  let initialized = $state(false);
 
   let time: number | null = $state(null);  // milliseconds since the epoch (see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTime)
   // It would be preferable for time to be a JulianDate, the type used natively by the CesiumJS viewer (and indeed,
@@ -51,12 +53,45 @@
   // Even when paused, the viewer's clock continues to emit "onTick" events. They are for the same moment in time,
   // represented by a new JulianDate instance on each tick.
   //
-  // Svelte's change-detection logic compares the instances by reference equality. (It appears not to support
+  // Svelte's change-detection logic compares the instances by reference equality. (It does not appear to support
   // user-defined notions of equality.) It concludes that successive instances from a paused viewer constitute a
   // difference and triggers a re-render.
   //
   // By instead using a number-based representation of time, we enable Svelte to correctly determine when the moment in
   // time has actually changed.
+
+  let icao24ToTrack = $state(approachMinderConfig.firstICAO24ToTrack);
+
+  let timeAsJulianDate = $derived(time ? JulianDate.fromDate(new Date(time)) : null);
+
+  let positions = $derived(timeAsJulianDate ? trajectoryCollection.latestPositionsWithinWindow(timeAsJulianDate, windowDuration) : new Array<Position>());
+
+  let [ posWrappersAircraftOnApproach, posWrappersOtherAircraft ] = $derived.by(() => {
+
+    if (!timeAsJulianDate) {
+      return [ new Array<PositionWrapper>(), new Array<PositionWrapper>() ];
+    }
+
+    const posWrappers: Array<PositionWrapper> = positions.map(position => ({
+      position: position,
+      ageSecs: JulianDate.secondsDifference(timeAsJulianDate, position.time),
+    }));
+
+    return partition(posWrappers, wrapper => {
+      const approachSegment = wrapper.position.approachSegment;
+      return approachSegment && approachSegment.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach;
+    });
+  });
+
+  $effect(() => {
+    // Change the tracked entity.
+    if (initialized) {  // apply this effect only once viewer has been initialized and trajectoriesToEntities has been populated
+      const position = positions.find(position => position.trajectory.icao24 === icao24ToTrack);
+      if (position) {
+        viewer.trackedEntity = trajectoriesToEntities.get(position.trajectory);
+      }  // TODO In the "else" case, should we clear viewer.trackedEntity?
+    }
+  });
 
   onMount(async () => {
 
@@ -65,7 +100,7 @@
       viewer,
       trajectoryCollection.earliestTime(),
       trajectoryCollection.latestTime(),
-      firstTrajectoryToTrack.earliestTime()
+      trajectoryCollection.earliestTime()
     );
 
     const airplaneIonResource = await IonResource.fromAssetId(approachMinderConfig.cesiumIon.assetIdAirplane);
@@ -73,39 +108,14 @@
     trajectoryCollection.trajectories.forEach(trajectory => {
       const entity = createCesiumEntity(trajectory, airplaneIonResource);
       viewer.entities.add(entity);
-      const trackEntityFunc = () => { viewer.trackedEntity = entity; };
-      trajectoriesToTrackEntityFuncs.set(trajectory, trackEntityFunc);
+      trajectoriesToEntities.set(trajectory, entity);
     });
-
-    // Begin tracking the entity of the designated trajectory (by calling the trajectory's function).
-    trajectoriesToTrackEntityFuncs.get(firstTrajectoryToTrack)!();
 
     viewer.clock.onTick.addEventListener(() => {  // This gets called very frequently, even when the clock is stopped!
       time = JulianDate.toDate(viewer.clock.currentTime).getTime();
     });
-  });
 
-  let [ posWrappersAircraftOnApproach, posWrappersOtherAircraft ] = $derived.by(() => {
-
-    if (time === null) {
-      return [ new Array<PositionWrapper>(), new Array<PositionWrapper>() ];
-    }
-
-    const timeAsJulianDate = JulianDate.fromDate(new Date(time));
-
-    // Get the latest positions within the time window, one per aircraft.
-    const latestPositionsWithinWindow = trajectoryCollection.latestPositionsWithinWindow(timeAsJulianDate, windowDuration);
-
-    const posWrappers: Array<PositionWrapper> = latestPositionsWithinWindow.map(position => ({
-      position: position,
-      ageSecs: JulianDate.secondsDifference(timeAsJulianDate!, position.time),
-      trackEntityFunc: trajectoriesToTrackEntityFuncs.get(position.trajectory)!
-    }));
-
-    return partition(posWrappers, wrapper => {
-      const approachSegment = wrapper.position.approachSegment;
-      return approachSegment && approachSegment.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach;
-    });
+    initialized = true;
   });
 </script>
 
@@ -118,9 +128,9 @@
   {#snippet b()}
     <section id="tableSection">
       <h1>Aircraft on Approach</h1>
-      <AircraftTable posWrappers={posWrappersAircraftOnApproach} showApproachSegments={true}/>
+      <AircraftTable posWrappers={posWrappersAircraftOnApproach} showApproachSegments={true} bind:icao24ToTrack={icao24ToTrack}/>
       <h1>Other Aircraft</h1>
-      <AircraftTable posWrappers={posWrappersOtherAircraft} showApproachSegments={false}/>
+      <AircraftTable posWrappers={posWrappersOtherAircraft} showApproachSegments={false} bind:icao24ToTrack={icao24ToTrack}/>
       <div id="bottomRightBox">
         <div id="appName"><b><a href="https://github.com/dmanchester/approachminder#approachminder" target="_blank">ApproachMinder</a></b></div>
         ADS-B data by <a href="https://opensky-network.org/" target="_blank">OpenSky Network</a>

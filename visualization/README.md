@@ -23,14 +23,15 @@
 
 6. Under `visualization/`, create a file named `approachminder-config.json`.
 
-7. Populate the file with the following JSON, _substituting the values from steps 5.i and 5.ii:_
+7. Populate the file with the JSON below. For `accessToken` and `assetIdAirplane`, substitute the values from steps 5.i and 5.ii, respectively. For `firstICAO24ToTrack`, use an aircraft's `icao24` value from `data.json`. (`a34fe6`, which corresponds to callsign "SKW4081", is a good choice.)
 
    ```json
    {
      "cesiumIon": {
        "accessToken": "ABCDEFGH",
        "assetIdAirplane": 12345678
-     }
+     },
+     "firstICAO24ToTrack": "abc123"
    }
    ```
 

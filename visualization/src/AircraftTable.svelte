@@ -6,9 +6,10 @@
   interface Props {
     posWrappers: Array<PositionWrapper>;
     showApproachSegments: boolean;
+    icao24ToTrack: string;
   }
 
-  let { posWrappers, showApproachSegments }: Props = $props();
+  let { posWrappers, showApproachSegments, icao24ToTrack = $bindable() }: Props = $props();
 
   let posWrappersSorted = $derived.by(() => {
 
@@ -46,7 +47,7 @@
       {@const position = wrapper.position}
       <tr>
         <td class="align-center">
-          <button onclick={wrapper.trackEntityFunc}>
+          <button onclick={() => { icao24ToTrack = position.trajectory.icao24; }}>
             {position.trajectory.callsign}
           </button>
         </td>

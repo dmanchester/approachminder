@@ -74,17 +74,11 @@ export function createCesiumEntity(trajectory: Trajectory, airplaneIonResource: 
 }
 
 /**
- * Wraps a Position and adds a couple UI-oriented fields to it:
- *
- *   * the age of the position (relative to a current point in time)
- *
- *   * a function that, when called, leads the Cesium viewer to begin tracking the entity (3-D model) that flies the
- *     trajectory of which the Position is part.
+ * Wraps a Position and adds a UI-oriented field: the age of the position (relative to a current point in time).
  */
 export type PositionWrapper = ({
   position: Position,
-  ageSecs: number,
-  trackEntityFunc: () => void
+  ageSecs: number
 });
 
 /**
