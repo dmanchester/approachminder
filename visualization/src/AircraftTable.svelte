@@ -43,9 +43,9 @@
     </tr>
   </thead>
   <tbody>
-    {#each posWrappersSorted as wrapper (wrapper.position.trajectory.icao24)}
+    {#each posWrappersSorted as wrapper, i (wrapper.position.trajectory.icao24)}
       {@const position = wrapper.position}
-      <tr>
+      <tr class={position.trajectory.icao24 === icao24ToTrack ? "tr-tracking" : i % 2 === 0 ? "tr-even" : "tr-odd"}>
         <td class="align-center">
           <button onclick={() => { icao24ToTrack = position.trajectory.icao24; }}>
             {position.trajectory.callsign}
@@ -102,12 +102,16 @@
     background-color: #f0f0f0;
   }
 
-  tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
+  .tr-tracking {
+    background-color: #ffffc0;
   }
 
-  tbody tr:nth-child(odd) {
+  .tr-even {  /* "even" and "odd" refer to JavaScript 0-based indexing, as opposed to CSS 1-based indexing */
     background-color: #ffffff;
+  }
+
+  .tr-odd {
+    background-color: #f9f9f9;
   }
 
   td {
@@ -115,7 +119,7 @@
   }
 
   .td-emphasis {
-    background-color: #ffa5002f;
+    background-color: #007bff1f;
   }
 
   button {
