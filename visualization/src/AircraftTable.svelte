@@ -4,20 +4,20 @@
   import { sortBy } from 'lodash';
 
   interface Props {
-    posWrappers: Array<PositionWrapper>;
+    positionWrappers: Array<PositionWrapper>;
     showApproachSegments: boolean;
     icao24ToTrack: string;
   }
 
-  let { posWrappers, showApproachSegments, icao24ToTrack = $bindable() }: Props = $props();
+  let { positionWrappers, showApproachSegments, icao24ToTrack = $bindable() }: Props = $props();
 
-  let posWrappersSorted = $derived.by(() => {
+  let positionWrappersSorted = $derived.by(() => {
 
     const fieldAccessor: (wrapper: PositionWrapper) => any = showApproachSegments ?
       wrapper => wrapper.position.approachSegment!.thresholdDistanceMeters :
       wrapper => wrapper.position.trajectory.callsign;
 
-    return sortBy(posWrappers, fieldAccessor);
+    return sortBy(positionWrappers, fieldAccessor);
   });
 </script>
 
@@ -43,7 +43,7 @@
     </tr>
   </thead>
   <tbody>
-    {#each posWrappersSorted as wrapper, i (wrapper.position.trajectory.icao24)}
+    {#each positionWrappersSorted as wrapper, i (wrapper.position.trajectory.icao24)}
       {@const position = wrapper.position}
       <tr class={position.trajectory.icao24 === icao24ToTrack ? "tr-tracking" : i % 2 === 0 ? "tr-even" : "tr-odd"}>
         <td class="align-center">

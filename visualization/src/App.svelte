@@ -44,8 +44,8 @@
 
   let initialized = $state(false);
 
-  let time: number | null = $state(null);  // milliseconds since the epoch (see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTime)
-  // It would be preferable for time to be a JulianDate, the type used natively by the CesiumJS viewer (and indeed,
+  let jsTime: number | null = $state(null);  // milliseconds since the epoch (see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTime)
+  // It would be preferable if this were a JulianDate, the type used natively by the CesiumJS viewer (and indeed,
   // through commit f796071c, this code relied on a JulianDate).
   //
   // However, using JulianDate leads to unnecessary Svelte re-rendering when the CesiumJS viewer is paused.
@@ -62,22 +62,22 @@
 
   let icao24ToTrack = $state(approachMinderConfig.firstICAO24ToTrack);
 
-  let timeAsJulianDate = $derived(time ? JulianDate.fromDate(new Date(time)) : null);
+  let time = $derived(jsTime ? JulianDate.fromDate(new Date(jsTime)) : null);
 
-  let positions = $derived(timeAsJulianDate ? trajectoryCollection.latestPositionsWithinWindow(timeAsJulianDate, windowDuration) : new Array<Position>());
+  let positions = $derived(time ? trajectoryCollection.latestPositionsWithinWindow(time, windowDuration) : new Array<Position>());
 
-  let [ posWrappersAircraftOnApproach, posWrappersOtherAircraft ] = $derived.by(() => {
+  let [ positionWrappersAircraftOnApproach, positionWrappersOtherAircraft ] = $derived.by(() => {
 
-    if (!timeAsJulianDate) {
+    if (!time) {
       return [ new Array<PositionWrapper>(), new Array<PositionWrapper>() ];
     }
 
-    const posWrappers: Array<PositionWrapper> = positions.map(position => ({
+    const positionWrappers: Array<PositionWrapper> = positions.map(position => ({
       position: position,
-      ageSecs: JulianDate.secondsDifference(timeAsJulianDate, position.time),
+      ageSecs: JulianDate.secondsDifference(time, position.time),
     }));
 
-    return partition(posWrappers, wrapper => {
+    return partition(positionWrappers, wrapper => {
       const approachSegment = wrapper.position.approachSegment;
       return approachSegment && approachSegment.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach;
     });
@@ -112,7 +112,7 @@
     });
 
     viewer.clock.onTick.addEventListener(() => {  // This gets called very frequently, even when the clock is stopped!
-      time = JulianDate.toDate(viewer.clock.currentTime).getTime();
+      jsTime = JulianDate.toDate(viewer.clock.currentTime).getTime();
     });
 
     initialized = true;
@@ -128,9 +128,9 @@
   {#snippet b()}
     <section id="tableSection">
       <h1>Aircraft on Approach</h1>
-      <AircraftTable posWrappers={posWrappersAircraftOnApproach} showApproachSegments={true} bind:icao24ToTrack={icao24ToTrack}/>
+      <AircraftTable positionWrappers={positionWrappersAircraftOnApproach} showApproachSegments={true} bind:icao24ToTrack={icao24ToTrack}/>
       <h1>Other Aircraft</h1>
-      <AircraftTable posWrappers={posWrappersOtherAircraft} showApproachSegments={false} bind:icao24ToTrack={icao24ToTrack}/>
+      <AircraftTable positionWrappers={positionWrappersOtherAircraft} showApproachSegments={false} bind:icao24ToTrack={icao24ToTrack}/>
       <div id="bottomRightBox">
         <div id="appName"><b><a href="https://github.com/dmanchester/approachminder#approachminder" target="_blank">ApproachMinder</a></b></div>
         ADS-B data by <a href="https://opensky-network.org/" target="_blank">OpenSky Network</a>
