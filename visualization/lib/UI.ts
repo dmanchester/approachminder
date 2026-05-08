@@ -12,8 +12,8 @@ import {
   Viewer
 } from 'cesium';
 
-import type Position from "./Position";
-import type Trajectory from "./Trajectory";
+import { type Position } from "./Position";
+import { type Trajectory } from "./Trajectory";
 
 // TODO This function's ImageryLayer.fromProviderAsync(IonImageryProvider.fromAssetId(...)) call (conditionally invoked)
 // presumably has a precondition of Ion.defaultAccessToken being set. Its Terrain.fromWorldTerrain() call (always

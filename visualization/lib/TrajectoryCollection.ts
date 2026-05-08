@@ -1,5 +1,5 @@
-import type Position from "./Position";
-import type Trajectory from "./Trajectory";
+import { type Position } from "./Position";
+import { type Trajectory } from "./Trajectory";
 
 import { groupBy, maxBy, minBy } from "lodash";
 import { JulianDate } from "cesium";
@@ -9,7 +9,7 @@ import { JulianDate } from "cesium";
  *
  * Is guaranteed to contain at least one trajectory.
  */
-class TrajectoryCollection {
+export class TrajectoryCollection {
   readonly trajectories: Array<Trajectory>;
 
   /**
@@ -81,5 +81,3 @@ class TrajectoryCollection {
     );
   }
 }
-
-export default TrajectoryCollection;

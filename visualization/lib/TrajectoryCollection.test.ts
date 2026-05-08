@@ -1,4 +1,4 @@
-import TrajectoryCollection from "./TrajectoryCollection";
+import { TrajectoryCollection } from "./TrajectoryCollection";
 
 import { JulianDate } from "cesium";
 

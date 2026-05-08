@@ -1,8 +1,8 @@
-import ApproachSegment from "./ApproachSegment";
-import type { PositionTemplate } from "./PositionTemplate";
-import Trajectory from "./Trajectory";
-import TrajectoryCollection from "./TrajectoryCollection";
-import type { TrajectoryCollectionTemplate } from "./TrajectoryCollectionTemplate";
+import { ApproachSegment } from "./ApproachSegment";
+import { type PositionTemplate } from "./PositionTemplate";
+import { Trajectory } from "./Trajectory";
+import { TrajectoryCollection } from "./TrajectoryCollection";
+import { type TrajectoryCollectionTemplate } from "./TrajectoryCollectionTemplate";
 
 /**
  * Construct a TrajectoryCollection instance.

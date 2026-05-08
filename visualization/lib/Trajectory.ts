@@ -1,5 +1,5 @@
-import Position from "./Position";
-import type { PositionTemplate } from "./PositionTemplate";
+import { Position } from "./Position";
+import { type PositionTemplate } from "./PositionTemplate";
 
 import { JulianDate } from "cesium";
 
@@ -10,7 +10,7 @@ import { JulianDate } from "cesium";
  *   * at least one position; and
  *   * no positions that share the same time.
  */
-class Trajectory {
+export class Trajectory {
   readonly icao24: string;
   readonly callsign: string | null;
   readonly category: string | null;
@@ -78,5 +78,3 @@ class Trajectory {
     return this.positions.findLast(tbp => JulianDate.lessThanOrEquals(startTime, tbp.time) && JulianDate.lessThanOrEquals(tbp.time, endTime));
   }
 }
-
-export default Trajectory;

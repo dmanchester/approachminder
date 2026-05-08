@@ -1,6 +1,6 @@
-import type ApproachSegment from "./ApproachSegment";
-import type { PositionTemplate } from "./PositionTemplate";
-import Trajectory from "./Trajectory";
+import { type ApproachSegment } from "./ApproachSegment";
+import { type PositionTemplate } from "./PositionTemplate";
+import { Trajectory } from "./Trajectory";
 
 import { JulianDate } from "cesium";
 
@@ -9,7 +9,7 @@ import { JulianDate } from "cesium";
  *
  * If the position has been deemed part of an approach to a runway, also includes an ApproachSegment.
  */
-class Position {
+export class Position {
   readonly trajectory: Trajectory;
   readonly time: JulianDate;
   readonly longitude: number;
@@ -36,5 +36,3 @@ class Position {
     this.approachSegment = template.approachSegment;
   }
 }
-
-export default Position;

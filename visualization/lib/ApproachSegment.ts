@@ -1,4 +1,4 @@
-class ApproachSegment {
+export class ApproachSegment {
   constructor(
     public readonly airport: string,
     public readonly threshold: string,
@@ -8,5 +8,3 @@ class ApproachSegment {
     public readonly normalizedEuclideanDistance: number
   ) {}
 }
-
-export default ApproachSegment;

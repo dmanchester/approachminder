@@ -1,4 +1,4 @@
-import type ApproachSegment from "./ApproachSegment";
+import { type ApproachSegment } from "./ApproachSegment";
 
 /**
  * The PositionTemplate type facilitates the creation of Position instances.
