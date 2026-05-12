@@ -13,9 +13,10 @@
   import AircraftTable from './AircraftTable.svelte';
   import { constructTrajectoryCollection } from '../lib/IO';
   import { type Position } from '../lib/Position';
+  import { type PositionWrapper } from '../lib/PositionWrapper';
   import { type Trajectory } from '../lib/Trajectory';
   import { type TrajectoryCollectionTemplate } from '../lib/TrajectoryCollectionTemplate';
-  import { configureViewer, createCesiumEntity, viewerOptions, type PositionWrapper } from '../lib/UI';
+  import { configureViewer, createCesiumEntity, viewerOptions } from '../lib/UI';
 
   import { partition } from 'lodash';
 

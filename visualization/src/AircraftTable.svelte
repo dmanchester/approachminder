@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { formatNumber, type PositionWrapper } from "../lib/UI";
+  import { formatNumber } from '../lib/UI';
+  import { type PositionWrapper } from '../lib/PositionWrapper';
 
   import { sortBy } from 'lodash';
 

@@ -12,7 +12,6 @@ import {
   Viewer
 } from 'cesium';
 
-import { type Position } from "./Position";
 import { type Trajectory } from "./Trajectory";
 
 // TODO This function's ImageryLayer.fromProviderAsync(IonImageryProvider.fromAssetId(...)) call (conditionally invoked)
@@ -72,14 +71,6 @@ export function createCesiumEntity(trajectory: Trajectory, airplaneIonResource: 
     orientation: new VelocityOrientationProperty(positionProperty)
   });
 }
-
-/**
- * Wraps a Position and adds a UI-oriented field: the age of the position (relative to a current point in time).
- */
-export type PositionWrapper = ({
-  position: Position,
-  ageSecs: number
-});
 
 /**
  * Formats a number, showing a specified count of digits after the decimal point. As needed: rounds/right-pads with
