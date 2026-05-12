@@ -1,5 +1,5 @@
-import { constructTrajectoryCollection } from "./IO";
-import { TrajectoryCollectionTemplate } from "./TrajectoryCollectionTemplate";
+import { constructTrajectoryCollection } from "../lib/IO";
+import { TrajectoryCollectionTemplate } from "../lib/TrajectoryCollectionTemplate";
 
 import { JulianDate } from "cesium";
 

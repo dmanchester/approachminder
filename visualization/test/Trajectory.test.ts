@@ -1,8 +1,8 @@
-import { Trajectory } from "./Trajectory";
+import { Trajectory } from "../lib/Trajectory";
 
 import { JulianDate } from "cesium";
 
-import { constructTrajectory } from "../test/helpers";
+import { constructTrajectory } from "./helpers";
 
 import { describe, expect, test } from "vitest";
 
