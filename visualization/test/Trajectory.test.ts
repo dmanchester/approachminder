@@ -1,4 +1,4 @@
-import { Trajectory } from "../lib/Trajectory";
+import { Trajectory } from "../src/lib/model/Trajectory";
 
 import { JulianDate } from "cesium";
 

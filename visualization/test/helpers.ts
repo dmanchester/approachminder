@@ -1,4 +1,4 @@
-import { Trajectory } from "../lib/Trajectory";
+import { Trajectory } from "../src/lib/model/Trajectory";
 
 export function constructTrajectory(icao24: string, times: Array<string>): Trajectory {
 

@@ -1,4 +1,4 @@
-import { formatNumber } from "../lib/UI";
+import { formatNumber } from "../src/lib/utils/ui";
 
 import { describe, expect, test } from "vitest";
 

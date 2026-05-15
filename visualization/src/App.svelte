@@ -10,13 +10,13 @@
   } from 'cesium';
   import 'cesium/Build/Cesium/Widgets/widgets.css';
 
-  import AircraftTable from './AircraftTable.svelte';
-  import { constructTrajectoryCollection } from '../lib/IO';
-  import { type Position } from '../lib/Position';
-  import { type PositionWrapper } from '../lib/PositionWrapper';
-  import { type Trajectory } from '../lib/Trajectory';
-  import { type TrajectoryCollectionTemplate } from '../lib/TrajectoryCollectionTemplate';
-  import { configureViewer, createCesiumEntity, viewerOptions } from '../lib/UI';
+  import AircraftTable from './lib/components/AircraftTable.svelte';
+  import { constructTrajectoryCollection } from './lib/services/io';
+  import { type Position } from './lib/model/Position';
+  import { type PositionWrapper } from './lib/model/PositionWrapper';
+  import { type Trajectory } from './lib/model/Trajectory';
+  import { type TrajectoryCollectionTemplate } from './lib/model/TrajectoryCollectionTemplate';
+  import { configureViewer, createCesiumEntity, viewerOptions } from './lib/utils/ui';
 
   import { partition } from 'lodash';
 
