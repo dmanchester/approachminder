@@ -22,6 +22,17 @@
   });
 </script>
 
+<!--
+@component
+
+A table of aircraft and their latest positions.
+
+In the basic case of, the aircraft are not on approach to a runway, the table shows callsign, latitude, longitude, etc.
+
+In the advanced case of, the aircraft *are* on approach (and "true" is passed for showApproachSegments), the table
+additionally shows information about the approach (runway, distance to threshold, vertical and horizontal deviation,
+etc.).
+-->
 <table id={showApproachSegments ? "table-with-segments" : "table-without-segments"}>
   <thead>
     <tr>
