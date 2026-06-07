@@ -85,7 +85,7 @@ npm run check
 
 With a large `data.json` (or other large resources that must be processed by Vite), the `npm run build` command above may fail on a `JavaScript heap out of memory` error like the following:
 
-```
+```text
 FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
 ```
 
