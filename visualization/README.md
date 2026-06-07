@@ -73,7 +73,7 @@ npm run build
 
 The distribution is created in `dist/`.
 
-## Running "svelte-check"
+## Running Checks and Linting
 
 _Documentation for "svelte-check": [npmjs.com](https://www.npmjs.com/package/svelte-check); [svelte.dev](https://svelte.dev/docs/cli/sv-check)._
 
