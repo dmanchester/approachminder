@@ -14,7 +14,7 @@
 
   let positionWrappersSorted = $derived.by(() => {
 
-    const fieldAccessor: (wrapper: PositionWrapper) => any = showApproachSegments ?
+    const fieldAccessor: (wrapper: PositionWrapper) => number | string | null = showApproachSegments ?
       wrapper => wrapper.position.approachSegment!.thresholdDistanceMeters :
       wrapper => wrapper.position.trajectory.callsign;
 

@@ -35,6 +35,7 @@
   const trajectoryCollection = constructTrajectoryCollection(trajectoriesFromJSON as unknown as TrajectoryCollectionTemplate);
 
   let viewer: Viewer;
+  // eslint-disable-next-line svelte/prefer-svelte-reactivity
   const trajectoriesToEntities = new Map<Trajectory, Entity>();
   // Regarding initialization/population of the above variables *not* occurring here:
   //
