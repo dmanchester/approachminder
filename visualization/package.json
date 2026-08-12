@@ -23,6 +23,7 @@
     "@vitest/ui": "^4.0.18",
     "cesium": "^1.137.0",
     "eslint": "^10.4.1",
+    "eslint-plugin-svelte": "^3.22.0",
     "globals": "^17.6.0",
     "jiti": "^2.7.0",
     "lodash": "^4.17.21",
