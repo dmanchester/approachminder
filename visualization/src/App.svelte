@@ -1,38 +1,38 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { SplitPane } from '@rich_harris/svelte-split-pane';
+  import { onMount } from "svelte";
+  import { SplitPane } from "@rich_harris/svelte-split-pane";
+  import { Entity, Ion, IonResource, JulianDate, Viewer } from "cesium";
+  import "cesium/Build/Cesium/Widgets/widgets.css";
+
+  import AircraftTable from "./lib/components/AircraftTable.svelte";
+  import { constructTrajectoryCollection } from "./lib/services/io";
+  import { type Position } from "./lib/model/Position";
+  import { type PositionWrapper } from "./lib/model/PositionWrapper";
+  import { type Trajectory } from "./lib/model/Trajectory";
+  import { type TrajectoryCollectionTemplate } from "./lib/model/TrajectoryCollectionTemplate";
   import {
-    Entity,
-    Ion,
-    IonResource,
-    JulianDate,
-    Viewer
-  } from 'cesium';
-  import 'cesium/Build/Cesium/Widgets/widgets.css';
+    configureViewer,
+    createCesiumEntity,
+    viewerOptions,
+  } from "./lib/utils/ui";
 
-  import AircraftTable from './lib/components/AircraftTable.svelte';
-  import { constructTrajectoryCollection } from './lib/services/io';
-  import { type Position } from './lib/model/Position';
-  import { type PositionWrapper } from './lib/model/PositionWrapper';
-  import { type Trajectory } from './lib/model/Trajectory';
-  import { type TrajectoryCollectionTemplate } from './lib/model/TrajectoryCollectionTemplate';
-  import { configureViewer, createCesiumEntity, viewerOptions } from './lib/utils/ui';
+  import { partition } from "lodash";
 
-  import { partition } from 'lodash';
-
-  import trajectoriesFromJSON from './data.json';
-  import approachMinderConfig from '../approachminder-config.json';
+  import trajectoriesFromJSON from "./data.json";
+  import approachMinderConfig from "../approachminder-config.json";
 
   const urlParams = new URLSearchParams(window.location.search);
-  const useBingImagery = urlParams.get('bing') === 'true';
+  const useBingImagery = urlParams.get("bing") === "true";
 
   const maxThresholdDistanceMetersForApproach = 10000;
-  const windowDuration = 60;  // seconds
+  const windowDuration = 60; // seconds
 
   Ion.defaultAccessToken = approachMinderConfig.cesiumIon.accessToken;
 
   // Hydrate the JSON-sourced data into "real" objects.
-  const trajectoryCollection = constructTrajectoryCollection(trajectoriesFromJSON as unknown as TrajectoryCollectionTemplate);
+  const trajectoryCollection = constructTrajectoryCollection(
+    trajectoriesFromJSON as unknown as TrajectoryCollectionTemplate,
+  );
 
   let viewer: Viewer;
   // eslint-disable-next-line svelte/prefer-svelte-reactivity
@@ -46,7 +46,7 @@
 
   let initialized = $state(false);
 
-  let jsTime: number | null = $state(null);  // milliseconds since the epoch (see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTime)
+  let jsTime: number | null = $state(null); // milliseconds since the epoch (see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTime)
   // It would be preferable if this were a JulianDate, the type used natively by the CesiumJS viewer (and indeed,
   // through commit f796071c, this code relied on a JulianDate).
   //
@@ -66,54 +66,69 @@
 
   let time = $derived(jsTime ? JulianDate.fromDate(new Date(jsTime)) : null);
 
-  let positions = $derived(time ? trajectoryCollection.latestPositionsWithinWindow(time, windowDuration) : new Array<Position>());
+  let positions = $derived(
+    time
+      ? trajectoryCollection.latestPositionsWithinWindow(time, windowDuration)
+      : new Array<Position>(),
+  );
 
-  let [ positionWrappersAircraftOnApproach, positionWrappersOtherAircraft ] = $derived.by(() => {
+  let [positionWrappersAircraftOnApproach, positionWrappersOtherAircraft] =
+    $derived.by(() => {
+      if (!time) {
+        return [new Array<PositionWrapper>(), new Array<PositionWrapper>()];
+      }
 
-    if (!time) {
-      return [ new Array<PositionWrapper>(), new Array<PositionWrapper>() ];
-    }
+      const positionWrappers: Array<PositionWrapper> = positions.map(
+        (position) => ({
+          position: position,
+          ageSecs: JulianDate.secondsDifference(time, position.time),
+        }),
+      );
 
-    const positionWrappers: Array<PositionWrapper> = positions.map(position => ({
-      position: position,
-      ageSecs: JulianDate.secondsDifference(time, position.time),
-    }));
-
-    return partition(positionWrappers, wrapper => {
-      const approachSegment = wrapper.position.approachSegment;
-      return approachSegment && approachSegment.thresholdDistanceMeters < maxThresholdDistanceMetersForApproach;
+      return partition(positionWrappers, (wrapper) => {
+        const approachSegment = wrapper.position.approachSegment;
+        return (
+          approachSegment &&
+          approachSegment.thresholdDistanceMeters <
+            maxThresholdDistanceMetersForApproach
+        );
+      });
     });
-  });
 
   $effect(() => {
     // Change the tracked entity.
-    if (initialized) {  // apply this effect only once viewer has been initialized and trajectoriesToEntities has been populated
-      const position = positions.find(position => position.trajectory.icao24 === icao24ToTrack);
+    if (initialized) {
+      // apply this effect only once viewer has been initialized and trajectoriesToEntities has been populated
+      const position = positions.find(
+        (position) => position.trajectory.icao24 === icao24ToTrack,
+      );
       if (position) {
         viewer.trackedEntity = trajectoriesToEntities.get(position.trajectory);
-      }  // TODO In the "else" case, should we clear viewer.trackedEntity?
+      } // TODO In the "else" case, should we clear viewer.trackedEntity?
     }
   });
 
   onMount(async () => {
-
-    viewer = new Viewer('cesiumContainer', viewerOptions(useBingImagery));
+    viewer = new Viewer("cesiumContainer", viewerOptions(useBingImagery));
     configureViewer(
       viewer,
       trajectoryCollection.earliestTime(),
       trajectoryCollection.latestTime(),
-      trajectoryCollection.earliestTime()
+      trajectoryCollection.earliestTime(),
     );
 
-    const airplaneIonResource = await IonResource.fromAssetId(approachMinderConfig.cesiumIon.assetIdAirplane);
+    const airplaneIonResource = await IonResource.fromAssetId(
+      approachMinderConfig.cesiumIon.assetIdAirplane,
+    );
 
-    trajectoryCollection.trajectories.forEach(trajectory => {
+    trajectoryCollection.trajectories.forEach((trajectory) => {
       const entity = createCesiumEntity(trajectory, airplaneIonResource);
       viewer.entities.add(entity);
       trajectoriesToEntities.set(trajectory, entity);
     });
 
-    viewer.clock.onTick.addEventListener(() => {  // This gets called very frequently, even when the clock is stopped!
+    viewer.clock.onTick.addEventListener(() => {
+      // This gets called very frequently, even when the clock is stopped!
       jsTime = JulianDate.toDate(viewer.clock.currentTime).getTime();
     });
 
@@ -130,12 +145,29 @@
   {#snippet b()}
     <section id="tableSection">
       <h1>Aircraft on Approach</h1>
-      <AircraftTable positionWrappers={positionWrappersAircraftOnApproach} showApproachSegments={true} bind:icao24ToTrack={icao24ToTrack}/>
+      <AircraftTable
+        positionWrappers={positionWrappersAircraftOnApproach}
+        showApproachSegments={true}
+        bind:icao24ToTrack
+      />
       <h1>Other Aircraft</h1>
-      <AircraftTable positionWrappers={positionWrappersOtherAircraft} showApproachSegments={false} bind:icao24ToTrack={icao24ToTrack}/>
+      <AircraftTable
+        positionWrappers={positionWrappersOtherAircraft}
+        showApproachSegments={false}
+        bind:icao24ToTrack
+      />
       <div id="bottomRightBox">
-        <div id="appName"><b><a href="https://github.com/dmanchester/approachminder#approachminder" target="_blank">ApproachMinder</a></b></div>
-        ADS-B data by <a href="https://opensky-network.org/" target="_blank">OpenSky Network</a>
+        <div id="appName">
+          <b
+            ><a
+              href="https://github.com/dmanchester/approachminder#approachminder"
+              target="_blank">ApproachMinder</a
+            ></b
+          >
+        </div>
+        ADS-B data by<a href="https://opensky-network.org/" target="_blank"
+          >OpenSky Network</a
+        >
       </div>
     </section>
   {/snippet}
@@ -161,7 +193,7 @@
     bottom: 16px;
     right: 32px;
     text-align: right;
-    background-color: white;  /* default background is transparent; workaround to make it opaque (and white) */
+    background-color: white; /* default background is transparent; workaround to make it opaque (and white) */
   }
 
   #appName {

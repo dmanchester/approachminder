@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { formatNumber } from '../utils/ui';
-  import { type PositionWrapper } from '../model/PositionWrapper';
+  import { formatNumber } from "../utils/ui";
+  import { type PositionWrapper } from "../model/PositionWrapper";
 
-  import { sortBy } from 'lodash';
+  import { sortBy } from "lodash";
 
   interface Props {
     positionWrappers: Array<PositionWrapper>;
@@ -10,13 +10,17 @@
     icao24ToTrack: string;
   }
 
-  let { positionWrappers, showApproachSegments, icao24ToTrack = $bindable() }: Props = $props();
+  let {
+    positionWrappers,
+    showApproachSegments,
+    icao24ToTrack = $bindable(),
+  }: Props = $props();
 
   let positionWrappersSorted = $derived.by(() => {
-
-    const fieldAccessor: (wrapper: PositionWrapper) => number | string | null = showApproachSegments ?
-      wrapper => wrapper.position.approachSegment!.thresholdDistanceMeters :
-      wrapper => wrapper.position.trajectory.callsign;
+    const fieldAccessor: (wrapper: PositionWrapper) => number | string | null =
+      showApproachSegments
+        ? (wrapper) => wrapper.position.approachSegment!.thresholdDistanceMeters
+        : (wrapper) => wrapper.position.trajectory.callsign;
 
     return sortBy(positionWrappers, fieldAccessor);
   });
@@ -33,7 +37,9 @@ In the advanced case of, the aircraft *are* on approach (and "true" is passed fo
 additionally shows information about the approach (runway, distance to threshold, vertical and horizontal deviation,
 etc.).
 -->
-<table id={showApproachSegments ? "table-with-segments" : "table-without-segments"}>
+<table
+  id={showApproachSegments ? "table-with-segments" : "table-without-segments"}
+>
   <thead>
     <tr>
       <th>Callsign</th>
@@ -57,23 +63,42 @@ etc.).
   <tbody>
     {#each positionWrappersSorted as wrapper, i (wrapper.position.trajectory.icao24)}
       {@const position = wrapper.position}
-      <tr class={position.trajectory.icao24 === icao24ToTrack ? "tr-tracking" : i % 2 === 0 ? "tr-even" : "tr-odd"}>
+      <tr
+        class={position.trajectory.icao24 === icao24ToTrack
+          ? "tr-tracking"
+          : i % 2 === 0
+            ? "tr-even"
+            : "tr-odd"}
+      >
         <td class="align-center">
-          <button onclick={() => { icao24ToTrack = position.trajectory.icao24; }}>
+          <button
+            onclick={() => {
+              icao24ToTrack = position.trajectory.icao24;
+            }}
+          >
             {position.trajectory.callsign}
           </button>
         </td>
         <td>{formatNumber(position.latitude, 4)}°</td>
         <td>{formatNumber(position.longitude, 4)}°</td>
-        <td>{formatNumber(position.altitude, 0)} m</td>  <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
-        {#if (showApproachSegments && position.approachSegment)}
+        <td>{formatNumber(position.altitude, 0)} m</td>
+        <!-- TODO Need to add in some factor to address "height above ellipsoid" vs. "height above geoid", get to a plausible height above MSL -->
+        {#if showApproachSegments && position.approachSegment}
           {@const approachSegment = position.approachSegment}
           <td class="td-emphasis">{approachSegment.airport}</td>
           <td class="td-emphasis">{approachSegment.threshold}</td>
-          <td class="td-emphasis">{formatNumber(approachSegment.thresholdDistanceMeters, 0)} m</td>
-          <td class="td-emphasis">{formatNumber(approachSegment.verticalDevMeters, 0)} m</td>
-          <td class="td-emphasis">{formatNumber(approachSegment.horizontalDevMeters, 0)} m</td>
-          <td class="td-emphasis">{formatNumber(approachSegment.normalizedEuclideanDistance, 1)}</td>
+          <td class="td-emphasis"
+            >{formatNumber(approachSegment.thresholdDistanceMeters, 0)} m</td
+          >
+          <td class="td-emphasis"
+            >{formatNumber(approachSegment.verticalDevMeters, 0)} m</td
+          >
+          <td class="td-emphasis"
+            >{formatNumber(approachSegment.horizontalDevMeters, 0)} m</td
+          >
+          <td class="td-emphasis"
+            >{formatNumber(approachSegment.normalizedEuclideanDistance, 1)}</td
+          >
         {/if}
         <td>{formatNumber(position.velocity, 0)} m/s</td>
         <td>{formatNumber(position.trueTrack, 0)}°</td>
@@ -90,10 +115,11 @@ etc.).
   }
 
   #table-without-segments {
-    width: 57.14%;  /* 8/14 */
+    width: 57.14%; /* 8/14 */
   }
 
-  th, td {
+  th,
+  td {
     padding: 4px;
     border: 1px solid #ddd;
   }
@@ -103,11 +129,11 @@ etc.).
   }
 
   #table-with-segments th {
-    width: 7.1429%;  /* 100%/14 */
+    width: 7.1429%; /* 100%/14 */
   }
 
   #table-without-segments th {
-    width: 12.5%;  /* 100%/8 */
+    width: 12.5%; /* 100%/8 */
   }
 
   thead tr {
@@ -118,7 +144,8 @@ etc.).
     background-color: #ffffc0;
   }
 
-  .tr-even {  /* "even" and "odd" refer to JavaScript 0-based indexing, as opposed to CSS 1-based indexing */
+  .tr-even {
+    /* "even" and "odd" refer to JavaScript 0-based indexing, as opposed to CSS 1-based indexing */
     background-color: #ffffff;
   }
 
