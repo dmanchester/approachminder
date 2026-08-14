@@ -3,7 +3,6 @@ import { formatNumber } from "../src/lib/utils/ui";
 import { describe, expect, test } from "vitest";
 
 describe("formatNumber()", () => {
-
   test("should round when the number has more digits than requested", () => {
     expect(formatNumber(1.2, 0)).toBe("1");
     expect(formatNumber(1.234, 2)).toBe("1.23");

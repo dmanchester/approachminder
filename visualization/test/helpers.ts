@@ -1,7 +1,9 @@
 import { Trajectory } from "../src/lib/model/Trajectory";
 
-export function constructTrajectory(icao24: string, times: Array<string>): Trajectory {
-
+export function constructTrajectory(
+  icao24: string,
+  times: Array<string>,
+): Trajectory {
   const positionTemplate = {
     longitude: 0,
     latitude: 0,
@@ -14,7 +16,12 @@ export function constructTrajectory(icao24: string, times: Array<string>): Traje
     approachSegment: null,
   };
 
-  const positionTemplates = times.map(time => [ time, positionTemplate ]);
+  const positionTemplates = times.map((time) => [time, positionTemplate]);
 
-  return new Trajectory(icao24, null, null, Object.fromEntries(positionTemplates));
+  return new Trajectory(
+    icao24,
+    null,
+    null,
+    Object.fromEntries(positionTemplates),
+  );
 }

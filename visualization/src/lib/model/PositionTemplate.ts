@@ -17,13 +17,13 @@ import { type ApproachSegment } from "./ApproachSegment";
  *           match a PositionTemplate with the time to which it applies.)
  */
 export type PositionTemplate = {
-  longitude: number,
-  latitude: number,
-  altitude: number,
-  onGround: boolean,
-  velocity: number | null,
-  trueTrack: number | null,
-  verticalRate: number | null,
-  squawk: string | null,
-  approachSegment: ApproachSegment | null,
-}
+  longitude: number;
+  latitude: number;
+  altitude: number;
+  onGround: boolean;
+  velocity: number | null;
+  trueTrack: number | null;
+  verticalRate: number | null;
+  squawk: string | null;
+  approachSegment: ApproachSegment | null;
+};

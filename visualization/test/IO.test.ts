@@ -6,7 +6,6 @@ import { JulianDate } from "cesium";
 import { describe, expect, test } from "vitest";
 
 describe("constructTrajectoryCollection()", () => {
-
   const icao24A = "icao24A";
   const callsignA = "callsignA";
   const categoryA = "categoryA";
@@ -25,21 +24,54 @@ describe("constructTrajectoryCollection()", () => {
       positions: {
         // Intentionally passing positions in non-chronological order.
         [timeA1]: {
-          longitude: 7.7, latitude: 8.8, altitude: 9.9, onGround: false, velocity: 1.2, trueTrack: 3.4, verticalRate: 5.6, squawk: "DEF", approachSegment: {
-            airport: "GHI", threshold: "JKL", thresholdDistanceMeters: 7.8, verticalDevMeters: 9.1, horizontalDevMeters: 2.3, normalizedEuclideanDistance: 4.5
-          }
+          longitude: 7.7,
+          latitude: 8.8,
+          altitude: 9.9,
+          onGround: false,
+          velocity: 1.2,
+          trueTrack: 3.4,
+          verticalRate: 5.6,
+          squawk: "DEF",
+          approachSegment: {
+            airport: "GHI",
+            threshold: "JKL",
+            thresholdDistanceMeters: 7.8,
+            verticalDevMeters: 9.1,
+            horizontalDevMeters: 2.3,
+            normalizedEuclideanDistance: 4.5,
+          },
         },
-        [timeA0]: { longitude: 1.1, latitude: 2.2, altitude: 3.3, onGround: true, velocity: 4.4, trueTrack: 5.5, verticalRate: 6.6, squawk: "ABC", approachSegment: null }
-      }
+        [timeA0]: {
+          longitude: 1.1,
+          latitude: 2.2,
+          altitude: 3.3,
+          onGround: true,
+          velocity: 4.4,
+          trueTrack: 5.5,
+          verticalRate: 6.6,
+          squawk: "ABC",
+          approachSegment: null,
+        },
+      },
     },
     {
       icao24: icao24B,
       callsign: callsignB,
       category: categoryB,
       positions: {
-        "2023-01-02T00:00:01Z": { longitude: 7.7, latitude: 8.8, altitude: 9.9, onGround: true, velocity: 4.4, trueTrack: 5.5, verticalRate: 6.6, squawk: "ABC", approachSegment: null }
-      }
-    }
+        "2023-01-02T00:00:01Z": {
+          longitude: 7.7,
+          latitude: 8.8,
+          altitude: 9.9,
+          onGround: true,
+          velocity: 4.4,
+          trueTrack: 5.5,
+          verticalRate: 6.6,
+          squawk: "ABC",
+          approachSegment: null,
+        },
+      },
+    },
   ];
 
   const trajectoryCollection = constructTrajectoryCollection(template);
@@ -56,8 +88,12 @@ describe("constructTrajectoryCollection()", () => {
   test("should construct a collection with top-level trajectory properties set correctly and with trajectories' positions ordered correctly", () => {
     expect(trajectoryA.callsign).toBe(callsignA);
     expect(trajectoryA.category).toBe(categoryA);
-    expect(trajectoryA.positions[0].time.equals(JulianDate.fromIso8601(timeA0))).toBe(true);
-    expect(trajectoryA.positions[1].time.equals(JulianDate.fromIso8601(timeA1))).toBe(true);
+    expect(
+      trajectoryA.positions[0].time.equals(JulianDate.fromIso8601(timeA0)),
+    ).toBe(true);
+    expect(
+      trajectoryA.positions[1].time.equals(JulianDate.fromIso8601(timeA1)),
+    ).toBe(true);
   });
 
   test("should, within a collection, construct a trajectory position correctly that lacks an approach segment", () => {
@@ -77,10 +113,18 @@ describe("constructTrajectoryCollection()", () => {
     expect(trajectoryA.positions[1].onGround).toBe(false);
     expect(trajectoryA.positions[1].approachSegment.airport).toBe("GHI");
     expect(trajectoryA.positions[1].approachSegment.threshold).toBe("JKL");
-    expect(trajectoryA.positions[1].approachSegment.thresholdDistanceMeters).toBe(7.8);
-    expect(trajectoryA.positions[1].approachSegment.verticalDevMeters).toBe(9.1);
-    expect(trajectoryA.positions[1].approachSegment.horizontalDevMeters).toBe(2.3);
-    expect(trajectoryA.positions[1].approachSegment.normalizedEuclideanDistance).toBe(4.5);
+    expect(
+      trajectoryA.positions[1].approachSegment.thresholdDistanceMeters,
+    ).toBe(7.8);
+    expect(trajectoryA.positions[1].approachSegment.verticalDevMeters).toBe(
+      9.1,
+    );
+    expect(trajectoryA.positions[1].approachSegment.horizontalDevMeters).toBe(
+      2.3,
+    );
+    expect(
+      trajectoryA.positions[1].approachSegment.normalizedEuclideanDistance,
+    ).toBe(4.5);
   });
 
   test("should throw if the template is empty", () => {
@@ -96,8 +140,8 @@ describe("constructTrajectoryCollection()", () => {
           icao24: icao24A,
           callsign: callsignA,
           category: categoryA,
-          positions: {}
-        }
+          positions: {},
+        },
       ]);
     }).toThrow();
   });

@@ -30,8 +30,12 @@ export class Trajectory {
    * Trajectory's Position instances. Must contain at least one entry, and the time must be in ISO-8601 format.
    * @throws {Error} If positionTemplates is empty.
    */
-  constructor(icao24: string, callsign: string | null, category: string | null, positionTemplates: Record<string, PositionTemplate>) {
-
+  constructor(
+    icao24: string,
+    callsign: string | null,
+    category: string | null,
+    positionTemplates: Record<string, PositionTemplate>,
+  ) {
     if (Object.keys(positionTemplates).length === 0) {
       throw new Error("positionTemplates must not be empty!");
     }
@@ -40,10 +44,16 @@ export class Trajectory {
     this.callsign = callsign;
     this.category = category;
 
-    const positions = Object.entries(positionTemplates).map(([timeIso8601, template]) => {
-      const time = JulianDate.fromIso8601(timeIso8601);
-      return new Position(this /* Trajectory being constructed */, time, template);
-    });
+    const positions = Object.entries(positionTemplates).map(
+      ([timeIso8601, template]) => {
+        const time = JulianDate.fromIso8601(timeIso8601);
+        return new Position(
+          this /* Trajectory being constructed */,
+          time,
+          template,
+        );
+      },
+    );
 
     positions.sort((a, b) => JulianDate.compare(a.time, b.time));
 
@@ -73,8 +83,19 @@ export class Trajectory {
    * @param endTime The end time of the window.
    * @param duration The duration of the window. (The start time is calculated using this duration.)
    */
-  latestPositionWithinWindow(endTime: JulianDate, duration: number): Position | undefined {
-    const startTime = JulianDate.addSeconds(endTime, -1 * duration, new JulianDate());
-    return this.positions.findLast(tbp => JulianDate.lessThanOrEquals(startTime, tbp.time) && JulianDate.lessThanOrEquals(tbp.time, endTime));
+  latestPositionWithinWindow(
+    endTime: JulianDate,
+    duration: number,
+  ): Position | undefined {
+    const startTime = JulianDate.addSeconds(
+      endTime,
+      -1 * duration,
+      new JulianDate(),
+    );
+    return this.positions.findLast(
+      (tbp) =>
+        JulianDate.lessThanOrEquals(startTime, tbp.time) &&
+        JulianDate.lessThanOrEquals(tbp.time, endTime),
+    );
   }
 }

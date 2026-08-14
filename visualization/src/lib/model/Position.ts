@@ -22,7 +22,11 @@ export class Position {
   readonly squawk: string | null;
   readonly approachSegment: ApproachSegment | null;
 
-  constructor(trajectory: Trajectory, time: JulianDate, template: PositionTemplate) {
+  constructor(
+    trajectory: Trajectory,
+    time: JulianDate,
+    template: PositionTemplate,
+  ) {
     this.trajectory = trajectory;
     this.time = time;
     this.longitude = template.longitude;

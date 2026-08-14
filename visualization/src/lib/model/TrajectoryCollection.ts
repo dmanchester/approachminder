@@ -19,7 +19,6 @@ export class TrajectoryCollection {
    * @throws {Error} If trajectories is empty.
    */
   constructor(trajectories: Array<Trajectory>) {
-
     if (trajectories.length === 0) {
       throw new Error("trajectories must not be empty!");
     }
@@ -31,16 +30,24 @@ export class TrajectoryCollection {
    * The time of the earliest position of any trajectory.
    */
   earliestTime(): JulianDate {
-    const earliestTimeOfEachTrajectory = this.trajectories.map(trajectory => trajectory.earliestTime());
-    return minBy(earliestTimeOfEachTrajectory, time => JulianDate.totalDays(time))!;  // totalDays includes whole and fractional days
+    const earliestTimeOfEachTrajectory = this.trajectories.map((trajectory) =>
+      trajectory.earliestTime(),
+    );
+    return minBy(earliestTimeOfEachTrajectory, (time) =>
+      JulianDate.totalDays(time),
+    )!; // totalDays includes whole and fractional days
   }
 
   /**
    * The time of the latest position of any trajectory.
    */
   latestTime(): JulianDate {
-    const latestTimeOfEachTrajectory = this.trajectories.map(trajectory => trajectory.latestTime());
-    return maxBy(latestTimeOfEachTrajectory, time => JulianDate.totalDays(time))!;
+    const latestTimeOfEachTrajectory = this.trajectories.map((trajectory) =>
+      trajectory.latestTime(),
+    );
+    return maxBy(latestTimeOfEachTrajectory, (time) =>
+      JulianDate.totalDays(time),
+    )!;
   }
 
   /**
@@ -60,24 +67,29 @@ export class TrajectoryCollection {
    * @param endTime The end time of the window.
    * @param duration The duration of the window. (The start time is calculated using this duration.)
    */
-  latestPositionsWithinWindow(endTime: JulianDate, duration: number): Array<Position> {
-
+  latestPositionsWithinWindow(
+    endTime: JulianDate,
+    duration: number,
+  ): Array<Position> {
     // For each trajectory that intersects the time window, find the latest position within the window.
-    const positionsUngrouped: Array<Position> = this.trajectories.map(trajectory =>
-      trajectory.latestPositionWithinWindow(endTime, duration)
-    ).filter(position =>
-      position !== undefined
-    );
+    const positionsUngrouped: Array<Position> = this.trajectories
+      .map((trajectory) =>
+        trajectory.latestPositionWithinWindow(endTime, duration),
+      )
+      .filter((position) => position !== undefined);
 
     // Group the found trajectories and positions by aircraft *physical identifier* (icao24).
     const positionsGroupedByAircraft: Record<string, Array<Position>> = groupBy(
       positionsUngrouped,
-      position => position.trajectory.icao24
+      (position) => position.trajectory.icao24,
     );
 
     // Obtain the latest position per aircraft.
-    return Object.values(positionsGroupedByAircraft).map(positionsOneAircraft =>
-      maxBy(positionsOneAircraft, position => JulianDate.totalDays(position.time))!
+    return Object.values(positionsGroupedByAircraft).map(
+      (positionsOneAircraft) =>
+        maxBy(positionsOneAircraft, (position) =>
+          JulianDate.totalDays(position.time),
+        )!,
     );
   }
 }
