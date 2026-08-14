@@ -81,6 +81,12 @@ _Documentation for "svelte-check": [npmjs.com](https://www.npmjs.com/package/sve
 npm run check
 ```
 
+## Prettifying the Code
+
+```bash
+npm run prettify
+```
+
 ## Other Notes
 
 With a large `data.json` (or other large resources that must be processed by Vite), the `npm run build` command above may fail on a `JavaScript heap out of memory` error like the following:
