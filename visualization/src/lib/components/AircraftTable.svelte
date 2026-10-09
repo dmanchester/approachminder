@@ -38,8 +38,7 @@ additionally shows information about the approach (runway, distance to threshold
 etc.).
 -->
 <table
-  id={showApproachSegments ? "table-with-segments" : "table-without-segments"}
->
+  id={showApproachSegments ? "table-with-segments" : "table-without-segments"}>
   <thead>
     <tr>
       <th>Callsign</th>
@@ -68,14 +67,12 @@ etc.).
           ? "tr-tracking"
           : i % 2 === 0
             ? "tr-even"
-            : "tr-odd"}
-      >
+            : "tr-odd"}>
         <td class="align-center">
           <button
             onclick={() => {
               icao24ToTrack = position.trajectory.icao24;
-            }}
-          >
+            }}>
             {position.trajectory.callsign}
           </button>
         </td>
@@ -88,17 +85,13 @@ etc.).
           <td class="td-emphasis">{approachSegment.airport}</td>
           <td class="td-emphasis">{approachSegment.threshold}</td>
           <td class="td-emphasis"
-            >{formatNumber(approachSegment.thresholdDistanceMeters, 0)} m</td
-          >
+            >{formatNumber(approachSegment.thresholdDistanceMeters, 0)} m</td>
           <td class="td-emphasis"
-            >{formatNumber(approachSegment.verticalDevMeters, 0)} m</td
-          >
+            >{formatNumber(approachSegment.verticalDevMeters, 0)} m</td>
           <td class="td-emphasis"
-            >{formatNumber(approachSegment.horizontalDevMeters, 0)} m</td
-          >
+            >{formatNumber(approachSegment.horizontalDevMeters, 0)} m</td>
           <td class="td-emphasis"
-            >{formatNumber(approachSegment.normalizedEuclideanDistance, 1)}</td
-          >
+            >{formatNumber(approachSegment.normalizedEuclideanDistance, 1)}</td>
         {/if}
         <td>{formatNumber(position.velocity, 0)} m/s</td>
         <td>{formatNumber(position.trueTrack, 0)}°</td>

@@ -148,26 +148,22 @@
       <AircraftTable
         positionWrappers={positionWrappersAircraftOnApproach}
         showApproachSegments={true}
-        bind:icao24ToTrack
-      />
+        bind:icao24ToTrack />
       <h1>Other Aircraft</h1>
       <AircraftTable
         positionWrappers={positionWrappersOtherAircraft}
         showApproachSegments={false}
-        bind:icao24ToTrack
-      />
+        bind:icao24ToTrack />
       <div id="bottomRightBox">
         <div id="appName">
           <b
             ><a
               href="https://github.com/dmanchester/approachminder#approachminder"
               target="_blank">ApproachMinder</a
-            ></b
-          >
+            ></b>
         </div>
         ADS-B data by<a href="https://opensky-network.org/" target="_blank"
-          >OpenSky Network</a
-        >
+          >OpenSky Network</a>
       </div>
     </section>
   {/snippet}
