@@ -66,7 +66,7 @@ describe("latestPositionWithinWindow()", () => {
       JulianDate.fromIso8601("2026-01-01T00:01:11Z"),
       20,
     ); // window includes time0 and time1
-    expect(position.time.equals(time1AsJulianDate)).toBeTruthy();
+    expect(position?.time.equals(time1AsJulianDate)).toBeTruthy();
   });
 
   test("should return a Position from the window's end time", () => {
@@ -74,7 +74,7 @@ describe("latestPositionWithinWindow()", () => {
       JulianDate.fromIso8601(time0),
       10,
     ); // window ends at time0
-    expect(position.time.equals(time0AsJulianDate)).toBeTruthy();
+    expect(position?.time.equals(time0AsJulianDate)).toBeTruthy();
   });
 
   test("should return a Position from the window's start time", () => {
@@ -82,6 +82,6 @@ describe("latestPositionWithinWindow()", () => {
       JulianDate.fromIso8601("2026-01-01T00:01:51Z"),
       20,
     ); // window starts at time2
-    expect(position.time.equals(time2AsJulianDate)).toBeTruthy();
+    expect(position?.time.equals(time2AsJulianDate)).toBeTruthy();
   });
 });

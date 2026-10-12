@@ -1,5 +1,5 @@
 import { constructTrajectoryCollection } from "../src/lib/services/io";
-import { TrajectoryCollectionTemplate } from "../src/lib/model/TrajectoryCollectionTemplate";
+import { type TrajectoryCollectionTemplate } from "../src/lib/model/TrajectoryCollectionTemplate";
 
 import { JulianDate } from "cesium";
 
@@ -111,19 +111,19 @@ describe("constructTrajectoryCollection()", () => {
     // We don't generally bother re-testing the properties that were tested by the previous test. The exception is the
     // boolean ("onGround"). The previous test checked "true"; this one checks "false".
     expect(trajectoryA.positions[1].onGround).toBe(false);
-    expect(trajectoryA.positions[1].approachSegment.airport).toBe("GHI");
-    expect(trajectoryA.positions[1].approachSegment.threshold).toBe("JKL");
+    expect(trajectoryA.positions[1].approachSegment?.airport).toBe("GHI");
+    expect(trajectoryA.positions[1].approachSegment?.threshold).toBe("JKL");
     expect(
-      trajectoryA.positions[1].approachSegment.thresholdDistanceMeters,
+      trajectoryA.positions[1].approachSegment?.thresholdDistanceMeters,
     ).toBe(7.8);
-    expect(trajectoryA.positions[1].approachSegment.verticalDevMeters).toBe(
+    expect(trajectoryA.positions[1].approachSegment?.verticalDevMeters).toBe(
       9.1,
     );
-    expect(trajectoryA.positions[1].approachSegment.horizontalDevMeters).toBe(
+    expect(trajectoryA.positions[1].approachSegment?.horizontalDevMeters).toBe(
       2.3,
     );
     expect(
-      trajectoryA.positions[1].approachSegment.normalizedEuclideanDistance,
+      trajectoryA.positions[1].approachSegment?.normalizedEuclideanDistance,
     ).toBe(4.5);
   });
 
