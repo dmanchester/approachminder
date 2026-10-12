@@ -57,7 +57,7 @@ test("earliestTime() should give the earliest time of any trajectory", () => {
     trajectoryCollection
       .earliestTime()
       .equals(JulianDate.fromIso8601(trajectoryATime0)),
-  );
+  ).toBeTruthy();
 });
 
 test("latestTime() should give the latest time of any trajectory", () => {
@@ -65,7 +65,7 @@ test("latestTime() should give the latest time of any trajectory", () => {
     trajectoryCollection
       .latestTime()
       .equals(JulianDate.fromIso8601(trajectoryBTime1)),
-  );
+  ).toBeTruthy();
 });
 
 describe("latestPositionsWithinWindow()", () => {
@@ -83,7 +83,7 @@ describe("latestPositionsWithinWindow()", () => {
       filteredPositions[0].time.equals(
         JulianDate.fromIso8601(trajectoryATime1),
       ),
-    );
+    ).toBeTruthy();
   });
 
   test("should include the latest position in the window across all of an aircraft's multiple trajectories in the collection", () => {
@@ -95,7 +95,7 @@ describe("latestPositionsWithinWindow()", () => {
       filteredPositions[0].time.equals(
         JulianDate.fromIso8601(trajectoryDTime0),
       ),
-    );
+    ).toBeTruthy();
   });
 
   test("should not reflect an aircraft that does not have a trajectory intersecting the window", () => {
