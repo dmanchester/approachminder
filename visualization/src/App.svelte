@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { SplitPane } from "@rich_harris/svelte-split-pane";
-  import { Entity, Ion, IonResource, JulianDate, Viewer } from "cesium";
+  import { Color, Entity, Ion, IonResource, JulianDate, Viewer } from "cesium";
   import "cesium/Build/Cesium/Widgets/widgets.css";
 
   import AircraftTable from "./lib/components/AircraftTable.svelte";
@@ -15,6 +15,11 @@
     createCesiumEntity,
     viewerOptions,
   } from "./lib/utils/ui";
+  import {
+    computeApproachGates,
+    createApproachTunnelPrimitive,
+    ksfo28LTunnelSpec,
+  } from "./lib/utils/tunnel";
 
   import { partition } from "lodash";
 
@@ -23,6 +28,7 @@
 
   const urlParams = new URLSearchParams(window.location.search);
   const useBingImagery = urlParams.get("bing") === "true";
+  const showTunnel = urlParams.get("tunnel") !== "false";
 
   const maxThresholdDistanceMetersForApproach = 10000;
   const windowDuration = 60; // seconds
@@ -116,6 +122,16 @@
       trajectoryCollection.latestTime(),
       trajectoryCollection.earliestTime(),
     );
+
+    const tunnel = viewer.scene.primitives.add(
+      createApproachTunnelPrimitive(
+        computeApproachGates(ksfo28LTunnelSpec),
+        ksfo28LTunnelSpec.wallThicknessMeters,
+        ksfo28LTunnelSpec.gateLengthMeters,
+        Color.fromCssColorString("#ff40ff").withAlpha(0.5),
+      ),
+    );
+    tunnel.show = showTunnel;
 
     const airplaneIonResource = await IonResource.fromAssetId(
       approachMinderConfig.cesiumIon.assetIdAirplane,
