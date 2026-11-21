@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder.experimental
 
-import com.dmanchester.approachminder.typeswithbehavior.MeanAngleAndAltitude
+import com.dmanchester.approachminder.math.MeanAngleAndAltitude
 
 /**
  * As a tree-like structure, models a set of trajectories that approach a reference point. For example:

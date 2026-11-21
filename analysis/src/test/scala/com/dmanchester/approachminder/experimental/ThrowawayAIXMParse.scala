@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder
 
 import com.dmanchester.approachminder.experimental.{AIXM, AIXMRepository}
-import io.dylemma.spac.xml.JavaxSource
+import _root_.io.dylemma.spac.xml.JavaxSource
 
 object ThrowawayAIXMParse {
 

@@ -1,10 +1,10 @@
 package com.dmanchester.approachminder.experimental
 
+import com.dmanchester.approachminder.airports.RunwaySurfaceTemplate
 import com.dmanchester.approachminder.experimental.AIXM.{AIXMAirportHeliport, AIXMLongLat, AIXMRunway, AIXMRunwayDirection}
 import com.dmanchester.approachminder.experimental.AIXMRepository.{AirportHeliportGmlId, RunwayGmlId, RunwayGmlIdNumericPortion, gmlIdNonNumericAndNumericPortions}
-import com.dmanchester.approachminder.typeswithoutbehavior.{LongLat, RunwaySurfaceTemplate}
-import com.dmanchester.approachminder.utils.GeographicCalculator
-import com.dmanchester.approachminder.utils.MathUtils.feetToMeters
+import com.dmanchester.approachminder.geo.{GeographicCalculator, LongLat}
+import com.dmanchester.approachminder.math.MathUtils.feetToMeters
 
 import scala.math.abs
 
