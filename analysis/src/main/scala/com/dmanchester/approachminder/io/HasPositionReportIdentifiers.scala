@@ -1,6 +1,4 @@
-package com.dmanchester.approachminder.reports
-
-import com.dmanchester.approachminder.io.AircraftCategory
+package com.dmanchester.approachminder.io
 
 trait HasPositionReportIdentifiers extends HasICAO24 with HasTime with HasCallsignAndTime {
   def icao24: String

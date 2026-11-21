@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder.reports
+package com.dmanchester.approachminder.trajectories
 
 import com.dmanchester.approachminder.testingtypes.CallsignAndTime
 import org.specs2.mutable.*

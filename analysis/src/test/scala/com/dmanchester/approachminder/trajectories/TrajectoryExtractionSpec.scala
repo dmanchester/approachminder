@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder.trajectories
 
-import com.dmanchester.approachminder.reports.HasICAO24
+import com.dmanchester.approachminder.io.HasICAO24
 import com.dmanchester.approachminder.testingtypes.ICAO24WithSomeText
 import com.dmanchester.approachminder.trajectories.TrajectoryExtraction.partitionByICAO24
 import org.specs2.mutable.*
