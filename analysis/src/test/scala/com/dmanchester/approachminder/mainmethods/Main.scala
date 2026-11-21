@@ -3,8 +3,8 @@ package com.dmanchester.approachminder.mainmethods
 import com.dmanchester.approachminder.airports.RunwayAndReferencePoint
 import com.dmanchester.approachminder.data.Airports.{oak, sfo}
 import com.dmanchester.approachminder.io.Output.openSkyTrajectoriesToJson
-import com.dmanchester.approachminder.modeling.{ApproachModeling, ApproachesAndLandingsExtraction}
-import com.dmanchester.approachminder.trajectories.{TrajectoryExtraction, TrajectoryTesting}
+import com.dmanchester.approachminder.io.TrajectoryExtraction
+import com.dmanchester.approachminder.modeling.{ApproachModeling, ApproachesAndLandingsExtraction, TrajectoryTesting}
 import com.typesafe.scalalogging.StrictLogging
 
 import java.nio.charset.StandardCharsets

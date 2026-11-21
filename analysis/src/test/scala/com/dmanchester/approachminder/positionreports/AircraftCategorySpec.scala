@@ -1,6 +1,6 @@
-package com.dmanchester.approachminder.io
+package com.dmanchester.approachminder.positionreports
 
-import com.dmanchester.approachminder.io.AircraftCategory.mostCommonNonBlankCategory
+import com.dmanchester.approachminder.positionreports.AircraftCategory.mostCommonNonBlankCategory
 import org.specs2.mutable.*
 
 class AircraftCategorySpec extends Specification {

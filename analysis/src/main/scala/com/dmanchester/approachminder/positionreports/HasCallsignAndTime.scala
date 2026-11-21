@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder.io
+package com.dmanchester.approachminder.positionreports
 
 trait HasCallsignAndTime extends HasTime {  // TODO Confirm there's upside to extending HasTime here.
   def callsign: Option[String]

@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder.trajectories
 
-import com.dmanchester.approachminder.io.HasCallsignAndTime
+import com.dmanchester.approachminder.positionreports.HasCallsignAndTime
 
 /**
  * Functionality for partitioning position reports.

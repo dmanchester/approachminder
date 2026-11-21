@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder.io
+package com.dmanchester.approachminder.positionreports
 
 import com.dmanchester.approachminder.geo.HasLongLatAlt
 

@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder.io
+package com.dmanchester.approachminder.positionreports
 
 /**
  * An OpenSky vector, as provided by their API.

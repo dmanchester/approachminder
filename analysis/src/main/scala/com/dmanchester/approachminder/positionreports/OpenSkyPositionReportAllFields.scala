@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder.io
+package com.dmanchester.approachminder.positionreports
 
 /**
  * An OpenSky position report with all the fields of an `OpenSkyVector`, but requires values for the following fields

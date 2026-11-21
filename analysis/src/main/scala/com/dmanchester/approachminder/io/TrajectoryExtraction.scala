@@ -1,6 +1,7 @@
-package com.dmanchester.approachminder.trajectories
+package com.dmanchester.approachminder.io
 
-import com.dmanchester.approachminder.io.{AircraftCategory, HasICAO24, HasPositionReportIdentifiers, HasTime, Input, OpenSkyPositionReport, OpenSkyPositionReportAllFields}
+import com.dmanchester.approachminder.positionreports.{AircraftCategory, HasICAO24, HasPositionReportIdentifiers, HasTime, OpenSkyPositionReport, OpenSkyPositionReportAllFields}
+import com.dmanchester.approachminder.trajectories.{ReportsPartitioning, Trajectory}
 import com.typesafe.scalalogging.StrictLogging
 
 import scala.collection.immutable.ListMap

@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder.trajectories
 
-import com.dmanchester.approachminder.io.AircraftCategory
+import com.dmanchester.approachminder.positionreports.AircraftCategory
 import com.dmanchester.approachminder.trajectories.TrajectoryUtils.positionsToSegments
 
 /**

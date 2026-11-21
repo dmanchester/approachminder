@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder.io
+package com.dmanchester.approachminder.positionreports
 
 sealed abstract class PositionSource(val description: String)
 

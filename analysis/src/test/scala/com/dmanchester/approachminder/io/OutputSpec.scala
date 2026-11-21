@@ -4,6 +4,7 @@ import com.dmanchester.approachminder.data.SFOConstructs.sfoRunway28LApproachMod
 import com.dmanchester.approachminder.io.Output.openSkyTrajectoriesToJson
 import com.dmanchester.approachminder.math.DeviationFromMean
 import com.dmanchester.approachminder.modeling.{ModelFit, ModelFitWithDisplayFields}
+import com.dmanchester.approachminder.positionreports.{ADSB, Large, MLAT, OpenSkyPositionReport}
 import com.dmanchester.approachminder.trajectories.Trajectory
 import org.specs2.mutable.*
 

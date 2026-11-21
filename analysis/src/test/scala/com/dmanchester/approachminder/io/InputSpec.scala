@@ -1,6 +1,7 @@
 package com.dmanchester.approachminder.io
 
 import com.dmanchester.approachminder.io.Input.{SingleOpenSkyFileToVectorsFailure, SingleOpenSkyFileToVectorsSuccess}
+import com.dmanchester.approachminder.positionreports.{AircraftCategory, OpenSkyVector, PositionSource}
 import org.specs2.mutable.*
 
 import java.nio.file.{Path, Paths}

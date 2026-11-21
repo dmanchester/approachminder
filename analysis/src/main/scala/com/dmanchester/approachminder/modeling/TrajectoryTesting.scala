@@ -1,8 +1,8 @@
-package com.dmanchester.approachminder.trajectories
+package com.dmanchester.approachminder.modeling
 
 import com.dmanchester.approachminder.geo.HasLongLatAlt
 import com.dmanchester.approachminder.math.MathUtils
-import com.dmanchester.approachminder.modeling.{ApproachModel, ApproachModelsTester, ModelFitWithDisplayFields}
+import com.dmanchester.approachminder.trajectories.Trajectory
 
 object TrajectoryTesting {
 

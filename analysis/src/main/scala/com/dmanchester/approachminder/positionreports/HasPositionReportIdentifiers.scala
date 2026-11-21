@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder.io
+package com.dmanchester.approachminder.positionreports
 
 trait HasPositionReportIdentifiers extends HasICAO24 with HasTime with HasCallsignAndTime {
   def icao24: String
