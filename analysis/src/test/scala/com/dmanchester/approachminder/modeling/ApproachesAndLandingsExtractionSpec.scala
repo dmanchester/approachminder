@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder.approaches
+package com.dmanchester.approachminder.modeling
 
 import com.dmanchester.approachminder.airports.RunwayAndReferencePoint
 import com.dmanchester.approachminder.data.Airports.{oak, sfo}

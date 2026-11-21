@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder.io
 
-import com.dmanchester.approachminder.approaches.ModelFitWithDisplayFields
+import com.dmanchester.approachminder.modeling.ModelFitWithDisplayFields
 import com.dmanchester.approachminder.trajectories.Trajectory
 import play.api.libs.json.*
 

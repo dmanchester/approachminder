@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder.approaches
+package com.dmanchester.approachminder.modeling
 
 import com.dmanchester.approachminder.data.Airports.sfo
 import com.dmanchester.approachminder.data.SFOConstructs.{meanTrajectoryFromSoutheast, sfo28LApproachPointB, sfo28LApproachPointC, sfoRunway28LApproachModel}

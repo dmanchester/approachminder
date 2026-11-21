@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder.approaches
+package com.dmanchester.approachminder.modeling
 
 import com.dmanchester.approachminder.airports.Airport
 import com.dmanchester.approachminder.geo.{HasLongLat, HasLongLatAlt}

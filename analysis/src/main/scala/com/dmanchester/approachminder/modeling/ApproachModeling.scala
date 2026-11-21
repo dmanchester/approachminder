@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder.approaches
+package com.dmanchester.approachminder.modeling
 
 import com.dmanchester.approachminder.geo.HasLongLatAlt
 import com.dmanchester.approachminder.math.{AngleAndAltitude, MathUtils, MeanAngleAndAltitude}

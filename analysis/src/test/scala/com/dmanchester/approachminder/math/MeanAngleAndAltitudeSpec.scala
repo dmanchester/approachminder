@@ -1,6 +1,6 @@
 package com.dmanchester.approachminder.math
 
-import com.dmanchester.approachminder.approaches.ApproachModeling
+import com.dmanchester.approachminder.modeling.ApproachModeling
 import com.dmanchester.approachminder.resources.TestHelpers.significantFigures
 import org.specs2.mutable.*
 

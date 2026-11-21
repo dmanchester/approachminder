@@ -1,9 +1,9 @@
 package com.dmanchester.approachminder.io
 
-import com.dmanchester.approachminder.approaches.{ModelFit, ModelFitWithDisplayFields}
 import com.dmanchester.approachminder.data.SFOConstructs.sfoRunway28LApproachModel
 import com.dmanchester.approachminder.io.Output.openSkyTrajectoriesToJson
 import com.dmanchester.approachminder.math.DeviationFromMean
+import com.dmanchester.approachminder.modeling.{ModelFit, ModelFitWithDisplayFields}
 import com.dmanchester.approachminder.trajectories.Trajectory
 import org.specs2.mutable.*
 

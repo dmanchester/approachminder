@@ -1,4 +1,4 @@
-package com.dmanchester.approachminder.approaches
+package com.dmanchester.approachminder.modeling
 
 /**
  * A ModelFit instance, along with some display-oriented fields.
