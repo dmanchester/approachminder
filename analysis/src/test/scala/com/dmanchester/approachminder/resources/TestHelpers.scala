@@ -1,7 +1,7 @@
 package com.dmanchester.approachminder.resources
 
-import com.dmanchester.approachminder.typeswithbehavior.Trajectory
-import com.dmanchester.approachminder.typeswithoutbehavior.{HasLongLat, HasLongLatAlt}
+import com.dmanchester.approachminder.geo.{HasLongLat, HasLongLatAlt}
+import com.dmanchester.approachminder.trajectories.Trajectory
 import org.specs2.matcher.Matchers.{SignificantFiguresSyntax, beCloseTo}
 import org.specs2.matcher.{Matcher, SignificantFigures}
 

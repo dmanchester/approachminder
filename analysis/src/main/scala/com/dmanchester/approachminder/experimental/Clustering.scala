@@ -1,8 +1,8 @@
 package com.dmanchester.approachminder.experimental
 
 import com.dmanchester.approachminder.*
-import com.dmanchester.approachminder.typeswithoutbehavior.{AngleAndAltitude, HasLongLat, LongLatAlt}
-import com.dmanchester.approachminder.utils.{GeographicCalculator, MathUtils}
+import com.dmanchester.approachminder.geo.{GeographicCalculator, HasLongLat, LongLatAlt}
+import com.dmanchester.approachminder.math.{AngleAndAltitude, MathUtils}
 import org.apache.commons.math3.ml.clustering.{Clusterable, DBSCANClusterer}
 import org.apache.commons.math3.ml.distance.DistanceMeasure
 

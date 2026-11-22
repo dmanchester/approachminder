@@ -1,10 +1,10 @@
 package com.dmanchester.approachminder.data
 
 import com.dmanchester.approachminder.data.Airports.{sfo, sfoData}
-import com.dmanchester.approachminder.typeswithbehavior.{ApproachModel, MeanAngleAndAltitude, PolarAngle}
-import com.dmanchester.approachminder.typeswithoutbehavior.*
-import com.dmanchester.approachminder.utils.GeographicCalculator
-import com.dmanchester.approachminder.utils.MathUtils.feetToMeters
+import com.dmanchester.approachminder.geo.{GeographicCalculator, HasLongLat, LongLat, LongLatAlt, Polygon}
+import com.dmanchester.approachminder.math.MathUtils.feetToMeters
+import com.dmanchester.approachminder.math.{MeanAngleAndAltitude, PolarAngle}
+import com.dmanchester.approachminder.modeling.ApproachModel
 
 object SFOConstructs {
 

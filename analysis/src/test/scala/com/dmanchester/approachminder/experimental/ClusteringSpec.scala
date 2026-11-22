@@ -2,8 +2,7 @@ package com.dmanchester.approachminder.experimental
 
 import com.dmanchester.approachminder.data.Airports.sfo
 import com.dmanchester.approachminder.data.SFOConstructs.sfoCalculator
-import com.dmanchester.approachminder.typeswithbehavior.PolarAngle
-import com.dmanchester.approachminder.typeswithoutbehavior.AngleAndAltitude
+import com.dmanchester.approachminder.math.{AngleAndAltitude, PolarAngle}
 import org.specs2.mutable.*
 
 class ClusteringSpec extends Specification {
